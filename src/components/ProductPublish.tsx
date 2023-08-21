@@ -31,7 +31,7 @@ type MyFormRules = {
     maxValue?: MyFormNumRules;
     minValue?: MyFormNumRules;
 
-    tips?: any;
+    tips?: MyFormDependRules[];
     disable?: MyFormDependRules;
 }
 type MyFormItemProps = {
@@ -75,17 +75,6 @@ function ProductPublish(props: {}) {
         }
         return rules;
     }
-    const getTip = (tp: any[]): ReactNode => {
-        return tp.length > 0
-            ? <>  {
-                tp.map((m, index) => {
-                    if (m.value) {
-                        return <div key={index} dangerouslySetInnerHTML={{ __html: m.value }} />
-                    }
-                })
-            } </>
-            : undefined;
-    }
 
     const checkDependGroup = (dependGroup?: MyFormDependGroup, values?: any): boolean | undefined => {
         const operator = dependGroup?.operator;
@@ -96,7 +85,7 @@ function ProductPublish(props: {}) {
         if (!operator || (expressLength == 0 && groupLength == 0)) { return undefined }
         values = values || {};
         let _isMatcheds: (boolean | undefined)[] = [];
-        let log = "";
+        // let log = "";
         for (let i = 0; i < expressLength; i++) {
             const exp = expresses[i];
             const _val = values[exp.fieldName];
@@ -105,7 +94,7 @@ function ProductPublish(props: {}) {
             } else if (exp.symbol == '==') {
                 _isMatcheds.push(_val == exp.fieldValue);
             }
-            log += `\n ${exp.fieldName}:${exp.fieldValue} ${exp.symbol} ${_val} `;
+            // log += `\n ${exp.fieldName}:${exp.fieldValue} ${exp.symbol} ${_val} `;
         }
 
         for (let j = 0; j < expressLength; j++) {
@@ -123,18 +112,17 @@ function ProductPublish(props: {}) {
                 isMatched = _isMatcheds.some(e => e === true);
             }
         }
-        console.log("eee", log, isMatched, operator, _isMatcheds);
+        // console.log("eee", log, isMatched, operator, _isMatcheds);
         return isMatched;
     }
 
     const checkDependRules = (dependRules: MyFormDependRules): [boolean, (values: any) => any] => {
         const dependGroup = dependRules?.dependGroup;
-
         const operator = dependGroup?.operator;
         const expressLength = dependGroup?.expresses?.length || 0;
         const groupLength = dependGroup?.groups?.length || 0;
-        const shouldUpdate = !!operator && (expressLength > 0 || groupLength > 0);
 
+        const shouldUpdate = !!operator && (expressLength > 0 || groupLength > 0);
         let getValue = (values: any) => {
             let isMatched = checkDependGroup(dependGroup, values);
             return isMatched === false ? undefined : dependRules?.value;
@@ -147,7 +135,7 @@ function ProductPublish(props: {}) {
         return (<>
             <Grid.Row gutter={{ xs: 4, sm: 6, md: 12 }}>
                 {p.formItems?.map((sm, si) => {
-                    return <Grid.Col span={12}>
+                    return <Grid.Col key={'cpi' + si} span={12}>
                         <FormItem
                             key={'si' + si} {...sm}
                             uiType={sm.type == 'singlecheck' ? 'select' : undefined}
@@ -158,34 +146,73 @@ function ProductPublish(props: {}) {
         </>)
     }
 
+    function ComplexFormItem(p: MyFormItemProps) {
+        // p.isCateProp
+        // ? <CateProFormItem key={'si' + p.name} {...p} />
+        // : p.formItems?.map((sm, si) => {
+        //     return <FormItem key={'si' + si} {...sm} />
+        // })
+
+        return (<>
+            <Grid.Row gutter={{ xs: 4, sm: 6, md: 12 }}>
+                {p.formItems?.map((sm, si) => {
+                    return <Grid.Col key={'cpi' + si} span={12}>
+                        <FormItem
+                            key={'si' + si} {...sm}
+                            uiType={sm.type == 'singlecheck' ? 'select' : undefined}
+                        />
+                    </Grid.Col>
+                })}
+            </Grid.Row>
+        </>)
+    }
+    const getTips = (tipRules: MyFormDependRules[]): [boolean, (values: any) => any] => {
+        let shouldUpdate = false;
+        let getValuefunList: Array<(values: any) => any> = [];
+        tipRules?.forEach(tipRule => {
+            const [_shouldUpdate, _getValue] = checkDependRules(tipRule || {});
+            if (_shouldUpdate === true) { shouldUpdate = true; }
+            getValuefunList.push(_getValue);
+        });
+
+        let getValues = (values: any) => {
+            return (
+                getValuefunList.map((fun, index) => {
+                    const value = fun && fun(values);
+                    if (value) { return <div key={index} dangerouslySetInnerHTML={{ __html: value }} /> }
+                })
+            );
+        };
+        return [shouldUpdate, getValues];
+    }
+
+
     function FormItem(p: MyFormItemProps) {
         const { tips, disable, ...restRules } = p.rules || {};
         const _rules = getrules(restRules);
-        const _tips = getTip(tips || []);
-        const [shouldUpdate, getValue] = checkDependRules(disable || {});
+        const [tipShouldUpdate, getTipValues] = getTips(tips || []);
+        const [disShouldUpdate, getDisValue] = checkDependRules(disable || {});
         return (<>
-            <Form.Item shouldUpdate={shouldUpdate}>
+            <Form.Item shouldUpdate={tipShouldUpdate || disShouldUpdate}>
                 {(values) => {
-                    const _disable = getValue(values) === true;
-                    return _disable ? <div>{"disable:" + p.label}</div> :
+                    const _disable = getDisValue(values) === true;
+                    const _tips = getTipValues(values);
+                    return _disable ? <div>{p.label + " : Disable rendering"}</div> :
                         <Form.Item
                             label={p.label} field={p.name}
-                            rules={_rules} extra={_tips}
+                            rules={_rules}
+                            extra={_tips}
                         >
                             {p.type == 'input' ? (
                                 (restRules.maxValue || restRules.minValue)
                                     ? <InputNumber placeholder={`请输入${p.label}`} />
                                     : <Input placeholder={`请输入${p.label}`} />
                             ) : p.type == 'singlecheck' ? (
-                                ((p.options && p.options.length > 3 && p.uiType != 'radio')
-                                    || p.uiType == 'select')
+                                ((p.options && p.options.length > 3 && p.uiType != 'radio') || p.uiType == 'select')
                                     ? <Select options={p.options} placeholder={`请选择${p.label}`} />
                                     : <Radio.Group options={p.options} />
-                            ) : p.type == 'complex' ? (p.isCateProp
-                                ? <CateProFormItem {...p} />
-                                : p.formItems?.map((sm, si) => {
-                                    return <FormItem key={'si' + si} {...sm} />
-                                })
+                            ) : p.type == 'complex' ? (
+                                <ComplexFormItem {...p} />
                             ) : undefined
                             }
                         </Form.Item>;
