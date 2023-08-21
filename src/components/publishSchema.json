@@ -5200,42 +5200,10 @@
 			}
 		]
 	},
-	{
-		"label": "宝贝长图",
-		"name": "verticalImage",
-		"type": "complex",
-		"rules": {
-			"tips": [
-				{
-					"value": "长图横竖比必须为2：3，最小长度为480，建议使用800*1200，若不上传长图，搜索列表、市场活动等页面的竖图模式将无法展示宝贝！<a target='_blank' href='//service.taobao.com/support/knowledge-13433847.htm'>查看详情</a>"
-				}
-			],
-			"required": false
-		},
-		"formItems": [
-			{
-				"label": "宝贝长图",
-				"name": "verticalImage_0",
-				"type": "input",
-				"rules": {
-					"required": false,
-					"valueType": "url"
-				}
-			}
-		]
-	},
+	
 	{
 		"label": "PC端详情描述",
 		"name": "desc",
-		"type": "input",
-		"rules": {
-			"required": false,
-			"valueType": "string"
-		}
-	},
-	{
-		"label": "手机端详情描述",
-		"name": "wirelessDesc",
 		"type": "input",
 		"rules": {
 			"required": false,

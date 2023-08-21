@@ -1,5 +1,6 @@
 import React, { ReactNode, useRef, useState } from 'react';
-import { Form, Input, Button, Modal, Radio, Select, InputNumber, Grid } from '@arco-design/web-react';
+import { Form, Input, Radio, Select, InputNumber, Grid, Upload } from '@arco-design/web-react';
+import { IconPlus } from '@arco-design/web-react/icon';
 import publishSchema from './publishSchema.json';
 type MyFormNumRules = {
     value?: any,
@@ -147,10 +148,13 @@ function ProductPublish(props: {}) {
     }
 
     function ComplexFormItem(p: MyFormItemProps) {
-        return (
-            p.isCateProp ? (
+        const isCateProp = p.name == "catProp";//p.isCateProp;
+        const isMainImg = p.name == "images";//TODO:主图图片字段类型
+        const formItems = p.formItems;
+        return (<>{
+            isCateProp ? (
                 <Grid.Row gutter={{ xs: 4, sm: 6, md: 12 }}>
-                    {p.formItems?.map((sm, si) => {
+                    {formItems?.map((sm, si) => {
                         const uiType = sm.type == 'singlecheck' ? 'select' : undefined;
                         return (
                             <Grid.Col key={'cpi' + si} span={12}>
@@ -159,10 +163,21 @@ function ProductPublish(props: {}) {
                         )
                     })}
                 </Grid.Row>
-            ) : p.formItems?.map((sm, si) => {
+            ) : isMainImg ? (
+                <Grid cols={{ xs: 3, sm: 4, md: 5, lg: 6, xl: 7, xxl: 8 }}>
+                    {formItems?.map((sm, si) => {
+                        const uiType = 'upload';
+                        return (
+                            <Grid.GridItem key={'cpi' + si}>
+                                <FormItem key={'si' + si} {...sm} uiType={uiType} />
+                            </Grid.GridItem>
+                        )
+                    })}
+                </Grid>
+            ) : formItems?.map((sm, si) => {
                 return <FormItem key={'si' + si} {...sm} />
             })
-        )
+        }</>)
     }
     const getTips = (tipRules: MyFormDependRules[]): [boolean, (values: any) => any] => {
         let shouldUpdate = false;
@@ -202,9 +217,26 @@ function ProductPublish(props: {}) {
                             extra={_tips}
                         >
                             {p.type == 'input' ? (
-                                (restRules.maxValue || restRules.minValue)
-                                    ? <InputNumber placeholder={`请输入${p.label}`} />
-                                    : <Input placeholder={`请输入${p.label}`} />
+                                p.uiType == 'upload' ? (
+                                    <Upload action='/'
+                                        showUploadList={false}
+                                        onChange={(_, currentFile) => { }}
+                                        onProgress={(currentFile) => { }}
+                                    >
+                                        <div className='arco-upload-trigger-picture'
+                                            style={{ width: '100px', height: '100px' }}>
+                                            <div className='arco-upload-trigger-picture-text'>
+                                                <IconPlus />
+                                                <div style={{ marginTop: 10, }}>添加上传图片</div>
+                                            </div>
+                                        </div>
+                                    </Upload>
+                                ) : ((restRules.maxValue || restRules.minValue) ? (
+                                    <InputNumber placeholder={`请输入${p.label}`} />
+                                ) : (
+                                    <Input placeholder={`请输入${p.label}`} />
+                                )
+                                )
                             ) : p.type == 'singlecheck' ? (
                                 ((p.options && p.options.length > 3 && p.uiType != 'radio') || p.uiType == 'select')
                                     ? <Select options={p.options} placeholder={`请选择${p.label}`} />
