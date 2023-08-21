@@ -1,0 +1,5395 @@
+[
+	{
+		"label": "宝贝类型",
+		"name": "stuffStatus",
+		"type": "singlecheck",
+		"rules": {
+			"required": true
+		},
+		"options": [
+			{
+				"label": "全新",
+				"value": "5"
+			},
+			{
+				"label": "二手",
+				"value": "6"
+			}
+		]
+	},
+	{
+		"label": "宝贝标题",
+		"name": "title",
+		"type": "input",
+		"rules": {
+			"tips": [
+				{
+					"value": "标题和描述关键词是否违规自检工具：<a href='//ss.taobao.com/compliance#/main' target='_blank'>商品合规工具</a>"
+				},
+				{
+					"value": "标题直接影响商品的搜索曝光机会，请<a href='//market.m.taobao.com/app/qn/toutiao-new/index-pc.html#/detail/10682439?_k=rkwe5f' target='_blank'>点此查看详情</a>学习标题填写规范及优化知识"
+				},
+				{
+					"value": "即日起，标题中请勿使用制表符、换行符。若填入制表符、换行符，系统将自动替换成空格"
+				},
+				{
+					"value": "最多允许输入30个汉字（60字符）"
+				}
+			],
+			"required": true,
+			"maxLength": {
+				"value": 60,
+				"include": true
+			},
+			"valueType": "string"
+		}
+	},
+	{
+		"label": "类目属性",
+		"name": "catProp",
+		"type": "complex",
+		"rules": {
+			"tips": [
+				{
+					"value": "错误填写宝贝属性，可能会引起宝贝下架或搜索流量减少，影响您的正常销售，请认真准确填写！"
+				},
+				{
+					"value": "若发布时遇到属性、属性值不能满足您提交商品的需求，请点击<a href='https://cpv.taobao.com/report/categoryPropertyIssueReport.htm?categoryId=50013194' target='_blank'>商品属性问题反馈</a>"
+				}
+			],
+			"required": false
+		},
+		"formItems": [
+			{
+				"label": "品牌",
+				"name": "p-20000",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "晒谷场",
+						"value": "1022430010"
+					},
+					{
+						"label": "晓公子",
+						"value": "1472037269"
+					}
+				]
+			},
+			{
+				"label": "货号",
+				"name": "p-13021751",
+				"type": "input",
+				"rules": {
+					"required": false,
+					"maxLength": {
+						"value": 128,
+						"include": true
+					}
+				}
+			},
+			{
+				"label": "服装版型",
+				"name": "p-122216586",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "修身型",
+						"value": "3267162"
+					},
+					{
+						"label": "高腰型",
+						"value": "27295811"
+					},
+					{
+						"label": "斗篷型",
+						"value": "27295812"
+					},
+					{
+						"label": "直筒型",
+						"value": "4049881"
+					}
+				]
+			},
+			{
+				"label": "风格",
+				"name": "p-20608",
+				"type": "singlecheck",
+				"rules": {
+					"tips": [
+						{
+							"value": "请使用SelectProp接口查询并填充完整子属性后提交"
+						}
+					],
+					"required": false
+				},
+				"options": [
+					{
+						"label": "甜美",
+						"value": "3267776"
+					},
+					{
+						"label": "通勤",
+						"value": "6384766"
+					},
+					{
+						"label": "街头",
+						"value": "29934"
+					},
+					{
+						"label": "洛丽塔",
+						"value": "3506815"
+					}
+				]
+			},
+			{
+				"label": "衣长",
+				"name": "p-122216562",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "超短款",
+						"value": "22561361"
+					},
+					{
+						"label": "短款",
+						"value": "47502"
+					},
+					{
+						"label": "常规",
+						"value": "3226292"
+					},
+					{
+						"label": "中长款",
+						"value": "44597"
+					},
+					{
+						"label": "长款",
+						"value": "66612"
+					}
+				]
+			},
+			{
+				"label": "袖长",
+				"name": "p-122216348",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "长袖",
+						"value": "29444"
+					},
+					{
+						"label": "七分袖",
+						"value": "3216779"
+					},
+					{
+						"label": "五分袖",
+						"value": "14587965"
+					},
+					{
+						"label": "短袖",
+						"value": "29445"
+					},
+					{
+						"label": "九分袖",
+						"value": "11162412"
+					},
+					{
+						"label": "无袖",
+						"value": "29446"
+					}
+				]
+			},
+			{
+				"label": "领子",
+				"name": "p-20663",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "西装领",
+						"value": "3267189"
+					},
+					{
+						"label": "立领",
+						"value": "29541"
+					},
+					{
+						"label": "娃娃领",
+						"value": "27316112"
+					},
+					{
+						"label": "可脱卸帽",
+						"value": "3267193"
+					},
+					{
+						"label": "堆堆领",
+						"value": "7486925"
+					},
+					{
+						"label": "一字领",
+						"value": "29917"
+					},
+					{
+						"label": "荷叶领",
+						"value": "9977673"
+					},
+					{
+						"label": "POLO领",
+						"value": "3276127"
+					},
+					{
+						"label": "方领",
+						"value": "29538"
+					},
+					{
+						"label": "半开领",
+						"value": "30066992"
+					},
+					{
+						"label": "高领",
+						"value": "29546"
+					},
+					{
+						"label": "双层领",
+						"value": "3267194"
+					},
+					{
+						"label": "海军领",
+						"value": "57658638"
+					},
+					{
+						"label": "其他/other",
+						"value": "14863995"
+					},
+					{
+						"label": "圆领",
+						"value": "29447"
+					},
+					{
+						"label": "V领",
+						"value": "29448"
+					},
+					{
+						"label": "连帽",
+						"value": "3267192"
+					},
+					{
+						"label": "半高领",
+						"value": "29075742"
+					}
+				]
+			},
+			{
+				"label": "袖型",
+				"name": "p-2917380",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "蝙蝠袖",
+						"value": "7576170"
+					},
+					{
+						"label": "泡泡袖",
+						"value": "5618747"
+					},
+					{
+						"label": "灯笼袖",
+						"value": "7216758"
+					},
+					{
+						"label": "喇叭袖",
+						"value": "19306903"
+					},
+					{
+						"label": "常规",
+						"value": "3226292"
+					},
+					{
+						"label": "飞飞袖",
+						"value": "95316670"
+					},
+					{
+						"label": "公主袖",
+						"value": "11245515"
+					},
+					{
+						"label": "其他",
+						"value": "20213"
+					},
+					{
+						"label": "堆堆袖",
+						"value": "145654279"
+					},
+					{
+						"label": "衬衫袖",
+						"value": "27414723"
+					},
+					{
+						"label": "插肩袖",
+						"value": "27414630"
+					},
+					{
+						"label": "花瓣袖",
+						"value": "42625521"
+					},
+					{
+						"label": "荷叶袖",
+						"value": "27414678"
+					},
+					{
+						"label": "包袖",
+						"value": "27414703"
+					}
+				]
+			},
+			{
+				"label": "衣门襟",
+				"name": "p-31611",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "单排扣",
+						"value": "103454"
+					},
+					{
+						"label": "双排扣",
+						"value": "103453"
+					},
+					{
+						"label": "牛角扣",
+						"value": "3216800"
+					},
+					{
+						"label": "拉链",
+						"value": "115481"
+					},
+					{
+						"label": "系带",
+						"value": "28102"
+					},
+					{
+						"label": "暗扣",
+						"value": "20754689"
+					},
+					{
+						"label": "一粒扣",
+						"value": "112631"
+					},
+					{
+						"label": "其他",
+						"value": "20213"
+					}
+				]
+			},
+			{
+				"label": "图案",
+				"name": "p-20603",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "纯色",
+						"value": "29454"
+					},
+					{
+						"label": "圆点",
+						"value": "113019"
+					},
+					{
+						"label": "条纹",
+						"value": "29452"
+					},
+					{
+						"label": "格子",
+						"value": "29453"
+					},
+					{
+						"label": "人字纹",
+						"value": "13021262"
+					},
+					{
+						"label": "千鸟格",
+						"value": "3222563"
+					},
+					{
+						"label": "植物花卉",
+						"value": "104170033"
+					}
+				]
+			},
+			{
+				"label": "流行元素/工艺",
+				"name": "p-122216588",
+				"type": "multicheck",
+				"rules": {
+					"tips": [
+						{
+							"value": "该属性支持自定义输入，自定义输入值请填写至value标签中inputValue属性,value标签内容为任意负数；多个输入值请保证value中内容负数值不重复"
+						}
+					],
+					"required": false,
+					"maxLength": {
+						"value": 100,
+						"include": true
+					},
+					"valueType": "string"
+				},
+				"options": [
+					{
+						"label": "蝴蝶结",
+						"value": "115772"
+					},
+					{
+						"label": "亮丝",
+						"value": "7573005"
+					},
+					{
+						"label": "镶钻",
+						"value": "3332415"
+					},
+					{
+						"label": "铆钉",
+						"value": "115776"
+					},
+					{
+						"label": "露背",
+						"value": "7600710"
+					},
+					{
+						"label": "油漆喷溅",
+						"value": "141823124"
+					},
+					{
+						"label": "手工磨破",
+						"value": "148585979"
+					},
+					{
+						"label": "破洞",
+						"value": "3267932"
+					},
+					{
+						"label": "镂空",
+						"value": "115771"
+					},
+					{
+						"label": "抽褶",
+						"value": "41118856"
+					},
+					{
+						"label": "贴布",
+						"value": "130845"
+					},
+					{
+						"label": "绣花",
+						"value": "29957"
+					},
+					{
+						"label": "链条",
+						"value": "4015931"
+					},
+					{
+						"label": "褶皱",
+						"value": "112602"
+					},
+					{
+						"label": "木耳",
+						"value": "42536"
+					},
+					{
+						"label": "勾花镂空",
+						"value": "148585986"
+					},
+					{
+						"label": "流苏",
+						"value": "115777"
+					},
+					{
+						"label": "口袋",
+						"value": "3243112"
+					},
+					{
+						"label": "荷叶边",
+						"value": "130316"
+					},
+					{
+						"label": "系带",
+						"value": "28102"
+					},
+					{
+						"label": "印花",
+						"value": "129555"
+					},
+					{
+						"label": "拼接",
+						"value": "9142620"
+					},
+					{
+						"label": "螺纹",
+						"value": "8611558"
+					},
+					{
+						"label": "扎花",
+						"value": "17665110"
+					},
+					{
+						"label": "立体装饰",
+						"value": "32971735"
+					},
+					{
+						"label": "不对称",
+						"value": "7642045"
+					},
+					{
+						"label": "植绒",
+						"value": "3267928"
+					},
+					{
+						"label": "绑带",
+						"value": "3705386"
+					},
+					{
+						"label": "扎染",
+						"value": "5145675"
+					},
+					{
+						"label": "钉珠",
+						"value": "29958"
+					},
+					{
+						"label": "波浪",
+						"value": "3424792"
+					},
+					{
+						"label": "做旧",
+						"value": "112597"
+					},
+					{
+						"label": "亮片",
+						"value": "29959"
+					},
+					{
+						"label": "背带",
+						"value": "100343"
+					},
+					{
+						"label": "肩章",
+						"value": "130138"
+					},
+					{
+						"label": "纽扣",
+						"value": "3693451"
+					},
+					{
+						"label": "纱网",
+						"value": "26325697"
+					},
+					{
+						"label": "拉链",
+						"value": "115481"
+					},
+					{
+						"label": "乱针修补",
+						"value": "148585996"
+					},
+					{
+						"label": "锈斑处理",
+						"value": "148585997"
+					},
+					{
+						"label": "3D",
+						"value": "3235817"
+					},
+					{
+						"label": "树脂固色",
+						"value": "148585998"
+					},
+					{
+						"label": "蕾丝",
+						"value": "28386"
+					},
+					{
+						"label": "燕尾",
+						"value": "6061030"
+					},
+					{
+						"label": "other",
+						"value": "-1"
+					}
+				]
+			},
+			{
+				"label": "面料",
+				"name": "p-20551",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "绵羊毛",
+						"value": "84652227"
+					},
+					{
+						"label": "羊毛皮",
+						"value": "11029302"
+					},
+					{
+						"label": "粗花呢",
+						"value": "3267729"
+					},
+					{
+						"label": "羊驼毛",
+						"value": "36107140"
+					},
+					{
+						"label": "狐狸毛",
+						"value": "46278"
+					},
+					{
+						"label": "头层牛皮",
+						"value": "3880992"
+					},
+					{
+						"label": "貂毛",
+						"value": "21540056"
+					},
+					{
+						"label": "羊皮",
+						"value": "28398"
+					},
+					{
+						"label": "烂花绒",
+						"value": "18091274"
+					},
+					{
+						"label": "雪尼尔",
+						"value": "3744794"
+					},
+					{
+						"label": "山羊绒",
+						"value": "9583785"
+					},
+					{
+						"label": "厚缎",
+						"value": "32064981"
+					},
+					{
+						"label": "仿牛仔",
+						"value": "3590240"
+					},
+					{
+						"label": "竹纤维",
+						"value": "94348"
+					},
+					{
+						"label": "迷彩布",
+						"value": "3267733"
+					},
+					{
+						"label": "涂层布",
+						"value": "3267732"
+					},
+					{
+						"label": "丝绸",
+						"value": "130223"
+					},
+					{
+						"label": "蚂蚁布",
+						"value": "39378678"
+					},
+					{
+						"label": "真丝双绉",
+						"value": "130225"
+					},
+					{
+						"label": "短顺毛料",
+						"value": "136444049"
+					},
+					{
+						"label": "兔绒",
+						"value": "31388007"
+					},
+					{
+						"label": "皮革",
+						"value": "46284"
+					},
+					{
+						"label": "毛巾布",
+						"value": "21222817"
+					},
+					{
+						"label": "复合",
+						"value": "3394768"
+					},
+					{
+						"label": "罗纹布",
+						"value": "3267781"
+					},
+					{
+						"label": "安哥拉兔毛",
+						"value": "45315007"
+					},
+					{
+						"label": "奥代尔",
+						"value": "65332988"
+					},
+					{
+						"label": "骆驼毛",
+						"value": "35280701"
+					},
+					{
+						"label": "驼绒",
+						"value": "31390967"
+					},
+					{
+						"label": "彩棉",
+						"value": "112994"
+					},
+					{
+						"label": "仿皮",
+						"value": "30079"
+					},
+					{
+						"label": "合成革",
+						"value": "30082"
+					},
+					{
+						"label": "毛料",
+						"value": "9114937"
+					},
+					{
+						"label": "莱卡棉",
+						"value": "3548657"
+					},
+					{
+						"label": "麻类混纺",
+						"value": "52571896"
+					},
+					{
+						"label": "纱布",
+						"value": "3313135"
+					},
+					{
+						"label": "动物毛",
+						"value": "22390950"
+					},
+					{
+						"label": "平纹布",
+						"value": "7910004"
+					},
+					{
+						"label": "丝光羊毛",
+						"value": "3229202"
+					},
+					{
+						"label": "白胚牛仔",
+						"value": "222028661"
+					},
+					{
+						"label": "尼丝纺",
+						"value": "17363835"
+					},
+					{
+						"label": "七彩绒",
+						"value": "30104501"
+					},
+					{
+						"label": "罗纹棉",
+						"value": "6581995"
+					},
+					{
+						"label": "包芯丝",
+						"value": "6739697"
+					},
+					{
+						"label": "麻质",
+						"value": "44703"
+					},
+					{
+						"label": "牛仔布",
+						"value": "28343"
+					},
+					{
+						"label": "尼龙",
+						"value": "28347"
+					},
+					{
+						"label": "水晶绒",
+						"value": "31057762"
+					},
+					{
+						"label": "再生纤维",
+						"value": "33239878"
+					},
+					{
+						"label": "漆皮",
+						"value": "28402"
+					},
+					{
+						"label": "人造彩棉",
+						"value": "493280156"
+					},
+					{
+						"label": "斜纹缎",
+						"value": "9729936"
+					},
+					{
+						"label": "罗马布",
+						"value": "30871234"
+					},
+					{
+						"label": "棉毛混纺",
+						"value": "37564680"
+					},
+					{
+						"label": "长绒棉",
+						"value": "4282117"
+					},
+					{
+						"label": "有机棉",
+						"value": "10040263"
+					},
+					{
+						"label": "棉混纺布",
+						"value": "27416256"
+					},
+					{
+						"label": "美舒绒",
+						"value": "84701797"
+					},
+					{
+						"label": "导热纤维",
+						"value": "49063278"
+					},
+					{
+						"label": "羊羔毛",
+						"value": "9888524"
+					},
+					{
+						"label": "巴厘纱",
+						"value": "41673184"
+					},
+					{
+						"label": "珍珠绒",
+						"value": "16231274"
+					},
+					{
+						"label": "素绉缎",
+						"value": "11463446"
+					},
+					{
+						"label": "獭兔毛",
+						"value": "9564975"
+					},
+					{
+						"label": "竹炭面料",
+						"value": "30857057"
+					},
+					{
+						"label": "斜纹布",
+						"value": "20896326"
+					},
+					{
+						"label": "牛津布",
+						"value": "3283716"
+					},
+					{
+						"label": "仿毛布（TR）",
+						"value": "136204116"
+					},
+					{
+						"label": "其他",
+						"value": "20213"
+					},
+					{
+						"label": "绒质",
+						"value": "46356"
+					},
+					{
+						"label": "竹炭纤维",
+						"value": "3227999"
+					},
+					{
+						"label": "人造革",
+						"value": "28404"
+					},
+					{
+						"label": "PU",
+						"value": "3323086"
+					},
+					{
+						"label": "呢子",
+						"value": "30083"
+					},
+					{
+						"label": "毛圈布",
+						"value": "33952715"
+					},
+					{
+						"label": "复合面料",
+						"value": "14369046"
+					},
+					{
+						"label": "抓绒布",
+						"value": "39438758"
+					},
+					{
+						"label": "网眼布",
+						"value": "3841078"
+					},
+					{
+						"label": "蚕丝",
+						"value": "130682"
+					},
+					{
+						"label": "其他/other",
+						"value": "14863995"
+					},
+					{
+						"label": "色丁布",
+						"value": "3267805"
+					},
+					{
+						"label": "丝绒",
+						"value": "105253"
+					},
+					{
+						"label": "羊羔绒",
+						"value": "8030147"
+					},
+					{
+						"label": "仿真丝",
+						"value": "4506307"
+					},
+					{
+						"label": "梭织布",
+						"value": "3267738"
+					}
+				]
+			},
+			{
+				"label": "里料图案",
+				"name": "p-2917649",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "条纹",
+						"value": "29452"
+					},
+					{
+						"label": "豹纹",
+						"value": "3255041"
+					},
+					{
+						"label": "花案",
+						"value": "25088318"
+					},
+					{
+						"label": "纯色",
+						"value": "29454"
+					},
+					{
+						"label": "碎花",
+						"value": "107622"
+					},
+					{
+						"label": "卡通",
+						"value": "31755"
+					}
+				]
+			},
+			{
+				"label": "里料材质",
+				"name": "p-122216587",
+				"type": "multicomplex",
+				"rules": {
+					"tips": [
+						{
+							"value": "点击查看材质数据<a href='https://helpcenter.taobao.com/servicehall/knowledge_detail?kwdContentId=208256727891648512' target='_blank'>填写须知</a>"
+						},
+						{
+							"value": "该属性支持自定义输入，自定义输入值请填写至value标签inputValue属性, value标签内容为任意负数"
+						}
+					],
+					"required": false,
+					"maxInputNum": {
+						"value": 7,
+						"include": true
+					},
+					"maxLength": {
+						"value": 9999,
+						"include": true
+					},
+					"valueType": "string"
+				},
+				"formItems": [
+					{
+						"label": "材质",
+						"name": "material_prop_name",
+						"type": "singlecheck",
+						"options": [
+							{
+								"label": "三乙烯基纤维",
+								"value": "三乙烯基纤维"
+							},
+							{
+								"label": "三聚氰胺纤维",
+								"value": "三聚氰胺纤维"
+							},
+							{
+								"label": "三醋酯纤维(三醋纤)",
+								"value": "三醋酯纤维(三醋纤)"
+							},
+							{
+								"label": "二烯类弹性纤维",
+								"value": "二烯类弹性纤维"
+							},
+							{
+								"label": "亚麻",
+								"value": "亚麻"
+							},
+							{
+								"label": "人造革",
+								"value": "人造革"
+							},
+							{
+								"label": "兔毛",
+								"value": "兔毛"
+							},
+							{
+								"label": "再生纤维素纤维",
+								"value": "再生纤维素纤维"
+							},
+							{
+								"label": "再生蛋白质纤维",
+								"value": "再生蛋白质纤维"
+							},
+							{
+								"label": "刺蒴麻",
+								"value": "刺蒴麻"
+							},
+							{
+								"label": "剑麻",
+								"value": "剑麻"
+							},
+							{
+								"label": "北极狐毛",
+								"value": "北极狐毛"
+							},
+							{
+								"label": "原驼毛",
+								"value": "原驼毛"
+							},
+							{
+								"label": "坦皮科大麻",
+								"value": "坦皮科大麻"
+							},
+							{
+								"label": "壳聚糖纤维",
+								"value": "壳聚糖纤维"
+							},
+							{
+								"label": "大麻(汉麻)",
+								"value": "大麻(汉麻)"
+							},
+							{
+								"label": "安哥拉兔毛",
+								"value": "安哥拉兔毛"
+							},
+							{
+								"label": "山羊毛",
+								"value": "山羊毛"
+							},
+							{
+								"label": "山羊绒(羊绒)",
+								"value": "山羊绒(羊绒)"
+							},
+							{
+								"label": "帕尔马丝兰属叶纤维",
+								"value": "帕尔马丝兰属叶纤维"
+							},
+							{
+								"label": "改性聚丙烯腈纤维(改性腈纶)",
+								"value": "改性聚丙烯腈纤维(改性腈纶)"
+							},
+							{
+								"label": "新西兰麻",
+								"value": "新西兰麻"
+							},
+							{
+								"label": "木棉",
+								"value": "木棉"
+							},
+							{
+								"label": "木薯蚕丝",
+								"value": "木薯蚕丝"
+							},
+							{
+								"label": "柞蚕丝",
+								"value": "柞蚕丝"
+							},
+							{
+								"label": "桑蚕丝",
+								"value": "桑蚕丝"
+							},
+							{
+								"label": "棉",
+								"value": "棉"
+							},
+							{
+								"label": "椰壳纤维",
+								"value": "椰壳纤维"
+							},
+							{
+								"label": "槿麻",
+								"value": "槿麻"
+							},
+							{
+								"label": "樗蚕丝",
+								"value": "樗蚕丝"
+							},
+							{
+								"label": "樟蚕丝",
+								"value": "樟蚕丝"
+							},
+							{
+								"label": "水獭毛",
+								"value": "水獭毛"
+							},
+							{
+								"label": "河狸毛",
+								"value": "河狸毛"
+							},
+							{
+								"label": "河狸鼠毛",
+								"value": "河狸鼠毛"
+							},
+							{
+								"label": "海丝",
+								"value": "海丝"
+							},
+							{
+								"label": "海狸皮",
+								"value": "海狸皮"
+							},
+							{
+								"label": "海藻纤维",
+								"value": "海藻纤维"
+							},
+							{
+								"label": "海豹毛",
+								"value": "海豹毛"
+							},
+							{
+								"label": "熊毛",
+								"value": "熊毛"
+							},
+							{
+								"label": "牛毛",
+								"value": "牛毛"
+							},
+							{
+								"label": "牛角瓜纤维",
+								"value": "牛角瓜纤维"
+							},
+							{
+								"label": "牦牛毛",
+								"value": "牦牛毛"
+							},
+							{
+								"label": "牦牛绒",
+								"value": "牦牛绒"
+							},
+							{
+								"label": "獭兔皮",
+								"value": "獭兔皮"
+							},
+							{
+								"label": "玫瑰茄麻",
+								"value": "玫瑰茄麻"
+							},
+							{
+								"label": "玻璃纤维",
+								"value": "玻璃纤维"
+							},
+							{
+								"label": "甲壳素纤维",
+								"value": "甲壳素纤维"
+							},
+							{
+								"label": "白毛羊胡子草纤维",
+								"value": "白毛羊胡子草纤维"
+							},
+							{
+								"label": "石棉(石绵)",
+								"value": "石棉(石绵)"
+							},
+							{
+								"label": "碳化硅纤维",
+								"value": "碳化硅纤维"
+							},
+							{
+								"label": "碳纤维",
+								"value": "碳纤维"
+							},
+							{
+								"label": "竹纤维",
+								"value": "竹纤维"
+							},
+							{
+								"label": "粘胶纤维(粘纤)",
+								"value": "粘胶纤维(粘纤)"
+							},
+							{
+								"label": "罗布麻",
+								"value": "罗布麻"
+							},
+							{
+								"label": "羊毛",
+								"value": "羊毛"
+							},
+							{
+								"label": "羊驼毛",
+								"value": "羊驼毛"
+							},
+							{
+								"label": "美洲驼毛",
+								"value": "美洲驼毛"
+							},
+							{
+								"label": "聚丙烯/聚酰胺复合纤维",
+								"value": "聚丙烯/聚酰胺复合纤维"
+							},
+							{
+								"label": "聚丙烯纤维(丙纶)",
+								"value": "聚丙烯纤维(丙纶)"
+							},
+							{
+								"label": "聚丙烯腈纤维(腈纶)",
+								"value": "聚丙烯腈纤维(腈纶)"
+							},
+							{
+								"label": "聚乙烯/聚丙烯复合纤维",
+								"value": "聚乙烯/聚丙烯复合纤维"
+							},
+							{
+								"label": "聚乙烯/聚对苯二甲酸乙二醇酯复合纤维",
+								"value": "聚乙烯/聚对苯二甲酸乙二醇酯复合纤维"
+							},
+							{
+								"label": "聚乙烯纤维(乙纶)",
+								"value": "聚乙烯纤维(乙纶)"
+							},
+							{
+								"label": "聚乙烯醇纤维(维纶)",
+								"value": "聚乙烯醇纤维(维纶)"
+							},
+							{
+								"label": "聚乳酸纤维(PLA)",
+								"value": "聚乳酸纤维(PLA)"
+							},
+							{
+								"label": "聚四氟乙烯纤维(氟纶)",
+								"value": "聚四氟乙烯纤维(氟纶)"
+							},
+							{
+								"label": "聚氨酯弹性纤维(氨纶)",
+								"value": "聚氨酯弹性纤维(氨纶)"
+							},
+							{
+								"label": "聚氯乙烯(氯纶)",
+								"value": "聚氯乙烯(氯纶)"
+							},
+							{
+								"label": "聚烯烃弹性纤维",
+								"value": "聚烯烃弹性纤维"
+							},
+							{
+								"label": "聚羟基脂肪酸酯纤维",
+								"value": "聚羟基脂肪酸酯纤维"
+							},
+							{
+								"label": "聚脲纤维",
+								"value": "聚脲纤维"
+							},
+							{
+								"label": "聚芳酯纤维",
+								"value": "聚芳酯纤维"
+							},
+							{
+								"label": "聚苯并咪唑纤维",
+								"value": "聚苯并咪唑纤维"
+							},
+							{
+								"label": "聚苯硫醚纤维",
+								"value": "聚苯硫醚纤维"
+							},
+							{
+								"label": "聚酯/聚酯复合纤维",
+								"value": "聚酯/聚酯复合纤维"
+							},
+							{
+								"label": "聚酯/聚酰胺复合纤维",
+								"value": "聚酯/聚酰胺复合纤维"
+							},
+							{
+								"label": "聚酯复合弹性纤维",
+								"value": "聚酯复合弹性纤维"
+							},
+							{
+								"label": "聚酯纤维",
+								"value": "聚酯纤维"
+							},
+							{
+								"label": "聚酰亚胺纤维",
+								"value": "聚酰亚胺纤维"
+							},
+							{
+								"label": "聚酰胺纤维(锦纶)",
+								"value": "聚酰胺纤维(锦纶)"
+							},
+							{
+								"label": "聚酰胺酯纤维",
+								"value": "聚酰胺酯纤维"
+							},
+							{
+								"label": "肖梵天花麻",
+								"value": "肖梵天花麻"
+							},
+							{
+								"label": "芦荟麻",
+								"value": "芦荟麻"
+							},
+							{
+								"label": "芳香族聚酰胺纤维(芳纶)",
+								"value": "芳香族聚酰胺纤维(芳纶)"
+							},
+							{
+								"label": "苎麻",
+								"value": "苎麻"
+							},
+							{
+								"label": "茼麻",
+								"value": "茼麻"
+							},
+							{
+								"label": "荨麻",
+								"value": "荨麻"
+							},
+							{
+								"label": "莫代尔纤维(莫代尔)",
+								"value": "莫代尔纤维(莫代尔)"
+							},
+							{
+								"label": "莱赛尔纤维(莱赛尔)",
+								"value": "莱赛尔纤维(莱赛尔)"
+							},
+							{
+								"label": "菠萝叶纤维",
+								"value": "菠萝叶纤维"
+							},
+							{
+								"label": "菲奎麻",
+								"value": "菲奎麻"
+							},
+							{
+								"label": "菽麻",
+								"value": "菽麻"
+							},
+							{
+								"label": "蒙加丝",
+								"value": "蒙加丝"
+							},
+							{
+								"label": "蓖麻",
+								"value": "蓖麻"
+							},
+							{
+								"label": "蓖麻蚕丝",
+								"value": "蓖麻蚕丝"
+							},
+							{
+								"label": "蕉麻",
+								"value": "蕉麻"
+							},
+							{
+								"label": "貂毛",
+								"value": "貂毛"
+							},
+							{
+								"label": "貂皮",
+								"value": "貂皮"
+							},
+							{
+								"label": "貉子皮",
+								"value": "貉子皮"
+							},
+							{
+								"label": "赫纳昆麻",
+								"value": "赫纳昆麻"
+							},
+							{
+								"label": "超高分子量聚乙烯纤维",
+								"value": "超高分子量聚乙烯纤维"
+							},
+							{
+								"label": "醋酯纤维(醋纤)",
+								"value": "醋酯纤维(醋纤)"
+							},
+							{
+								"label": "野兔毛",
+								"value": "野兔毛"
+							},
+							{
+								"label": "金属纤维",
+								"value": "金属纤维"
+							},
+							{
+								"label": "金雀花麻",
+								"value": "金雀花麻"
+							},
+							{
+								"label": "针茅麻",
+								"value": "针茅麻"
+							},
+							{
+								"label": "铜氨纤维(铜氨丝)",
+								"value": "铜氨纤维(铜氨丝)"
+							},
+							{
+								"label": "银鼠毛",
+								"value": "银鼠毛"
+							},
+							{
+								"label": "阿拉菲野蚕丝",
+								"value": "阿拉菲野蚕丝"
+							},
+							{
+								"label": "附生凤梨纤维",
+								"value": "附生凤梨纤维"
+							},
+							{
+								"label": "陶瓷纤维",
+								"value": "陶瓷纤维"
+							},
+							{
+								"label": "马奎麻",
+								"value": "马奎麻"
+							},
+							{
+								"label": "马毛",
+								"value": "马毛"
+							},
+							{
+								"label": "马海毛",
+								"value": "马海毛"
+							},
+							{
+								"label": "驯鹿毛",
+								"value": "驯鹿毛"
+							},
+							{
+								"label": "骆马毛",
+								"value": "骆马毛"
+							},
+							{
+								"label": "骆驼毛",
+								"value": "骆驼毛"
+							},
+							{
+								"label": "骆驼绒",
+								"value": "骆驼绒"
+							},
+							{
+								"label": "鹿毛",
+								"value": "鹿毛"
+							},
+							{
+								"label": "麝鼠毛",
+								"value": "麝鼠毛"
+							},
+							{
+								"label": "黄麻",
+								"value": "黄麻"
+							},
+							{
+								"label": "黑貂毛",
+								"value": "黑貂毛"
+							},
+							{
+								"label": "鼬鼠毛",
+								"value": "鼬鼠毛"
+							}
+						]
+					},
+					{
+						"label": "含量(%)",
+						"name": "material_prop_content",
+						"type": "input",
+						"rules": {
+							"disable": {
+								"value": true,
+								"dependGroup": {
+									"operator": "or",
+									"expresses": [
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "二层牛皮（除牛反绒）",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "二层猪皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "兔毛皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "其他",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "头层牛皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "头层牛皮（除牛反绒）",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "头层猪皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "孔雀皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "山羊皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "树膏皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "水貂毛",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "牛二层皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "牛二层皮覆膜",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "牛反绒（磨砂皮）",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "牛皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "狐狸毛",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "猪皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "獭兔毛",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "珍珠鱼皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "紫貂毛",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "绵羊皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "羊反绒（羊猄）",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "羊皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "羊皮毛一体",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "羊皮（除羊反绒，羊猄）",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "羊驼皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "蛇皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "蜥蜴皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "袋鼠皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "裘皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "貉子毛",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "马皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "鳄鱼皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "鳗鱼皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "鸵鸟皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "鹿皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "麂皮",
+											"symbol": "=="
+										}
+									]
+								}
+							},
+							"required": true,
+							"regex": "^\\d+(\\.\\d{1,2})?$",
+							"maxValue": {
+								"value": 100,
+								"include": true
+							},
+							"minValue": {
+								"value": 0,
+								"include": false
+							},
+							"valueType": "number"
+						}
+					}
+				]
+			},
+			{
+				"label": "适用年龄",
+				"name": "p-20017",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "30-34周岁",
+						"value": "494072162"
+					},
+					{
+						"label": "35-39周岁",
+						"value": "494072164"
+					},
+					{
+						"label": "25-29周岁",
+						"value": "494072160"
+					},
+					{
+						"label": "18-24周岁",
+						"value": "494072158"
+					},
+					{
+						"label": "40-49周岁",
+						"value": "494072166"
+					},
+					{
+						"label": "17周岁以下",
+						"value": "136515180"
+					}
+				]
+			},
+			{
+				"label": "上市年份季节",
+				"name": "p-122216347",
+				"type": "singlecheck",
+				"rules": {
+					"required": true
+				},
+				"options": [
+					{
+						"label": "2023年秋季",
+						"value": "9383137270"
+					},
+					{
+						"label": "2023年秋冬季",
+						"value": "22588329490"
+					},
+					{
+						"label": "2023年春季",
+						"value": "1957142166"
+					},
+					{
+						"label": "2023年春夏季",
+						"value": "22814460182"
+					},
+					{
+						"label": "2023年夏季",
+						"value": "828892473"
+					},
+					{
+						"label": "2023年冬季",
+						"value": "17308280890"
+					},
+					{
+						"label": "2022年秋季",
+						"value": "1931065011"
+					},
+					{
+						"label": "2022年春季",
+						"value": "1930978450"
+					},
+					{
+						"label": "2022年夏季",
+						"value": "828914261"
+					},
+					{
+						"label": "2022年冬季",
+						"value": "1931065013"
+					},
+					{
+						"label": "2021年秋季",
+						"value": "1930952679"
+					},
+					{
+						"label": "2021年春季",
+						"value": "1931020215"
+					},
+					{
+						"label": "2021年夏季",
+						"value": "828880806"
+					},
+					{
+						"label": "2021年冬季",
+						"value": "1930880999"
+					},
+					{
+						"label": "2020年秋季",
+						"value": "1930932758"
+					},
+					{
+						"label": "2020年春季",
+						"value": "1767432777"
+					},
+					{
+						"label": "2020年夏季",
+						"value": "828918270"
+					},
+					{
+						"label": "2020年冬季",
+						"value": "1931065005"
+					},
+					{
+						"label": "2019年秋季",
+						"value": "1930889840"
+					},
+					{
+						"label": "2019年春季",
+						"value": "1767451285"
+					},
+					{
+						"label": "2019年夏季",
+						"value": "828896460"
+					},
+					{
+						"label": "2019年冬季",
+						"value": "1930994249"
+					},
+					{
+						"label": "2018年秋季",
+						"value": "1586027483"
+					},
+					{
+						"label": "2018年春季",
+						"value": "1586070154"
+					},
+					{
+						"label": "2018年夏季",
+						"value": "828880787"
+					},
+					{
+						"label": "2018年冬季",
+						"value": "556502669"
+					},
+					{
+						"label": "2017年秋季",
+						"value": "728066917"
+					},
+					{
+						"label": "2017年春季",
+						"value": "1375048537"
+					},
+					{
+						"label": "2017年夏季",
+						"value": "828896582"
+					},
+					{
+						"label": "2017年冬季",
+						"value": "740150614"
+					},
+					{
+						"label": "2016年秋季",
+						"value": "728146012"
+					},
+					{
+						"label": "2016年春季",
+						"value": "854168429"
+					},
+					{
+						"label": "2016年夏季",
+						"value": "828914351"
+					},
+					{
+						"label": "2016年冬季",
+						"value": "740138901"
+					},
+					{
+						"label": "2015年秋季",
+						"value": "715192583"
+					},
+					{
+						"label": "2015年春季",
+						"value": "379874864"
+					},
+					{
+						"label": "2015年夏季",
+						"value": "647672577"
+					},
+					{
+						"label": "2015年冬季",
+						"value": "740132938"
+					},
+					{
+						"label": "2014年秋季",
+						"value": "380120406"
+					},
+					{
+						"label": "2014年春季",
+						"value": "379930774"
+					},
+					{
+						"label": "2014年夏季",
+						"value": "379818839"
+					},
+					{
+						"label": "2014年冬季",
+						"value": "379886796"
+					},
+					{
+						"label": "2013年秋季",
+						"value": "209928864"
+					},
+					{
+						"label": "2013年春季",
+						"value": "199870733"
+					},
+					{
+						"label": "2013年夏季",
+						"value": "186026840"
+					},
+					{
+						"label": "2013年冬季",
+						"value": "209928863"
+					},
+					{
+						"label": "2012年秋季",
+						"value": "132721317"
+					},
+					{
+						"label": "2012年春季",
+						"value": "132721270"
+					},
+					{
+						"label": "2012年夏季",
+						"value": "132721297"
+					},
+					{
+						"label": "2012年冬季",
+						"value": "132721335"
+					},
+					{
+						"label": "2011年秋季",
+						"value": "96618833"
+					},
+					{
+						"label": "2011年春季",
+						"value": "94386424"
+					},
+					{
+						"label": "2011年夏季",
+						"value": "96618834"
+					},
+					{
+						"label": "2011年冬季",
+						"value": "96618832"
+					}
+				]
+			},
+			{
+				"label": "材质成分",
+				"name": "p-149422948",
+				"type": "multicomplex",
+				"rules": {
+					"tips": [
+						{
+							"value": "点击查看材质数据<a href='https://helpcenter.taobao.com/servicehall/knowledge_detail?kwdContentId=208256727891648512' target='_blank'>填写须知</a>"
+						}
+					],
+					"required": true,
+					"maxInputNum": {
+						"value": 7,
+						"include": true
+					},
+					"maxLength": {
+						"value": 9999,
+						"include": true
+					}
+				},
+				"formItems": [
+					{
+						"label": "材质",
+						"name": "material_prop_name",
+						"type": "singlecheck",
+						"options": [
+							{
+								"label": "三醋酯纤维(三醋纤)",
+								"value": "三醋酯纤维(三醋纤)"
+							},
+							{
+								"label": "二烯类弹性纤维",
+								"value": "二烯类弹性纤维"
+							},
+							{
+								"label": "亚麻",
+								"value": "亚麻"
+							},
+							{
+								"label": "兔毛",
+								"value": "兔毛"
+							},
+							{
+								"label": "兔绒",
+								"value": "兔绒"
+							},
+							{
+								"label": "其他材质",
+								"value": "其他材质"
+							},
+							{
+								"label": "再生纤维素纤维",
+								"value": "再生纤维素纤维"
+							},
+							{
+								"label": "大豆蛋白复合纤维",
+								"value": "大豆蛋白复合纤维"
+							},
+							{
+								"label": "大豆蛋白纤维",
+								"value": "大豆蛋白纤维"
+							},
+							{
+								"label": "大麻(汉麻)",
+								"value": "大麻(汉麻)"
+							},
+							{
+								"label": "山羊绒(羊绒)",
+								"value": "山羊绒(羊绒)"
+							},
+							{
+								"label": "改性聚丙烯腈纤维(改性腈纶)",
+								"value": "改性聚丙烯腈纤维(改性腈纶)"
+							},
+							{
+								"label": "新型聚酯纤维",
+								"value": "新型聚酯纤维"
+							},
+							{
+								"label": "木棉",
+								"value": "木棉"
+							},
+							{
+								"label": "柞蚕丝",
+								"value": "柞蚕丝"
+							},
+							{
+								"label": "桑蚕丝",
+								"value": "桑蚕丝"
+							},
+							{
+								"label": "棉",
+								"value": "棉"
+							},
+							{
+								"label": "海藻纤维",
+								"value": "海藻纤维"
+							},
+							{
+								"label": "牦牛毛",
+								"value": "牦牛毛"
+							},
+							{
+								"label": "牦牛绒",
+								"value": "牦牛绒"
+							},
+							{
+								"label": "玻璃纤维",
+								"value": "玻璃纤维"
+							},
+							{
+								"label": "甲克素纤维",
+								"value": "甲克素纤维"
+							},
+							{
+								"label": "石棉(石绵)",
+								"value": "石棉(石绵)"
+							},
+							{
+								"label": "碳纤维",
+								"value": "碳纤维"
+							},
+							{
+								"label": "竹原纤维(竹纤维)",
+								"value": "竹原纤维(竹纤维)"
+							},
+							{
+								"label": "粘胶纤维(粘纤)",
+								"value": "粘胶纤维(粘纤)"
+							},
+							{
+								"label": "绵羊毛",
+								"value": "绵羊毛"
+							},
+							{
+								"label": "羊毛",
+								"value": "羊毛"
+							},
+							{
+								"label": "羊驼毛",
+								"value": "羊驼毛"
+							},
+							{
+								"label": "羊驼绒",
+								"value": "羊驼绒"
+							},
+							{
+								"label": "聚丙烯纤维(丙纶)",
+								"value": "聚丙烯纤维(丙纶)"
+							},
+							{
+								"label": "聚丙烯腈纤维(腈纶)",
+								"value": "聚丙烯腈纤维(腈纶)"
+							},
+							{
+								"label": "聚乙烯纤维(乙纶)",
+								"value": "聚乙烯纤维(乙纶)"
+							},
+							{
+								"label": "聚乙烯醇纤维(维纶)",
+								"value": "聚乙烯醇纤维(维纶)"
+							},
+							{
+								"label": "聚乳酸纤维(PLA)",
+								"value": "聚乳酸纤维(PLA)"
+							},
+							{
+								"label": "聚四氟乙烯纤维(氟纶)",
+								"value": "聚四氟乙烯纤维(氟纶)"
+							},
+							{
+								"label": "聚对苯二甲酸乙二酯(涤纶)",
+								"value": "聚对苯二甲酸乙二酯(涤纶)"
+							},
+							{
+								"label": "聚氨酯弹性纤维(氨纶)",
+								"value": "聚氨酯弹性纤维(氨纶)"
+							},
+							{
+								"label": "聚氯乙烯(氯纶)",
+								"value": "聚氯乙烯(氯纶)"
+							},
+							{
+								"label": "聚烯烃弹性纤维",
+								"value": "聚烯烃弹性纤维"
+							},
+							{
+								"label": "聚苯硫醚纤维",
+								"value": "聚苯硫醚纤维"
+							},
+							{
+								"label": "聚酯复合弹性纤维",
+								"value": "聚酯复合弹性纤维"
+							},
+							{
+								"label": "聚酯纤维",
+								"value": "聚酯纤维"
+							},
+							{
+								"label": "聚酰亚胺纤维",
+								"value": "聚酰亚胺纤维"
+							},
+							{
+								"label": "聚酰胺纤维(锦纶)",
+								"value": "聚酰胺纤维(锦纶)"
+							},
+							{
+								"label": "芳香族聚酰胺纤维(芳纶)",
+								"value": "芳香族聚酰胺纤维(芳纶)"
+							},
+							{
+								"label": "苎麻",
+								"value": "苎麻"
+							},
+							{
+								"label": "莫代尔纤维(莫代尔)",
+								"value": "莫代尔纤维(莫代尔)"
+							},
+							{
+								"label": "莱赛尔纤维(莱赛尔)",
+								"value": "莱赛尔纤维(莱赛尔)"
+							},
+							{
+								"label": "貂毛",
+								"value": "貂毛"
+							},
+							{
+								"label": "超高分子量聚乙烯纤维",
+								"value": "超高分子量聚乙烯纤维"
+							},
+							{
+								"label": "醋酯纤维(醋纤)",
+								"value": "醋酯纤维(醋纤)"
+							},
+							{
+								"label": "金属纤维",
+								"value": "金属纤维"
+							},
+							{
+								"label": "金属镀膜纤维",
+								"value": "金属镀膜纤维"
+							},
+							{
+								"label": "铜氨纤维(铜氨丝)",
+								"value": "铜氨纤维(铜氨丝)"
+							},
+							{
+								"label": "陆禽毛",
+								"value": "陆禽毛"
+							},
+							{
+								"label": "陶瓷纤维",
+								"value": "陶瓷纤维"
+							},
+							{
+								"label": "马海毛",
+								"value": "马海毛"
+							},
+							{
+								"label": "骆驼毛",
+								"value": "骆驼毛"
+							},
+							{
+								"label": "骆驼绒",
+								"value": "骆驼绒"
+							},
+							{
+								"label": "黄麻",
+								"value": "黄麻"
+							},
+							{
+								"label": "其他",
+								"value": "其他"
+							}
+						]
+					},
+					{
+						"label": "含量(%)",
+						"name": "material_prop_content",
+						"type": "input",
+						"rules": {
+							"disable": {
+								"value": true,
+								"dependGroup": {
+									"operator": "or",
+									"expresses": [
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "PU",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "PVC",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "头层牛皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "山羊皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "猪皮",
+											"symbol": "=="
+										},
+										{
+											"fieldName": "material_prop_name",
+											"fieldValue": "绵羊皮",
+											"symbol": "=="
+										}
+									]
+								}
+							},
+							"required": true,
+							"regex": "^\\d+(\\.\\d{1,2})?$",
+							"maxValue": {
+								"value": 100,
+								"include": true
+							},
+							"minValue": {
+								"value": 0,
+								"include": false
+							},
+							"valueType": "number"
+						}
+					}
+				]
+			},
+			{
+				"label": "产地",
+				"name": "p-229183516",
+				"type": "singlecheck"
+			}
+		],
+		"isCateProp": true
+	},
+	{
+		"label": "商品资质",
+		"name": "qualification",
+		"type": "complex"
+	},
+	{
+		"label": "宝贝定制",
+		"name": "customize",
+		"type": "complex",
+		"formItems": [
+			{
+				"label": "宝贝定制",
+				"name": "customizeNav",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "否",
+						"value": "0"
+					},
+					{
+						"label": "支持",
+						"value": "1"
+					}
+				]
+			},
+			{
+				"label": "定制工具",
+				"name": "customizeTool",
+				"type": "singlecheck",
+				"rules": {
+					"disable": {
+						"value": true,
+						"dependGroup": {
+							"operator": "and",
+							"expresses": [
+								{
+									"fieldName": "customizeNav",
+									"fieldValue": "1",
+									"symbol": "!="
+								}
+							]
+						}
+					},
+					"required": true
+				},
+				"options": [
+					{
+						"label": "图片传输",
+						"value": "1"
+					}
+				]
+			}
+		]
+	},
+	{
+		"label": "采购地",
+		"name": "globalStock",
+		"type": "complex",
+		"rules": {
+			"required": true
+		},
+		"formItems": [
+			{
+				"label": "采购地",
+				"name": "globalStockNav",
+				"type": "singlecheck",
+				"options": [
+					{
+						"label": "中国内地（大陆）",
+						"value": "0"
+					},
+					{
+						"label": "中国港澳台地区及其他国家和地区",
+						"value": "1"
+					}
+				]
+			},
+			{
+				"label": "地区/国家",
+				"name": "country",
+				"type": "singlecheck",
+				"rules": {
+					"disable": {
+						"value": true,
+						"dependGroup": {
+							"operator": "and",
+							"expresses": [
+								{
+									"fieldName": "globalStockNav",
+									"fieldValue": "1",
+									"symbol": "!="
+								}
+							]
+						}
+					},
+					"required": true
+				},
+				"options": [
+					{
+						"label": "澳门",
+						"value": "澳门"
+					},
+					{
+						"label": "台湾",
+						"value": "台湾"
+					},
+					{
+						"label": "香港",
+						"value": "香港"
+					},
+					{
+						"label": "阿富汗",
+						"value": "阿富汗"
+					},
+					{
+						"label": "阿拉斯加",
+						"value": "阿拉斯加"
+					},
+					{
+						"label": "阿尔巴尼亚",
+						"value": "阿尔巴尼亚"
+					},
+					{
+						"label": "阿尔及利亚",
+						"value": "阿尔及利亚"
+					},
+					{
+						"label": "阿根廷",
+						"value": "阿根廷"
+					},
+					{
+						"label": "阿鲁巴岛",
+						"value": "阿鲁巴岛"
+					},
+					{
+						"label": "阿塞拜疆",
+						"value": "阿塞拜疆"
+					},
+					{
+						"label": "阿曼",
+						"value": "阿曼"
+					},
+					{
+						"label": "阿森松(英)",
+						"value": "阿森松(英)"
+					},
+					{
+						"label": "阿拉伯联合酋长国",
+						"value": "阿拉伯联合酋长国"
+					},
+					{
+						"label": "阿森松岛(英)",
+						"value": "阿森松岛(英)"
+					},
+					{
+						"label": "埃及",
+						"value": "埃及"
+					},
+					{
+						"label": "埃塞俄比亚",
+						"value": "埃塞俄比亚"
+					},
+					{
+						"label": "爱沙尼亚",
+						"value": "爱沙尼亚"
+					},
+					{
+						"label": "爱尔兰",
+						"value": "爱尔兰"
+					},
+					{
+						"label": "安道尔",
+						"value": "安道尔"
+					},
+					{
+						"label": "安哥拉",
+						"value": "安哥拉"
+					},
+					{
+						"label": "安圭拉岛(英)",
+						"value": "安圭拉岛(英)"
+					},
+					{
+						"label": "安提瓜和巴布达",
+						"value": "安提瓜和巴布达"
+					},
+					{
+						"label": "奥兰群岛",
+						"value": "奥兰群岛"
+					},
+					{
+						"label": "澳大利亚",
+						"value": "澳大利亚"
+					},
+					{
+						"label": "奥地利",
+						"value": "奥地利"
+					},
+					{
+						"label": "奥尔德尼岛",
+						"value": "奥尔德尼岛"
+					},
+					{
+						"label": "巴林",
+						"value": "巴林"
+					},
+					{
+						"label": "巴巴多斯",
+						"value": "巴巴多斯"
+					},
+					{
+						"label": "巴西",
+						"value": "巴西"
+					},
+					{
+						"label": "巴基斯坦",
+						"value": "巴基斯坦"
+					},
+					{
+						"label": "巴拿马",
+						"value": "巴拿马"
+					},
+					{
+						"label": "巴布亚新几内亚",
+						"value": "巴布亚新几内亚"
+					},
+					{
+						"label": "巴拉圭",
+						"value": "巴拉圭"
+					},
+					{
+						"label": "巴哈马国",
+						"value": "巴哈马国"
+					},
+					{
+						"label": "巴勒斯坦",
+						"value": "巴勒斯坦"
+					},
+					{
+						"label": "白俄罗斯",
+						"value": "白俄罗斯"
+					},
+					{
+						"label": "百慕大群岛(英)",
+						"value": "百慕大群岛(英)"
+					},
+					{
+						"label": "保加利亚",
+						"value": "保加利亚"
+					},
+					{
+						"label": "贝宁",
+						"value": "贝宁"
+					},
+					{
+						"label": "比利时",
+						"value": "比利时"
+					},
+					{
+						"label": "冰岛",
+						"value": "冰岛"
+					},
+					{
+						"label": "玻利维亚",
+						"value": "玻利维亚"
+					},
+					{
+						"label": "波斯尼亚和黑塞哥维那",
+						"value": "波斯尼亚和黑塞哥维那"
+					},
+					{
+						"label": "波兰",
+						"value": "波兰"
+					},
+					{
+						"label": "波多黎各(美)",
+						"value": "波多黎各(美)"
+					},
+					{
+						"label": "博茨瓦纳",
+						"value": "博茨瓦纳"
+					},
+					{
+						"label": "伯利兹",
+						"value": "伯利兹"
+					},
+					{
+						"label": "布基纳法索",
+						"value": "布基纳法索"
+					},
+					{
+						"label": "布隆迪",
+						"value": "布隆迪"
+					},
+					{
+						"label": "布韦岛",
+						"value": "布韦岛"
+					},
+					{
+						"label": "不丹",
+						"value": "不丹"
+					},
+					{
+						"label": "赤道几内亚",
+						"value": "赤道几内亚"
+					},
+					{
+						"label": "丹麦",
+						"value": "丹麦"
+					},
+					{
+						"label": "德国",
+						"value": "德国"
+					},
+					{
+						"label": "迪戈加西亚岛",
+						"value": "迪戈加西亚岛"
+					},
+					{
+						"label": "东萨摩亚(美)",
+						"value": "东萨摩亚(美)"
+					},
+					{
+						"label": "东帝汶",
+						"value": "东帝汶"
+					},
+					{
+						"label": "多米尼克国",
+						"value": "多米尼克国"
+					},
+					{
+						"label": "多米尼加共和国",
+						"value": "多米尼加共和国"
+					},
+					{
+						"label": "多哥",
+						"value": "多哥"
+					},
+					{
+						"label": "俄罗斯",
+						"value": "俄罗斯"
+					},
+					{
+						"label": "厄瓜多尔",
+						"value": "厄瓜多尔"
+					},
+					{
+						"label": "厄立特里亚",
+						"value": "厄立特里亚"
+					},
+					{
+						"label": "法罗群岛(丹)",
+						"value": "法罗群岛(丹)"
+					},
+					{
+						"label": "法国",
+						"value": "法国"
+					},
+					{
+						"label": "法属波里尼西亚",
+						"value": "法属波里尼西亚"
+					},
+					{
+						"label": "法属圭亚那",
+						"value": "法属圭亚那"
+					},
+					{
+						"label": "法属南部和南极领地",
+						"value": "法属南部和南极领地"
+					},
+					{
+						"label": "法国本土",
+						"value": "法国本土"
+					},
+					{
+						"label": "梵蒂冈",
+						"value": "梵蒂冈"
+					},
+					{
+						"label": "菲律宾",
+						"value": "菲律宾"
+					},
+					{
+						"label": "斐济",
+						"value": "斐济"
+					},
+					{
+						"label": "芬兰",
+						"value": "芬兰"
+					},
+					{
+						"label": "佛得角",
+						"value": "佛得角"
+					},
+					{
+						"label": "福克兰群岛",
+						"value": "福克兰群岛"
+					},
+					{
+						"label": "刚果",
+						"value": "刚果"
+					},
+					{
+						"label": "刚果(金)",
+						"value": "刚果(金)"
+					},
+					{
+						"label": "冈比亚",
+						"value": "冈比亚"
+					},
+					{
+						"label": "哥伦比亚",
+						"value": "哥伦比亚"
+					},
+					{
+						"label": "哥斯达黎加",
+						"value": "哥斯达黎加"
+					},
+					{
+						"label": "格鲁吉亚",
+						"value": "格鲁吉亚"
+					},
+					{
+						"label": "格陵兰岛",
+						"value": "格陵兰岛"
+					},
+					{
+						"label": "格林纳达",
+						"value": "格林纳达"
+					},
+					{
+						"label": "根西岛(英)",
+						"value": "根西岛(英)"
+					},
+					{
+						"label": "瓜德罗普岛(法)",
+						"value": "瓜德罗普岛(法)"
+					},
+					{
+						"label": "关岛(美)",
+						"value": "关岛(美)"
+					},
+					{
+						"label": "圭亚那",
+						"value": "圭亚那"
+					},
+					{
+						"label": "哈萨克斯坦",
+						"value": "哈萨克斯坦"
+					},
+					{
+						"label": "海地",
+						"value": "海地"
+					},
+					{
+						"label": "韩国",
+						"value": "韩国"
+					},
+					{
+						"label": "荷兰",
+						"value": "荷兰"
+					},
+					{
+						"label": "荷属安的列斯群岛",
+						"value": "荷属安的列斯群岛"
+					},
+					{
+						"label": "赫德岛和麦克唐纳群岛",
+						"value": "赫德岛和麦克唐纳群岛"
+					},
+					{
+						"label": "黑山",
+						"value": "黑山"
+					},
+					{
+						"label": "洪都拉斯",
+						"value": "洪都拉斯"
+					},
+					{
+						"label": "基里巴斯",
+						"value": "基里巴斯"
+					},
+					{
+						"label": "吉布提",
+						"value": "吉布提"
+					},
+					{
+						"label": "吉尔吉斯斯坦",
+						"value": "吉尔吉斯斯坦"
+					},
+					{
+						"label": "几内亚",
+						"value": "几内亚"
+					},
+					{
+						"label": "几内亚比绍",
+						"value": "几内亚比绍"
+					},
+					{
+						"label": "加拿大",
+						"value": "加拿大"
+					},
+					{
+						"label": "加那利群岛",
+						"value": "加那利群岛"
+					},
+					{
+						"label": "加蓬",
+						"value": "加蓬"
+					},
+					{
+						"label": "加纳",
+						"value": "加纳"
+					},
+					{
+						"label": "加勒比荷兰",
+						"value": "加勒比荷兰"
+					},
+					{
+						"label": "柬埔塞",
+						"value": "柬埔塞"
+					},
+					{
+						"label": "捷克",
+						"value": "捷克"
+					},
+					{
+						"label": "津巴布韦",
+						"value": "津巴布韦"
+					},
+					{
+						"label": "喀麦隆",
+						"value": "喀麦隆"
+					},
+					{
+						"label": "卡塔尔",
+						"value": "卡塔尔"
+					},
+					{
+						"label": "开曼群岛(英)",
+						"value": "开曼群岛(英)"
+					},
+					{
+						"label": "科科斯岛",
+						"value": "科科斯岛"
+					},
+					{
+						"label": "科摩罗",
+						"value": "科摩罗"
+					},
+					{
+						"label": "科克群岛(新)",
+						"value": "科克群岛(新)"
+					},
+					{
+						"label": "科特迪瓦",
+						"value": "科特迪瓦"
+					},
+					{
+						"label": "科威特",
+						"value": "科威特"
+					},
+					{
+						"label": "科索沃",
+						"value": "科索沃"
+					},
+					{
+						"label": "克罗地亚",
+						"value": "克罗地亚"
+					},
+					{
+						"label": "肯尼亚",
+						"value": "肯尼亚"
+					},
+					{
+						"label": "库拉索",
+						"value": "库拉索"
+					},
+					{
+						"label": "拉脱维亚",
+						"value": "拉脱维亚"
+					},
+					{
+						"label": "莱索托",
+						"value": "莱索托"
+					},
+					{
+						"label": "老挝",
+						"value": "老挝"
+					},
+					{
+						"label": "黎巴嫩",
+						"value": "黎巴嫩"
+					},
+					{
+						"label": "利比里亚",
+						"value": "利比里亚"
+					},
+					{
+						"label": "利比亚",
+						"value": "利比亚"
+					},
+					{
+						"label": "立陶宛",
+						"value": "立陶宛"
+					},
+					{
+						"label": "列支敦士登",
+						"value": "列支敦士登"
+					},
+					{
+						"label": "留尼汪岛",
+						"value": "留尼汪岛"
+					},
+					{
+						"label": "卢森堡",
+						"value": "卢森堡"
+					},
+					{
+						"label": "卢旺达",
+						"value": "卢旺达"
+					},
+					{
+						"label": "罗马尼亚",
+						"value": "罗马尼亚"
+					},
+					{
+						"label": "马恩岛(英)",
+						"value": "马恩岛(英)"
+					},
+					{
+						"label": "马其顿",
+						"value": "马其顿"
+					},
+					{
+						"label": "马达加斯加",
+						"value": "马达加斯加"
+					},
+					{
+						"label": "马拉维",
+						"value": "马拉维"
+					},
+					{
+						"label": "马来西亚",
+						"value": "马来西亚"
+					},
+					{
+						"label": "马尔代夫",
+						"value": "马尔代夫"
+					},
+					{
+						"label": "马里",
+						"value": "马里"
+					},
+					{
+						"label": "马耳他",
+						"value": "马耳他"
+					},
+					{
+						"label": "马绍尔群岛",
+						"value": "马绍尔群岛"
+					},
+					{
+						"label": "马提尼克(法)",
+						"value": "马提尼克(法)"
+					},
+					{
+						"label": "马约特岛",
+						"value": "马约特岛"
+					},
+					{
+						"label": "马里亚纳群岛",
+						"value": "马里亚纳群岛"
+					},
+					{
+						"label": "毛里塔尼亚",
+						"value": "毛里塔尼亚"
+					},
+					{
+						"label": "毛里求斯",
+						"value": "毛里求斯"
+					},
+					{
+						"label": "美国本土外小岛屿",
+						"value": "美国本土外小岛屿"
+					},
+					{
+						"label": "美国",
+						"value": "美国"
+					},
+					{
+						"label": "蒙古",
+						"value": "蒙古"
+					},
+					{
+						"label": "蒙特塞拉特岛(英)",
+						"value": "蒙特塞拉特岛(英)"
+					},
+					{
+						"label": "孟加拉国",
+						"value": "孟加拉国"
+					},
+					{
+						"label": "密克罗尼西亚(美)",
+						"value": "密克罗尼西亚(美)"
+					},
+					{
+						"label": "秘鲁",
+						"value": "秘鲁"
+					},
+					{
+						"label": "缅甸",
+						"value": "缅甸"
+					},
+					{
+						"label": "摩纳哥",
+						"value": "摩纳哥"
+					},
+					{
+						"label": "摩洛哥",
+						"value": "摩洛哥"
+					},
+					{
+						"label": "摩尔多瓦",
+						"value": "摩尔多瓦"
+					},
+					{
+						"label": "墨西哥",
+						"value": "墨西哥"
+					},
+					{
+						"label": "莫桑比克",
+						"value": "莫桑比克"
+					},
+					{
+						"label": "纳米比亚",
+						"value": "纳米比亚"
+					},
+					{
+						"label": "南极",
+						"value": "南极"
+					},
+					{
+						"label": "南非",
+						"value": "南非"
+					},
+					{
+						"label": "南乔治亚与南桑威奇群岛",
+						"value": "南乔治亚与南桑威奇群岛"
+					},
+					{
+						"label": "南斯拉夫",
+						"value": "南斯拉夫"
+					},
+					{
+						"label": "南苏丹",
+						"value": "南苏丹"
+					},
+					{
+						"label": "瑙鲁",
+						"value": "瑙鲁"
+					},
+					{
+						"label": "尼泊尔",
+						"value": "尼泊尔"
+					},
+					{
+						"label": "尼加拉瓜",
+						"value": "尼加拉瓜"
+					},
+					{
+						"label": "尼日尔",
+						"value": "尼日尔"
+					},
+					{
+						"label": "尼日利亚",
+						"value": "尼日利亚"
+					},
+					{
+						"label": "尼维斯岛",
+						"value": "尼维斯岛"
+					},
+					{
+						"label": "纽埃岛(新)",
+						"value": "纽埃岛(新)"
+					},
+					{
+						"label": "挪威",
+						"value": "挪威"
+					},
+					{
+						"label": "诺福克岛(澳)",
+						"value": "诺福克岛(澳)"
+					},
+					{
+						"label": "帕劳(美)",
+						"value": "帕劳(美)"
+					},
+					{
+						"label": "皮特凯恩群岛",
+						"value": "皮特凯恩群岛"
+					},
+					{
+						"label": "葡萄牙",
+						"value": "葡萄牙"
+					},
+					{
+						"label": "日本",
+						"value": "日本"
+					},
+					{
+						"label": "瑞典",
+						"value": "瑞典"
+					},
+					{
+						"label": "瑞士",
+						"value": "瑞士"
+					},
+					{
+						"label": "萨尔瓦多",
+						"value": "萨尔瓦多"
+					},
+					{
+						"label": "塞浦路斯",
+						"value": "塞浦路斯"
+					},
+					{
+						"label": "塞内加尔",
+						"value": "塞内加尔"
+					},
+					{
+						"label": "塞尔维亚",
+						"value": "塞尔维亚"
+					},
+					{
+						"label": "塞舌尔",
+						"value": "塞舌尔"
+					},
+					{
+						"label": "塞拉利昂",
+						"value": "塞拉利昂"
+					},
+					{
+						"label": "桑给巴尔",
+						"value": "桑给巴尔"
+					},
+					{
+						"label": "沙特阿拉伯",
+						"value": "沙特阿拉伯"
+					},
+					{
+						"label": "圣诞岛",
+						"value": "圣诞岛"
+					},
+					{
+						"label": "圣赫勒拿",
+						"value": "圣赫勒拿"
+					},
+					{
+						"label": "圣克里斯托弗和尼维斯",
+						"value": "圣克里斯托弗和尼维斯"
+					},
+					{
+						"label": "圣卢西亚",
+						"value": "圣卢西亚"
+					},
+					{
+						"label": "圣皮埃尔岛及密克隆岛",
+						"value": "圣皮埃尔岛及密克隆岛"
+					},
+					{
+						"label": "圣文森特岛(英)",
+						"value": "圣文森特岛(英)"
+					},
+					{
+						"label": "圣马力诺",
+						"value": "圣马力诺"
+					},
+					{
+						"label": "圣多美和普林西比",
+						"value": "圣多美和普林西比"
+					},
+					{
+						"label": "圣马丁(荷)",
+						"value": "圣马丁(荷)"
+					},
+					{
+						"label": "圣巴泰勒米岛",
+						"value": "圣巴泰勒米岛"
+					},
+					{
+						"label": "圣马丁岛",
+						"value": "圣马丁岛"
+					},
+					{
+						"label": "斯洛伐克",
+						"value": "斯洛伐克"
+					},
+					{
+						"label": "斯洛文尼亚",
+						"value": "斯洛文尼亚"
+					},
+					{
+						"label": "斯里兰卡",
+						"value": "斯里兰卡"
+					},
+					{
+						"label": "斯瓦尔巴群岛(挪)",
+						"value": "斯瓦尔巴群岛(挪)"
+					},
+					{
+						"label": "斯威士兰",
+						"value": "斯威士兰"
+					},
+					{
+						"label": "苏里南",
+						"value": "苏里南"
+					},
+					{
+						"label": "苏格兰",
+						"value": "苏格兰"
+					},
+					{
+						"label": "所罗门群岛",
+						"value": "所罗门群岛"
+					},
+					{
+						"label": "索马里",
+						"value": "索马里"
+					},
+					{
+						"label": "塔吉克斯坦",
+						"value": "塔吉克斯坦"
+					},
+					{
+						"label": "泰国",
+						"value": "泰国"
+					},
+					{
+						"label": "坦桑尼亚",
+						"value": "坦桑尼亚"
+					},
+					{
+						"label": "汤加",
+						"value": "汤加"
+					},
+					{
+						"label": "特立尼达和多巴哥",
+						"value": "特立尼达和多巴哥"
+					},
+					{
+						"label": "特克斯和凯科斯群岛(英)",
+						"value": "特克斯和凯科斯群岛(英)"
+					},
+					{
+						"label": "突尼斯",
+						"value": "突尼斯"
+					},
+					{
+						"label": "图瓦卢",
+						"value": "图瓦卢"
+					},
+					{
+						"label": "土耳其",
+						"value": "土耳其"
+					},
+					{
+						"label": "土库曼斯坦",
+						"value": "土库曼斯坦"
+					},
+					{
+						"label": "托克劳群岛(新)",
+						"value": "托克劳群岛(新)"
+					},
+					{
+						"label": "瓦努阿图",
+						"value": "瓦努阿图"
+					},
+					{
+						"label": "瓦里斯和富士那群岛(法)",
+						"value": "瓦里斯和富士那群岛(法)"
+					},
+					{
+						"label": "危地马拉",
+						"value": "危地马拉"
+					},
+					{
+						"label": "维尔京群岛(英)",
+						"value": "维尔京群岛(英)"
+					},
+					{
+						"label": "维尔京群岛(美)",
+						"value": "维尔京群岛(美)"
+					},
+					{
+						"label": "委内瑞拉",
+						"value": "委内瑞拉"
+					},
+					{
+						"label": "文莱",
+						"value": "文莱"
+					},
+					{
+						"label": "乌干达",
+						"value": "乌干达"
+					},
+					{
+						"label": "乌克兰",
+						"value": "乌克兰"
+					},
+					{
+						"label": "乌拉圭",
+						"value": "乌拉圭"
+					},
+					{
+						"label": "乌兹别克斯坦",
+						"value": "乌兹别克斯坦"
+					},
+					{
+						"label": "希腊",
+						"value": "希腊"
+					},
+					{
+						"label": "西萨摩亚",
+						"value": "西萨摩亚"
+					},
+					{
+						"label": "西班牙",
+						"value": "西班牙"
+					},
+					{
+						"label": "西撒哈拉",
+						"value": "西撒哈拉"
+					},
+					{
+						"label": "新喀里多尼亚群岛(法)",
+						"value": "新喀里多尼亚群岛(法)"
+					},
+					{
+						"label": "新西兰",
+						"value": "新西兰"
+					},
+					{
+						"label": "新加坡",
+						"value": "新加坡"
+					},
+					{
+						"label": "匈牙利",
+						"value": "匈牙利"
+					},
+					{
+						"label": "牙买加",
+						"value": "牙买加"
+					},
+					{
+						"label": "亚美尼亚",
+						"value": "亚美尼亚"
+					},
+					{
+						"label": "也门",
+						"value": "也门"
+					},
+					{
+						"label": "伊拉克",
+						"value": "伊拉克"
+					},
+					{
+						"label": "以色列",
+						"value": "以色列"
+					},
+					{
+						"label": "意大利",
+						"value": "意大利"
+					},
+					{
+						"label": "印度",
+						"value": "印度"
+					},
+					{
+						"label": "印度尼西亚",
+						"value": "印度尼西亚"
+					},
+					{
+						"label": "英国",
+						"value": "英国"
+					},
+					{
+						"label": "英属印度洋领地",
+						"value": "英属印度洋领地"
+					},
+					{
+						"label": "约旦",
+						"value": "约旦"
+					},
+					{
+						"label": "越南",
+						"value": "越南"
+					},
+					{
+						"label": "赞比亚",
+						"value": "赞比亚"
+					},
+					{
+						"label": "泽西岛(英)",
+						"value": "泽西岛(英)"
+					},
+					{
+						"label": "乍得",
+						"value": "乍得"
+					},
+					{
+						"label": "直布罗陀(英)",
+						"value": "直布罗陀(英)"
+					},
+					{
+						"label": "智利",
+						"value": "智利"
+					},
+					{
+						"label": "中非",
+						"value": "中非"
+					},
+					{
+						"label": "中途岛(美)",
+						"value": "中途岛(美)"
+					}
+				]
+			},
+			{
+				"label": "库存类型",
+				"name": "stockType",
+				"type": "singlecheck",
+				"rules": {
+					"disable": {
+						"value": true,
+						"dependGroup": {
+							"operator": "and",
+							"expresses": [
+								{
+									"fieldName": "globalStockNav",
+									"fieldValue": "1",
+									"symbol": "!="
+								}
+							]
+						}
+					},
+					"required": true
+				},
+				"options": [
+					{
+						"label": "现货（可快速发货）",
+						"value": "4738"
+					},
+					{
+						"label": "非现货（无现货，需采购）",
+						"value": "4674"
+					}
+				]
+			}
+		]
+	},
+	{
+		"label": "发货地",
+		"name": "departurePlace",
+		"type": "singlecheck",
+		"rules": {
+			"tips": [
+				{
+					"value": "<div><div>如发布宝贝需要展示海外直邮标识，保证全链路的物流信息完整，并符合平台的展示要求，在商品发布后，请到卖家中心－淘宝服务加入 海外直邮服务。<br>若您已签署服务合约，您可在卖家中心－淘宝服务 <a href='https://xiaobao.taobao.com/service/itemManager.htm?spm=a215o.7394214.1.2.ksWzTq' target='_blank'>服务商品管理</a>，为符合服务承诺的商品添加海外直邮服务协议。<br>若您未签署服务合约，您可在卖家中心－淘宝服务 <a href='https://xiaobao.taobao.com/service/serviceList.htm?spm=a215o.7394217.0.0.6fggRl' target='_blank'>加入服务－海外直邮服务</a>，签署海外直邮服务合约。</div></div>",
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [
+							{
+								"fieldName": "departurePlace",
+								"fieldValue": "1",
+								"symbol": "=="
+							}
+						]
+					}
+				}
+			],
+			"disable": {
+				"value": true,
+				"dependGroup": {
+					"operator": "and",
+					"expresses": [
+						{
+							"fieldName": "globalStockNav",
+							"fieldValue": "1",
+							"symbol": "!="
+						}
+					]
+				}
+			},
+			"required": false
+		},
+		"options": [
+			{
+				"label": "中国内地（大陆）",
+				"value": "0"
+			},
+			{
+				"label": "中国港澳台地区及其他国家和地区",
+				"value": "1"
+			}
+		]
+	},
+	{
+		"label": "报关方式",
+		"name": "legalCustoms",
+		"type": "singlecheck",
+		"rules": {
+			"disable": {
+				"value": true,
+				"dependGroup": {
+					"operator": "or",
+					"expresses": [
+						{
+							"fieldName": "globalStockNav",
+							"fieldValue": "1",
+							"symbol": "!="
+						},
+						{
+							"fieldName": "departurePlace",
+							"fieldValue": "0",
+							"symbol": "!="
+						},
+						{
+							"fieldName": "stockType",
+							"fieldValue": "4738",
+							"symbol": "!="
+						}
+					]
+				}
+			},
+			"required": false
+		},
+		"options": [
+			{
+				"label": "一般贸易进口",
+				"value": "0"
+			},
+			{
+				"label": "其它",
+				"value": "1"
+			}
+		]
+	},
+	{
+		"label": "销售属性",
+		"name": "saleProp",
+		"type": "complex",
+		"formItems": [
+			{
+				"label": "颜色分类",
+				"name": "p-1627207",
+				"type": "multicheck",
+				"rules": {
+					"tips": [
+						{
+							"value": "<b style='color:#ff6600'>请选择或直接输入主色，标准颜色可增加搜索/导购机会</b>，还可填写颜色备注信息（偏深、偏亮等），建议不要超过15个字。<a href='//helpcenter.tmall.com/servicehall/knowledge_detail?knowledgeId=1060905572' target='_blank'>查看详情</a><br>属性图上传功能更新，亲可以在属性选择后直接上传图片哦！"
+						},
+						{
+							"value": "颜色名称最大长度为130个字符(65个汉字)"
+						},
+						{
+							"value": "该属性支持自定义输入，自定义输入值请填写至value标签中inputValue属性,value标签内容为任意负数；多个输入值请保证value中内容负数值不重复"
+						}
+					],
+					"required": false,
+					"maxLength": {
+						"value": 30,
+						"include": true
+					},
+					"maxValue": {
+						"value": 600,
+						"include": true
+					},
+					"valueType": "string"
+				},
+				"options": [
+					{
+						"label": "乳白色",
+						"value": "28321"
+					},
+					{
+						"label": "白色",
+						"value": "28320"
+					},
+					{
+						"label": "米白色",
+						"value": "4266701"
+					},
+					{
+						"label": "浅灰色",
+						"value": "28332"
+					},
+					{
+						"label": "深灰色",
+						"value": "3232478"
+					},
+					{
+						"label": "灰色",
+						"value": "28334"
+					},
+					{
+						"label": "银色",
+						"value": "28330"
+					},
+					{
+						"label": "黑色",
+						"value": "28341"
+					},
+					{
+						"label": "桔红色",
+						"value": "4950473"
+					},
+					{
+						"label": "玫红色",
+						"value": "3594022"
+					},
+					{
+						"label": "粉红色",
+						"value": "3232480"
+					},
+					{
+						"label": "红色",
+						"value": "28326"
+					},
+					{
+						"label": "藕色",
+						"value": "4464174"
+					},
+					{
+						"label": "西瓜红",
+						"value": "3743025"
+					},
+					{
+						"label": "酒红色",
+						"value": "28327"
+					},
+					{
+						"label": "卡其色",
+						"value": "28331"
+					},
+					{
+						"label": "姜黄色",
+						"value": "15409374"
+					},
+					{
+						"label": "明黄色",
+						"value": "20412615"
+					},
+					{
+						"label": "杏色",
+						"value": "30155"
+					},
+					{
+						"label": "柠檬黄",
+						"value": "132476"
+					},
+					{
+						"label": "桔色",
+						"value": "90554"
+					},
+					{
+						"label": "浅黄色",
+						"value": "60092"
+					},
+					{
+						"label": "荧光黄",
+						"value": "6134424"
+					},
+					{
+						"label": "金色",
+						"value": "28328"
+					},
+					{
+						"label": "香槟色",
+						"value": "130166"
+					},
+					{
+						"label": "黄色",
+						"value": "28324"
+					},
+					{
+						"label": "军绿色",
+						"value": "3232483"
+					},
+					{
+						"label": "墨绿色",
+						"value": "80557"
+					},
+					{
+						"label": "浅绿色",
+						"value": "30156"
+					},
+					{
+						"label": "绿色",
+						"value": "28335"
+					},
+					{
+						"label": "翠绿色",
+						"value": "8588036"
+					},
+					{
+						"label": "荧光绿",
+						"value": "6535235"
+					},
+					{
+						"label": "青色",
+						"value": "3455405"
+					},
+					{
+						"label": "天蓝色",
+						"value": "3232484"
+					},
+					{
+						"label": "孔雀蓝",
+						"value": "5138330"
+					},
+					{
+						"label": "宝蓝色",
+						"value": "3707775"
+					},
+					{
+						"label": "浅蓝色",
+						"value": "28337"
+					},
+					{
+						"label": "深蓝色",
+						"value": "28340"
+					},
+					{
+						"label": "湖蓝色",
+						"value": "5483105"
+					},
+					{
+						"label": "蓝色",
+						"value": "28338"
+					},
+					{
+						"label": "藏青色",
+						"value": "28866"
+					},
+					{
+						"label": "浅紫色",
+						"value": "4104877"
+					},
+					{
+						"label": "深紫色",
+						"value": "3232479"
+					},
+					{
+						"label": "紫红色",
+						"value": "5167321"
+					},
+					{
+						"label": "紫罗兰",
+						"value": "80882"
+					},
+					{
+						"label": "紫色",
+						"value": "28329"
+					},
+					{
+						"label": "咖啡色",
+						"value": "129819"
+					},
+					{
+						"label": "巧克力色",
+						"value": "3232481"
+					},
+					{
+						"label": "栗色",
+						"value": "6071353"
+					},
+					{
+						"label": "浅棕色",
+						"value": "30158"
+					},
+					{
+						"label": "深卡其布色",
+						"value": "3232482"
+					},
+					{
+						"label": "深棕色",
+						"value": "6588790"
+					},
+					{
+						"label": "褐色",
+						"value": "132069"
+					},
+					{
+						"label": "驼色",
+						"value": "3224419"
+					},
+					{
+						"label": "花色",
+						"value": "130164"
+					},
+					{
+						"label": "透明",
+						"value": "107121"
+					}
+				]
+			},
+			{
+				"label": "尺码",
+				"name": "p-20509",
+				"type": "complex",
+				"formItems": [
+					{
+						"label": "尺码分组",
+						"name": "p-20509-sizeGroup",
+						"type": "singlecheck",
+						"options": [
+							{
+								"label": "中国号型A",
+								"value": "136553091-women_tops"
+							},
+							{
+								"label": "中国码",
+								"value": "27013-women_tops"
+							},
+							{
+								"label": "英码",
+								"value": "27411-women_tops"
+							},
+							{
+								"label": "美码",
+								"value": "27409-women_tops"
+							},
+							{
+								"label": "均码",
+								"value": "28383-women_tops"
+							}
+						]
+					},
+					{
+						"label": "尺码值",
+						"name": "p-20509-sizeValue",
+						"type": "complex",
+						"formItems": [
+							{
+								"label": "中国号型A",
+								"name": "size-136553091-women_tops",
+								"type": "multicheck",
+								"rules": {
+									"disable": {
+										"value": true,
+										"dependGroup": {
+											"operator": "and",
+											"expresses": [
+												{
+													"fieldName": "p-20509-sizeGroup",
+													"fieldValue": "136553091-women_tops",
+													"symbol": "!="
+												}
+											]
+										}
+									},
+									"required": false
+								},
+								"options": [
+									{
+										"label": "145/80A",
+										"value": "649458002"
+									},
+									{
+										"label": "150/80A",
+										"value": "66579689"
+									},
+									{
+										"label": "155/80A",
+										"value": "3959184"
+									},
+									{
+										"label": "160/84A",
+										"value": "6215318"
+									},
+									{
+										"label": "165/88A",
+										"value": "3267942"
+									},
+									{
+										"label": "170/92A",
+										"value": "3267943"
+									},
+									{
+										"label": "175/96A",
+										"value": "3267944"
+									},
+									{
+										"label": "175/100A",
+										"value": "71744989"
+									},
+									{
+										"label": "other",
+										"value": "-1"
+									}
+								]
+							},
+							{
+								"label": "中国码",
+								"name": "size-27013-women_tops",
+								"type": "multicheck",
+								"rules": {
+									"disable": {
+										"value": true,
+										"dependGroup": {
+											"operator": "and",
+											"expresses": [
+												{
+													"fieldName": "p-20509-sizeGroup",
+													"fieldValue": "27013-women_tops",
+													"symbol": "!="
+												}
+											]
+										}
+									},
+									"required": false
+								},
+								"options": [
+									{
+										"label": "XXS",
+										"value": "28381"
+									},
+									{
+										"label": "XS",
+										"value": "28313"
+									},
+									{
+										"label": "S",
+										"value": "28314"
+									},
+									{
+										"label": "M",
+										"value": "28315"
+									},
+									{
+										"label": "L",
+										"value": "28316"
+									},
+									{
+										"label": "XL",
+										"value": "28317"
+									},
+									{
+										"label": "2XL",
+										"value": "6145171"
+									},
+									{
+										"label": "3XL",
+										"value": "115781"
+									},
+									{
+										"label": "4XL",
+										"value": "3727387"
+									},
+									{
+										"label": "5XL",
+										"value": "7539404"
+									},
+									{
+										"label": "6XL",
+										"value": "28128814"
+									},
+									{
+										"label": "other",
+										"value": "-1"
+									}
+								]
+							},
+							{
+								"label": "英码",
+								"name": "size-27411-women_tops",
+								"type": "multicheck",
+								"rules": {
+									"disable": {
+										"value": true,
+										"dependGroup": {
+											"operator": "and",
+											"expresses": [
+												{
+													"fieldName": "p-20509-sizeGroup",
+													"fieldValue": "27411-women_tops",
+													"symbol": "!="
+												}
+											]
+										}
+									},
+									"required": false
+								},
+								"options": [
+									{
+										"label": "4",
+										"value": "9573633"
+									},
+									{
+										"label": "6",
+										"value": "12624364"
+									},
+									{
+										"label": "8",
+										"value": "9784259"
+									},
+									{
+										"label": "10",
+										"value": "7285415"
+									},
+									{
+										"label": "12",
+										"value": "9876263"
+									},
+									{
+										"label": "14",
+										"value": "65356191"
+									},
+									{
+										"label": "16",
+										"value": "4352277"
+									},
+									{
+										"label": "18",
+										"value": "12680589"
+									},
+									{
+										"label": "20",
+										"value": "13041257"
+									},
+									{
+										"label": "other",
+										"value": "-1"
+									}
+								]
+							},
+							{
+								"label": "美码",
+								"name": "size-27409-women_tops",
+								"type": "multicheck",
+								"rules": {
+									"disable": {
+										"value": true,
+										"dependGroup": {
+											"operator": "and",
+											"expresses": [
+												{
+													"fieldName": "p-20509-sizeGroup",
+													"fieldValue": "27409-women_tops",
+													"symbol": "!="
+												}
+											]
+										}
+									},
+									"required": false
+								},
+								"options": [
+									{
+										"label": "0",
+										"value": "151093043"
+									},
+									{
+										"label": "2",
+										"value": "6651814"
+									},
+									{
+										"label": "4",
+										"value": "10504551"
+									},
+									{
+										"label": "6",
+										"value": "8226873"
+									},
+									{
+										"label": "8",
+										"value": "12674322"
+									},
+									{
+										"label": "10",
+										"value": "12674541"
+									},
+									{
+										"label": "12",
+										"value": "11768567"
+									},
+									{
+										"label": "14",
+										"value": "12677498"
+									},
+									{
+										"label": "16",
+										"value": "8201177"
+									},
+									{
+										"label": "other",
+										"value": "-1"
+									}
+								]
+							},
+							{
+								"label": "均码",
+								"name": "size-28383-women_tops",
+								"type": "multicheck",
+								"rules": {
+									"disable": {
+										"value": true,
+										"dependGroup": {
+											"operator": "and",
+											"expresses": [
+												{
+													"fieldName": "p-20509-sizeGroup",
+													"fieldValue": "28383-women_tops",
+													"symbol": "!="
+												}
+											]
+										}
+									},
+									"required": false
+								},
+								"options": [
+									{
+										"label": "均码",
+										"value": "28383"
+									},
+									{
+										"label": "other",
+										"value": "-1"
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	{
+		"label": "发货时效",
+		"name": "deliveryTimeType",
+		"type": "singlecheck",
+		"rules": {
+			"tips": [
+				{
+					"value": "<b style='color:#ff6600'>平台默认48小时发货，同时您可根据商品实际库存进行自定义发货时间。如果违背发货时效承诺，将会受到平台处罚。具体可点击查看<a href='https://rule.taobao.com/detail-539.htm?tag=self' target='_blank'>违背承诺规则</a></b>"
+				},
+				{
+					"value": "点击查看<a href='https://rule.taobao.com/?type=detail&ruleId=20000710&cId=87#/ruleStudy/detail?ruleId=20000710&cId=87' target='_blank'>发货时效设置指南。</a><span style='color:#ff6600'>若需要更长发货时效，请在发布商品后<a href='https://www.yuque.com/docs/share/e67a0582-1fd5-4fd4-8301-8f4bed5014d1' target='_blank'>设置分阶段预售</a>；也可以在消费者下单后<a href='https://rulechannel.taobao.com/?spm=a2177.12575716.0.0.486717eanpwhjT&type=detail&ruleId=20000670&cId=87#/ruleStudy/detail?ruleId=20000670&cId=87' target='_blank'>自行约定发货时间</a></span>"
+				}
+			],
+			"required": true
+		},
+		"options": [
+			{
+				"label": "24小时内发货",
+				"value": "3"
+			},
+			{
+				"label": "48小时内发货",
+				"value": "0"
+			},
+			{
+				"label": "大于48小时发货",
+				"value": "2"
+			}
+		]
+	},
+	{
+		"label": "发货时间天数",
+		"name": "tbDeliveryTime",
+		"type": "singlecheck",
+		"rules": {
+			"tips": [
+				{
+					"value": "发货时间大于48h请选择「大于48小时发货」，消费者一次性付款，您需要按照约定时间发货，逾期将承担延迟发货责任。<a href='https://rule.taobao.com/detail-539.htm?tag=self' target='_blank'>点击查看详情</a>"
+				}
+			],
+			"required": false
+		},
+		"options": [
+			{
+				"label": "3天",
+				"value": "3"
+			},
+			{
+				"label": "4天",
+				"value": "4"
+			},
+			{
+				"label": "5天",
+				"value": "5"
+			},
+			{
+				"label": "6天",
+				"value": "6"
+			},
+			{
+				"label": "7天",
+				"value": "7"
+			},
+			{
+				"label": "8天",
+				"value": "8"
+			},
+			{
+				"label": "9天",
+				"value": "9"
+			},
+			{
+				"label": "10天",
+				"value": "10"
+			},
+			{
+				"label": "11天",
+				"value": "11"
+			},
+			{
+				"label": "12天",
+				"value": "12"
+			},
+			{
+				"label": "13天",
+				"value": "13"
+			},
+			{
+				"label": "14天",
+				"value": "14"
+			},
+			{
+				"label": "15天",
+				"value": "15"
+			},
+			{
+				"label": "16天",
+				"value": "16"
+			},
+			{
+				"label": "17天",
+				"value": "17"
+			},
+			{
+				"label": "18天",
+				"value": "18"
+			},
+			{
+				"label": "19天",
+				"value": "19"
+			},
+			{
+				"label": "20天",
+				"value": "20"
+			},
+			{
+				"label": "21天",
+				"value": "21"
+			},
+			{
+				"label": "22天",
+				"value": "22"
+			},
+			{
+				"label": "23天",
+				"value": "23"
+			},
+			{
+				"label": "24天",
+				"value": "24"
+			},
+			{
+				"label": "25天",
+				"value": "25"
+			},
+			{
+				"label": "26天",
+				"value": "26"
+			},
+			{
+				"label": "27天",
+				"value": "27"
+			},
+			{
+				"label": "28天",
+				"value": "28"
+			},
+			{
+				"label": "29天",
+				"value": "29"
+			},
+			{
+				"label": "30天",
+				"value": "30"
+			}
+		]
+	},
+	{
+		"label": "宝贝销售规格",
+		"name": "sku",
+		"type": "multicomplex",
+		"rules": {
+			"tips": [
+				{
+					"value": "近期将持续升级销售规格编辑面板，<a href='https://www.yuque.com/qvda7g/gqp7o3/ybgwai72dimq1i20' target='_blank'> 点击查看具体说明 <a/>。"
+				}
+			],
+			"required": false
+		},
+		"formItems": [
+			{
+				"label": "属性对",
+				"name": "props",
+				"type": "complex",
+				"formItems": [
+					{
+						"label": "颜色分类",
+						"name": "p-1627207",
+						"type": "singlecheck"
+					},
+					{
+						"label": "尺码",
+						"name": "p-20509",
+						"type": "singlecheck"
+					}
+				]
+			},
+			{
+				"label": "skuId",
+				"name": "skuId",
+				"type": "input",
+				"rules": {
+					"required": false,
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "价格(元)",
+				"name": "skuPrice",
+				"type": "input",
+				"rules": {
+					"required": true,
+					"maxValue": {
+						"value": 10000000,
+						"include": false
+					},
+					"minValue": {
+						"value": 0,
+						"include": false
+					}
+				}
+			},
+			{
+				"label": "数量(件)",
+				"name": "skuStock",
+				"type": "input",
+				"rules": {
+					"required": false,
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "商家编码",
+				"name": "skuOuterId",
+				"type": "input",
+				"rules": {
+					"required": false,
+					"maxLength": {
+						"value": 64,
+						"include": true
+					},
+					"valueType": "string"
+				}
+			},
+			{
+				"label": "商品条形码",
+				"name": "skuBarcode",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "请填写正确条码，将有助于平台准确识别您的商品，消费者能更方便找到您的商品，也可以提供更准确、全面的信息导购。"
+						}
+					],
+					"required": false,
+					"maxLength": {
+						"value": 32,
+						"include": true
+					},
+					"valueType": "string"
+				}
+			}
+		]
+	},
+	{
+		"label": "一口价",
+		"name": "price",
+		"type": "input",
+		"rules": {
+			"required": true,
+			"regex": "([0-9]{0,9})(\\.[0-9]{0,2})?",
+			"maxValue": {
+				"value": 10000000,
+				"include": false
+			},
+			"minValue": {
+				"value": 0,
+				"include": true
+			}
+		}
+	},
+	{
+		"label": "总数量",
+		"name": "quantity",
+		"type": "input",
+		"rules": {
+			"tips": [
+				{
+					"value": "总数量范围是0件~100000000件之间，默认为1件"
+				}
+			],
+			"required": true,
+			"regex": "([1-9][0-9]+|[0-9])",
+			"maxValue": {
+				"value": 100000000,
+				"include": false
+			},
+			"minValue": {
+				"value": 0,
+				"include": true
+			},
+			"valueType": "number"
+		}
+	},
+	{
+		"label": "商家编码",
+		"name": "outerId",
+		"type": "input",
+		"rules": {
+			"required": false,
+			"maxLength": {
+				"value": 64,
+				"include": true
+			},
+			"valueType": "string"
+		}
+	},
+	{
+		"label": "商品条形码",
+		"name": "barcode",
+		"type": "input",
+		"rules": {
+			"required": false,
+			"maxLength": {
+				"value": 32,
+				"include": true
+			},
+			"valueType": "string"
+		}
+	},
+	{
+		"label": "设置尺码表",
+		"name": "sizeMapping",
+		"type": "multicomplex",
+		"rules": {
+			"tips": [
+				{
+					"value": "请<a href='https://market.m.taobao.com/app/qn/toutiao-new/index-pc.html#/detail/10682457?_k=vrqoi7' target='_blank'>点击查看详情</a>学习尺码表及模特图上传规范及优化知识，温馨提示：需要先填写尺码再填写尺码表哦<a href='#struct-p-20509'>去填写尺码</a>"
+				},
+				{
+					"value": "请准确填写尺码表，该商品尺码表将有机会展示在商品详情主图「尺码」锚点、图文详情尺码模块和SKU浮层尺码助手中，并通过尺码推荐能力，提升尺码挑选便利度，降低因尺码带来的退款 <a href='https://www.yuque.com/zijian-wgh6h/fhkdgv/vmqr7y' target='_blank'>介绍文档</a>"
+				},
+				{
+					"value": "为了更全面地了解您在商品发布中对【尺码】与【尺码表】的意见与建议，特邀您参与此次问卷调研，感谢您对淘宝发品改善的支持。<a href='https://survey.taobao.com/apps/zhiliao/IEm6irCJD' target='_blank'>点此填写调查问卷</a>"
+				}
+			],
+			"required": false
+		},
+		"formItems": [
+			{
+				"label": "尺码值",
+				"name": "p-20509-sizeValue",
+				"type": "complex",
+				"rules": {
+					"required": true
+				},
+				"formItems": [
+					{
+						"label": "中国号型A",
+						"name": "size-136553091-women_tops",
+						"type": "singlecheck",
+						"rules": {
+							"disable": {
+								"value": true,
+								"dependGroup": {
+									"operator": "and",
+									"expresses": [
+										{
+											"fieldName": "sizeMapping-sizeGroup",
+											"fieldValue": "136553091-women_tops",
+											"symbol": "!="
+										}
+									]
+								}
+							},
+							"required": false
+						},
+						"options": [
+							{
+								"label": "145/80A",
+								"value": "649458002"
+							},
+							{
+								"label": "150/80A",
+								"value": "66579689"
+							},
+							{
+								"label": "155/80A",
+								"value": "3959184"
+							},
+							{
+								"label": "160/84A",
+								"value": "6215318"
+							},
+							{
+								"label": "165/88A",
+								"value": "3267942"
+							},
+							{
+								"label": "170/92A",
+								"value": "3267943"
+							},
+							{
+								"label": "175/96A",
+								"value": "3267944"
+							},
+							{
+								"label": "175/100A",
+								"value": "71744989"
+							},
+							{
+								"label": "other",
+								"value": "-1"
+							}
+						]
+					},
+					{
+						"label": "中国码",
+						"name": "size-27013-women_tops",
+						"type": "singlecheck",
+						"rules": {
+							"disable": {
+								"value": true,
+								"dependGroup": {
+									"operator": "and",
+									"expresses": [
+										{
+											"fieldName": "sizeMapping-sizeGroup",
+											"fieldValue": "27013-women_tops",
+											"symbol": "!="
+										}
+									]
+								}
+							},
+							"required": false
+						},
+						"options": [
+							{
+								"label": "XXS",
+								"value": "28381"
+							},
+							{
+								"label": "XS",
+								"value": "28313"
+							},
+							{
+								"label": "S",
+								"value": "28314"
+							},
+							{
+								"label": "M",
+								"value": "28315"
+							},
+							{
+								"label": "L",
+								"value": "28316"
+							},
+							{
+								"label": "XL",
+								"value": "28317"
+							},
+							{
+								"label": "2XL",
+								"value": "6145171"
+							},
+							{
+								"label": "3XL",
+								"value": "115781"
+							},
+							{
+								"label": "4XL",
+								"value": "3727387"
+							},
+							{
+								"label": "5XL",
+								"value": "7539404"
+							},
+							{
+								"label": "6XL",
+								"value": "28128814"
+							},
+							{
+								"label": "other",
+								"value": "-1"
+							}
+						]
+					},
+					{
+						"label": "英码",
+						"name": "size-27411-women_tops",
+						"type": "singlecheck",
+						"rules": {
+							"disable": {
+								"value": true,
+								"dependGroup": {
+									"operator": "and",
+									"expresses": [
+										{
+											"fieldName": "sizeMapping-sizeGroup",
+											"fieldValue": "27411-women_tops",
+											"symbol": "!="
+										}
+									]
+								}
+							},
+							"required": false
+						},
+						"options": [
+							{
+								"label": "4",
+								"value": "9573633"
+							},
+							{
+								"label": "6",
+								"value": "12624364"
+							},
+							{
+								"label": "8",
+								"value": "9784259"
+							},
+							{
+								"label": "10",
+								"value": "7285415"
+							},
+							{
+								"label": "12",
+								"value": "9876263"
+							},
+							{
+								"label": "14",
+								"value": "65356191"
+							},
+							{
+								"label": "16",
+								"value": "4352277"
+							},
+							{
+								"label": "18",
+								"value": "12680589"
+							},
+							{
+								"label": "20",
+								"value": "13041257"
+							},
+							{
+								"label": "other",
+								"value": "-1"
+							}
+						]
+					},
+					{
+						"label": "美码",
+						"name": "size-27409-women_tops",
+						"type": "singlecheck",
+						"rules": {
+							"disable": {
+								"value": true,
+								"dependGroup": {
+									"operator": "and",
+									"expresses": [
+										{
+											"fieldName": "sizeMapping-sizeGroup",
+											"fieldValue": "27409-women_tops",
+											"symbol": "!="
+										}
+									]
+								}
+							},
+							"required": false
+						},
+						"options": [
+							{
+								"label": "0",
+								"value": "151093043"
+							},
+							{
+								"label": "2",
+								"value": "6651814"
+							},
+							{
+								"label": "4",
+								"value": "10504551"
+							},
+							{
+								"label": "6",
+								"value": "8226873"
+							},
+							{
+								"label": "8",
+								"value": "12674322"
+							},
+							{
+								"label": "10",
+								"value": "12674541"
+							},
+							{
+								"label": "12",
+								"value": "11768567"
+							},
+							{
+								"label": "14",
+								"value": "12677498"
+							},
+							{
+								"label": "16",
+								"value": "8201177"
+							},
+							{
+								"label": "other",
+								"value": "-1"
+							}
+						]
+					},
+					{
+						"label": "均码",
+						"name": "size-28383-women_tops",
+						"type": "singlecheck",
+						"rules": {
+							"disable": {
+								"value": true,
+								"dependGroup": {
+									"operator": "and",
+									"expresses": [
+										{
+											"fieldName": "sizeMapping-sizeGroup",
+											"fieldValue": "28383-women_tops",
+											"symbol": "!="
+										}
+									]
+								}
+							},
+							"required": false
+						},
+						"options": [
+							{
+								"label": "均码",
+								"value": "28383"
+							},
+							{
+								"label": "other",
+								"value": "-1"
+							}
+						]
+					}
+				]
+			},
+			{
+				"label": "摆围（cm）",
+				"name": "sizeMapping_baiwei",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "背宽（cm）",
+				"name": "sizeMapping_beikuan",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "底摆（cm）",
+				"name": "sizeMapping_dibai",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "肩宽（cm）",
+				"name": "sizeMapping_jiankuan",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "领高（cm）",
+				"name": "sizeMapping_linggao",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "领口（cm）",
+				"name": "sizeMapping_lingkou",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "领宽（cm）",
+				"name": "sizeMapping_lingkuan",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "领深（cm）",
+				"name": "sizeMapping_lingshen",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "领围（cm）",
+				"name": "sizeMapping_lingwei",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "平摆衣长（cm）",
+				"name": "sizeMapping_pingbai",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "前长（cm）",
+				"name": "sizeMapping_qianchang",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "身高（cm）",
+				"name": "sizeMapping_shengao",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "体重（kg）",
+				"name": "sizeMapping_tizhong",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "下摆围（cm）",
+				"name": "sizeMapping_xiabaiwei",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "胸围（cm）",
+				"name": "sizeMapping_xiongwei",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "袖长（cm）",
+				"name": "sizeMapping_xiuchang",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "袖肥（cm）",
+				"name": "sizeMapping_xiufei",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "袖口（cm）",
+				"name": "sizeMapping_xiukou",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "衣长（cm）",
+				"name": "sizeMapping_yichang",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "圆摆衣长（cm）",
+				"name": "sizeMapping_yuanbai",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "圆摆后中长（cm）",
+				"name": "sizeMapping_yuanbaihou",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			},
+			{
+				"label": "中腰（cm）",
+				"name": "sizeMapping_zhongyao",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "只能填写数字，最多保留一位小数！"
+						}
+					],
+					"required": false,
+					"regex": "^[0-9]+(\\.?[0-9]+)?$",
+					"valueType": "number"
+				}
+			}
+		]
+	},
+	{
+		"label": "主图图片",
+		"name": "images",
+		"type": "complex",
+		"rules": {
+			"tips": [
+				{
+					"value": "宝贝主图大小不能超过3MB；700*700 以上图片上传后宝贝详情页自动提供放大镜功能。第五张图发商品白底图可增加手淘首页曝光机会 <a href='//helpcenter.taobao.com/servicehall/knowledge_detail?kwdContentId=10235684456498182' target='_blank'>查看规范</a> "
+				},
+				{
+					"value": "主图直接影响商品曝光引流效果及平台免费推荐机会，请<a href='https://market.m.taobao.com/app/qn/toutiao-new/index-pc.html#/detail/10682448?_k=jlrthw' target='_blank'>点击查看详情</a> 学习主图上传规范及优化知识"
+				},
+				{
+					"value": "<b style='color:#ff6600'>原创保护提醒：</b>若您的商品为原创设计新品，建议您在发布商品前进行新品备案保护，<a href='https://yc.alibaba.com/#/guide' target='_blank'>了解详情</a>"
+				}
+			],
+			"required": false
+		},
+		"formItems": [
+			{
+				"label": "主图图片",
+				"name": "images_0",
+				"type": "input",
+				"rules": {
+					"required": true,
+					"valueType": "url"
+				}
+			},
+			{
+				"label": "主图图片",
+				"name": "images_1",
+				"type": "input",
+				"rules": {
+					"required": false,
+					"valueType": "url"
+				}
+			},
+			{
+				"label": "主图图片",
+				"name": "images_2",
+				"type": "input",
+				"rules": {
+					"required": false,
+					"valueType": "url"
+				}
+			},
+			{
+				"label": "主图图片",
+				"name": "images_3",
+				"type": "input",
+				"rules": {
+					"required": false,
+					"valueType": "url"
+				}
+			},
+			{
+				"label": "非模特白底图",
+				"name": "images_4",
+				"type": "input",
+				"rules": {
+					"required": false,
+					"valueType": "url"
+				}
+			}
+		]
+	},
+	{
+		"label": "宝贝长图",
+		"name": "verticalImage",
+		"type": "complex",
+		"rules": {
+			"tips": [
+				{
+					"value": "长图横竖比必须为2：3，最小长度为480，建议使用800*1200，若不上传长图，搜索列表、市场活动等页面的竖图模式将无法展示宝贝！<a target='_blank' href='//service.taobao.com/support/knowledge-13433847.htm'>查看详情</a>"
+				}
+			],
+			"required": false
+		},
+		"formItems": [
+			{
+				"label": "宝贝长图",
+				"name": "verticalImage_0",
+				"type": "input",
+				"rules": {
+					"required": false,
+					"valueType": "url"
+				}
+			}
+		]
+	},
+	{
+		"label": "PC端详情描述",
+		"name": "desc",
+		"type": "input",
+		"rules": {
+			"required": false,
+			"valueType": "string"
+		}
+	},
+	{
+		"label": "手机端详情描述",
+		"name": "wirelessDesc",
+		"type": "input",
+		"rules": {
+			"required": false,
+			"valueType": "string"
+		}
+	},
+	{
+		"label": "库存扣减方式",
+		"name": "subStock",
+		"type": "singlecheck",
+		"rules": {
+			"required": true
+		},
+		"options": [
+			{
+				"label": "买家拍下减库存",
+				"value": "1"
+			},
+			{
+				"label": "买家付款减库存",
+				"value": "0"
+			}
+		]
+	},
+	{
+		"label": "运费",
+		"name": "tbExtractWay",
+		"type": "complex",
+		"rules": {
+			"required": true
+		},
+		"formItems": [
+			{
+				"label": "运费模板",
+				"name": "template",
+				"type": "input",
+				"rules": {
+					"tips": [
+						{
+							"value": "使用官方寄件，一键发货，全程保障。当日揽收，更优惠更便捷。<a href='//fahuo.cainiao.com/consigns/order/ggSend.htm?tab=tb_order&s_c=spfb001' target='_blank'>点击体验</a>"
+						}
+					],
+					"required": false,
+					"valueType": "string"
+				}
+			}
+		]
+	},
+	{
+		"label": "物流体积",
+		"name": "deliverVolumn",
+		"type": "input",
+		"rules": {
+			"tips": [
+				{
+					"value": "当前运费模板，按物流体积（含包装）计费"
+				}
+			],
+			"required": false,
+			"valueType": "string"
+		}
+	},
+	{
+		"label": "物流重量",
+		"name": "deliverWeight",
+		"type": "input",
+		"rules": {
+			"tips": [
+				{
+					"value": "当前运费模板，按物流重量（含包装）计费"
+				}
+			],
+			"required": false,
+			"valueType": "string"
+		}
+	},
+	{
+		"label": "提供发票",
+		"name": "invoice",
+		"type": "singlecheck",
+		"options": [
+			{
+				"label": "是",
+				"value": "1"
+			},
+			{
+				"label": "否",
+				"value": "0"
+			}
+		]
+	},
+	{
+		"label": "保修服务",
+		"name": "warranty",
+		"type": "singlecheck",
+		"options": [
+			{
+				"label": "是",
+				"value": "1"
+			},
+			{
+				"label": "否",
+				"value": "0"
+			}
+		]
+	},
+	{
+		"label": "退换货承诺",
+		"name": "sellPromise",
+		"type": "singlecheck",
+		"rules": {
+			"tips": [
+				{
+					"value": "凡使用支付宝服务付款购买本店商品，若存在质量问题或与描述不符，本店将主动提供退换货服务并承担来回邮费"
+				}
+			],
+			"required": false
+		},
+		"options": [
+			{
+				"label": "是",
+				"value": "1"
+			},
+			{
+				"label": "否",
+				"value": "0"
+			}
+		]
+	},
+	{
+		"label": "上架时间",
+		"name": "startTime",
+		"type": "singlecheck",
+		"rules": {
+			"tips": [
+				{
+					"value": "定时上架的商品在上架前请到“仓库中的宝贝”里编辑商品。"
+				}
+			],
+			"required": true
+		},
+		"options": [
+			{
+				"label": "立刻上架",
+				"value": "0"
+			},
+			{
+				"label": "定时上架",
+				"value": "1"
+			},
+			{
+				"label": "放入仓库",
+				"value": "2"
+			}
+		]
+	}
+]
