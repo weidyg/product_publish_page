@@ -147,24 +147,22 @@ function ProductPublish(props: {}) {
     }
 
     function ComplexFormItem(p: MyFormItemProps) {
-        // p.isCateProp
-        // ? <CateProFormItem key={'si' + p.name} {...p} />
-        // : p.formItems?.map((sm, si) => {
-        //     return <FormItem key={'si' + si} {...sm} />
-        // })
-
-        return (<>
-            <Grid.Row gutter={{ xs: 4, sm: 6, md: 12 }}>
-                {p.formItems?.map((sm, si) => {
-                    return <Grid.Col key={'cpi' + si} span={12}>
-                        <FormItem
-                            key={'si' + si} {...sm}
-                            uiType={sm.type == 'singlecheck' ? 'select' : undefined}
-                        />
-                    </Grid.Col>
-                })}
-            </Grid.Row>
-        </>)
+        return (
+            p.isCateProp ? (
+                <Grid.Row gutter={{ xs: 4, sm: 6, md: 12 }}>
+                    {p.formItems?.map((sm, si) => {
+                        const uiType = sm.type == 'singlecheck' ? 'select' : undefined;
+                        return (
+                            <Grid.Col key={'cpi' + si} span={12}>
+                                <FormItem key={'si' + si} {...sm} uiType={uiType} />
+                            </Grid.Col>
+                        )
+                    })}
+                </Grid.Row>
+            ) : p.formItems?.map((sm, si) => {
+                return <FormItem key={'si' + si} {...sm} />
+            })
+        )
     }
     const getTips = (tipRules: MyFormDependRules[]): [boolean, (values: any) => any] => {
         let shouldUpdate = false;
