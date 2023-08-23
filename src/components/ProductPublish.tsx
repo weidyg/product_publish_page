@@ -1,7 +1,11 @@
-import React, { ReactNode, useRef, useState } from 'react';
-import { Form, Input, Radio, Select, InputNumber, Grid, Upload } from '@arco-design/web-react';
+import React, { ChangeEvent, ReactNode, useEffect, useRef, useState } from 'react';
+import { Form, Input, Radio, Select, InputNumber, Grid, Upload, Checkbox, Card } from '@arco-design/web-react';
 import { IconPlus } from '@arco-design/web-react/icon';
 import publishSchema from './publishSchema.json';
+import styles from './ProductPublish.module.less'
+import ReactQuill from 'react-quill';
+import "react-quill/dist/quill.snow.css";
+
 type MyFormNumRules = {
     value?: any,
     include?: boolean
@@ -18,6 +22,7 @@ type MyFormDependGroup = {
     groups?: MyFormDependGroup[],
 }
 type MyFormDependExpress = {
+    namePath: string[];
     fieldName: string,
     fieldValue: string,
     symbol?: '==' | '!='
@@ -38,6 +43,7 @@ type MyFormRules = {
 type MyFormItemProps = {
     label?: string;
     name?: string;
+    namePath?: string[];
     type?: string;
     rules?: MyFormRules;
     options?: {
@@ -46,12 +52,28 @@ type MyFormItemProps = {
     }[];
     formItems?: MyFormItemProps[];
     isCateProp?: boolean;
-    [key: string]: any;
+    // [key: string]: any;
+    uiType?: string;
+
+    value?: any;
+    defaultValue?: any;
+    onChange?: any;
 }
 function ProductPublish(props: {}) {
     const formRef = useRef<any>();
 
-    const getrules = (rp: MyFormRules) => {
+    useEffect(() => {
+        formRef.current.setFieldsValue(
+            {
+                "invoice": "1",
+                "stuffStatus": "5",
+                "subStock": "0",
+                "p-20000": "1472037269"
+            }
+        );
+    }, [])
+
+    const getValiRules = (rp: MyFormRules) => {
         let rules: any[] = [];
         if (rp) {
             const type = rp.valueType;
@@ -73,11 +95,29 @@ function ProductPublish(props: {}) {
                 const { value: min, include: includes } = rp.minValue;
                 rules.push({ type: 'number', min, includes });
             }
+            if (rules.every(e => e !== type)) {
+                rules.push({ type: type });
+            }
         }
         return rules;
     }
 
-    const checkDependGroup = (dependGroup?: MyFormDependGroup, values?: any): boolean | undefined => {
+    const checkDependGroup = (dependGroup: MyFormDependGroup, values: any): boolean | undefined => {
+
+        const getDeepValue = (values: any, fieldName: string, namePath: string[]) => {
+            let value = values[fieldName];
+            if (!value && namePath?.length > 0) {
+                let _values = values;
+                namePath?.forEach(field => {
+                    if (typeof _values == 'object') {
+                        _values = _values[field];
+                    }
+                });
+                value = _values;
+            }
+            return value
+        }
+
         const operator = dependGroup?.operator;
         const expresses = dependGroup?.expresses || [];
         const groups = dependGroup?.groups || [];
@@ -89,7 +129,7 @@ function ProductPublish(props: {}) {
         // let log = "";
         for (let i = 0; i < expressLength; i++) {
             const exp = expresses[i];
-            const _val = values[exp.fieldName];
+            const _val = getDeepValue(values, exp.fieldName, exp.namePath);
             if (exp.symbol == '!=') {
                 _isMatcheds.push(_val != exp.fieldValue);
             } else if (exp.symbol == '==') {
@@ -117,54 +157,154 @@ function ProductPublish(props: {}) {
         return isMatched;
     }
 
-    const checkDependRules = (dependRules: MyFormDependRules): [boolean, (values: any) => any] => {
+    const checkDependRules = (dependRules: MyFormDependRules): [
+        (prev: any, next: any, info: any) => boolean,
+        (values: any) => any
+    ] => {
         const dependGroup = dependRules?.dependGroup;
         const operator = dependGroup?.operator;
         const expressLength = dependGroup?.expresses?.length || 0;
         const groupLength = dependGroup?.groups?.length || 0;
 
-        const shouldUpdate = !!operator && (expressLength > 0 || groupLength > 0);
-        let getValue = (values: any) => {
-            let isMatched = checkDependGroup(dependGroup, values);
+        const shouldUpdate = (prev: any, next: any, info: any) => {
+            return !!operator && (expressLength > 0 || groupLength > 0);
+        }
+        const getValue = (values: any) => {
+            let isMatched = dependGroup && checkDependGroup(dependGroup, values);
             return isMatched === false ? undefined : dependRules?.value;
         };
+
         return [shouldUpdate, getValue];
     }
+    const getTips = (tipRules: MyFormDependRules[]): [
+        (prev: any, next: any, info: any) => boolean,
+        (values: any) => any
+    ] => {
+        let shouldUpdateList: Array<(prev: any, next: any, info: any) => boolean> = [];
+        let getValuefunList: Array<(values: any) => any> = [];
+        tipRules?.forEach(tipRule => {
+            const [_shouldUpdate, _getValue] = checkDependRules(tipRule || {});
+            shouldUpdateList.push(_shouldUpdate);
+            getValuefunList.push(_getValue);
+        });
 
-    function CateProFormItem(p: MyFormItemProps) {
+        const shouldUpdate = (prev: any, next: any, info: any) => {
+            for (let index = 0; index < shouldUpdateList.length; index++) {
+                const fun = shouldUpdateList[index];
+                const value = fun && fun(prev, next, info);
+                if (value == true) { return true; }
+            }
+            return false;
+        };
 
-        return (<>
-            <Grid.Row gutter={{ xs: 4, sm: 6, md: 12 }}>
-                {p.formItems?.map((sm, si) => {
-                    return <Grid.Col key={'cpi' + si} span={12}>
-                        <FormItem
-                            key={'si' + si} {...sm}
-                            uiType={sm.type == 'singlecheck' ? 'select' : undefined}
-                        />
-                    </Grid.Col>
-                })}
-            </Grid.Row>
-        </>)
+        const getValues = (values: any) => {
+            return (getValuefunList.map((fun, index) => {
+                const value = fun && fun(values);
+                if (value) { return <div key={index} dangerouslySetInnerHTML={{ __html: value }} /> }
+            }));
+        };
+        return [shouldUpdate, getValues];
     }
 
-    function ComplexFormItem(p: MyFormItemProps) {
-        const isCateProp = p.name == "catProp";//p.isCateProp;
-        const isMainImg = p.name == "images";//TODO:主图图片字段类型
-        const formItems = p.formItems;
+    function RenderInput(_props: MyFormItemProps) {
+        const { value, defaultValue, onChange, ...restProps } = _props;
+        const { uiType, label, name, rules = {} } = restProps;
+        const _commonProps = { value, defaultValue, onChange };
+
+        const numReg = /^[0-9]+.?[0-9]*/;
+        const isNum = numReg.test(rules.maxValue?.value) || numReg.test(rules.minValue?.value);
+
+        const _uiType = uiType || (name == 'desc' ? 'input-html' : isNum ? 'input-number' : undefined);
+        return (
+            _uiType == 'upload' ? (
+                <Upload action='/'
+                    showUploadList={false}
+                    onProgress={(currentFile) => { }}
+                    {..._commonProps} >
+                    <div className='arco-upload-trigger-picture'
+                        style={{ width: '100px', height: '100px' }}>
+                        <div className='arco-upload-trigger-picture-text'>
+                            <IconPlus />
+                            <div style={{ marginTop: 10, }}>添加上传图片</div>
+                        </div>
+                    </div>
+                </Upload>
+            ) : _uiType == 'input-number' ? (
+                <InputNumber style={{ maxWidth: '358px' }}
+                    placeholder={`请输入${label}`}
+                    {..._commonProps} />
+            ) : _uiType == 'input-html' ? (
+                <ReactQuill theme="snow" {..._commonProps} />
+            ) : (
+                <Input style={{ maxWidth: '734px' }}
+                    placeholder={`请输入${label}`}
+                    {..._commonProps} />
+            )
+        )
+    }
+    function RenderSingleCheck(_props: MyFormItemProps) {
+        const { value, defaultValue, onChange, ...restProps } = _props;
+        const { options = [], uiType, label } = restProps;
+        let _commonProps = { value, defaultValue, onChange };
+
+        if (uiType == 'checkbox' && options.every(e => ['0', '1'].includes(e.value))) {
+            _commonProps.onChange = (checked: boolean, e: Event) => {
+                return onChange(checked ? '1' : '0', e)
+            }
+        }
+
+        return (
+            uiType == 'radio' ? (
+                <Radio.Group options={options} {..._commonProps} />
+            ) : uiType == 'select' ? (
+                <Select style={{ maxWidth: '358px' }}
+                    placeholder={`请选择${label}`}
+                    showSearch
+                    filterOption={(inputValue, option) =>
+                        option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
+                        option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+                    }
+                    options={options} {..._commonProps} />
+            ) : uiType == 'checkbox' ? (
+                <Checkbox {..._commonProps}>{label}</Checkbox>
+            ) : <></>
+        )
+    }
+    function RenderMultiCheck(_props: MyFormItemProps) {
+        const { value, defaultValue, onChange, ...restProps } = _props;
+        const { options = [], uiType, label } = restProps;
+        let _commonProps = { value, defaultValue, onChange };
+        return (
+            <Select style={{ maxWidth: '358px' }}
+                placeholder={`请选择${label}`}
+                mode='multiple'
+                showSearch={true}
+                filterOption={(inputValue, option) =>
+                    option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
+                    option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+                }
+                options={options} {..._commonProps}
+            />
+        )
+    }
+    function RenderComplex(_props: MyFormItemProps) {
+        const { name, formItems } = _props;
+        const isCateProp = name == "catProp";//p.isCateProp;
+        const isMainImg = name == "images";//TODO:主图图片字段类型
         return (<>{
             isCateProp ? (
-                <Grid.Row gutter={{ xs: 4, sm: 6, md: 12 }}>
+                <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
                     {formItems?.map((sm, si) => {
-                        const uiType = sm.type == 'singlecheck' ? 'select' : undefined;
+                        const uiType = sm.type == 'singlecheck' ? 'select' : sm.type;
                         return (
-                            <Grid.Col key={'cpi' + si} span={12}>
+                            <Grid.GridItem key={'cpi' + si} style={{ maxWidth: '358px' }}>
                                 <FormItem key={'si' + si} {...sm} uiType={uiType} />
-                            </Grid.Col>
+                            </Grid.GridItem>
                         )
                     })}
-                </Grid.Row>
+                </Grid>
             ) : isMainImg ? (
-                <Grid cols={{ xs: 3, sm: 4, md: 5, lg: 6, xl: 7, xxl: 8 }}>
+                <Grid cols={5} colGap={12}>
                     {formItems?.map((sm, si) => {
                         const uiType = 'upload';
                         return (
@@ -179,93 +319,99 @@ function ProductPublish(props: {}) {
             })
         }</>)
     }
-    const getTips = (tipRules: MyFormDependRules[]): [boolean, (values: any) => any] => {
-        let shouldUpdate = false;
-        let getValuefunList: Array<(values: any) => any> = [];
-        tipRules?.forEach(tipRule => {
-            const [_shouldUpdate, _getValue] = checkDependRules(tipRule || {});
-            if (_shouldUpdate === true) { shouldUpdate = true; }
-            getValuefunList.push(_getValue);
-        });
-
-        let getValues = (values: any) => {
-            return (
-                getValuefunList.map((fun, index) => {
-                    const value = fun && fun(values);
-                    if (value) { return <div key={index} dangerouslySetInnerHTML={{ __html: value }} /> }
-                })
-            );
-        };
-        return [shouldUpdate, getValues];
+    function RenderMultiComplex(_props: MyFormItemProps) {
+        const { name, formItems } = _props;
+        // const isCateProp = name == "catProp";//p.isCateProp;
+        // const isMainImg = name == "images";//TODO:主图图片字段类型
+        return (<>{
+            <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
+                {formItems?.map((sm, si) => {
+                    const uiType = sm.type == 'singlecheck' ? 'select' : sm.type;
+                    return (
+                        <Grid.GridItem key={'cpi' + si} style={{ maxWidth: '358px' }}>
+                            <FormItem key={'si' + si} {...sm} uiType={uiType} />
+                        </Grid.GridItem>
+                    )
+                })}
+            </Grid>
+        }</>)
     }
 
+    const getDefaultUiType = (_props: MyFormItemProps) => {
+        const { type, options = [], uiType } = _props;
+        const length = options.length;
 
-    function FormItem(p: MyFormItemProps) {
-        const { tips, disable, ...restRules } = p.rules || {};
-        const _rules = getrules(restRules);
+        if (uiType) { return uiType; }
+        if (type == 'singlecheck') {
+            return length > 3 ? 'select' : 'radio';
+        }
+        return uiType;
+    }
+
+    function FormItem(_props: MyFormItemProps) {
+        const uiType = getDefaultUiType(_props);
+        const props = { ..._props, uiType }
+
+        const { type, label, value, name, namePath = [], rules: propRules } = props || {};
+        const { tips, disable, ...restRules } = propRules || {};
+        const rules = getValiRules(restRules);
+
+        const field = namePath.join('.');
         const [tipShouldUpdate, getTipValues] = getTips(tips || []);
         const [disShouldUpdate, getDisValue] = checkDependRules(disable || {});
+
+        const shouldUpdate = (prev: any, next: any, info: any) => {
+            return tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
+        }
+        const isComplex = type?.toLowerCase().indexOf('complex') !== -1;
         return (<>
-            <Form.Item shouldUpdate={tipShouldUpdate || disShouldUpdate}>
+            <Form.Item noStyle shouldUpdate={shouldUpdate} >
                 {(values) => {
                     const _disable = getDisValue(values) === true;
-                    const _tips = getTipValues(values);
-                    return _disable ? <div>{p.label + " : Disable rendering"}</div> :
-                        <Form.Item
-                            label={p.label} field={p.name}
-                            rules={_rules}
-                            extra={_tips}
-                        >
-                            {p.type == 'input' ? (
-                                p.uiType == 'upload' ? (
-                                    <Upload action='/'
-                                        showUploadList={false}
-                                        onChange={(_, currentFile) => { }}
-                                        onProgress={(currentFile) => { }}
-                                    >
-                                        <div className='arco-upload-trigger-picture'
-                                            style={{ width: '100px', height: '100px' }}>
-                                            <div className='arco-upload-trigger-picture-text'>
-                                                <IconPlus />
-                                                <div style={{ marginTop: 10, }}>添加上传图片</div>
-                                            </div>
-                                        </div>
-                                    </Upload>
-                                ) : ((restRules.maxValue || restRules.minValue) ? (
-                                    <InputNumber placeholder={`请输入${p.label}`} />
-                                ) : (
-                                    <Input placeholder={`请输入${p.label}`} />
-                                )
-                                )
-                            ) : p.type == 'singlecheck' ? (
-                                ((p.options && p.options.length > 3 && p.uiType != 'radio') || p.uiType == 'select')
-                                    ? <Select options={p.options} placeholder={`请选择${p.label}`} />
-                                    : <Radio.Group options={p.options} />
-                            ) : p.type == 'complex' ? (
-                                <ComplexFormItem {...p} />
-                            ) : undefined
-                            }
+                    const extra = getTipValues(values);
+                    const _label = isComplex ? <>
+                        <span>{label}</span>
+                        <div className="arco-form-extra">{extra}</div>
+                    </> : label;
+                    return _disable ? undefined :
+                        <Form.Item initialValue={value}
+                            label={uiType != 'checkbox' ? _label : undefined}
+                            field={field} rules={rules}
+                            extra={isComplex == false ? extra : undefined}>
+                            {type == 'input' ? (
+                                <RenderInput {...props} />
+                            ) : type == 'singlecheck' ? (
+                                <RenderSingleCheck {...props} />
+                            ) : type == 'multicheck' ? (
+                                <RenderMultiCheck {...props} />
+                            ) : type == 'complex' ? (
+                                <RenderComplex {...props} />
+                            ) : type == 'multicomplex' ? (
+                                <RenderMultiComplex {...props} />
+                            ) : undefined}
                         </Form.Item>;
                 }}
             </Form.Item>
             {/* {JSON.stringify(p)} */}
         </>)
     }
-
     return (
-        <div style={{ margin: '24px' }}>
-            <Form
-                ref={formRef}
-                layout='vertical'
-                autoComplete='off'
-                onValuesChange={(_, values) => {
-                    console.log(values);
-                }}
-            >
-                {publishSchema.map((m, i) => {
-                    return <FormItem key={i} {...m as any} />
-                })}
-            </Form>
+        <div className={styles['struct-content']}>
+            <Card className={styles['sell-card']}>
+                <Form
+                    ref={formRef}
+                    layout='vertical'
+                    autoComplete='off'
+                    onValuesChange={(_, values) => {
+                        console.log(values);
+                    }}
+                >
+                    {publishSchema.map((m, i) => {
+                        return <FormItem key={i} {...m as any} />
+                    })}
+                </Form>
+            </Card>
+
         </div>
     );
 }
