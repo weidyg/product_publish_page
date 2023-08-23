@@ -52,12 +52,13 @@ type MyFormItemProps = {
     }[];
     formItems?: MyFormItemProps[];
     isCateProp?: boolean;
-    // [key: string]: any;
     uiType?: string;
 
+    // [key: string]: any;
     value?: any;
     defaultValue?: any;
     onChange?: any;
+    hideLabel?: boolean;
 }
 function ProductPublish(props: {}) {
     const formRef = useRef<any>();
@@ -236,7 +237,7 @@ function ProductPublish(props: {}) {
             ) : _uiType == 'input-html' ? (
                 <ReactQuill theme="snow" {..._commonProps} />
             ) : (
-                <Input style={{ maxWidth: '734px' }}
+                <Input allowClear style={{ maxWidth: '734px' }}
                     placeholder={`请输入${label}`}
                     {..._commonProps} />
             )
@@ -245,7 +246,7 @@ function ProductPublish(props: {}) {
     function RenderSingleCheck(_props: MyFormItemProps) {
         const { value, defaultValue, onChange, ...restProps } = _props;
         const { options = [], uiType, label } = restProps;
-        let _commonProps = { value, defaultValue, onChange };
+        let _commonProps = { value, defaultValue, onChange, allowClear: true };
 
         if (uiType == 'checkbox' && options.every(e => ['0', '1'].includes(e.value))) {
             _commonProps.onChange = (checked: boolean, e: Event) => {
@@ -259,7 +260,8 @@ function ProductPublish(props: {}) {
             ) : uiType == 'select' ? (
                 <Select style={{ maxWidth: '358px' }}
                     placeholder={`请选择${label}`}
-                    showSearch
+                    showSearch={true}
+                    labelInValue={true}
                     filterOption={(inputValue, option) =>
                         option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
                         option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
@@ -273,12 +275,13 @@ function ProductPublish(props: {}) {
     function RenderMultiCheck(_props: MyFormItemProps) {
         const { value, defaultValue, onChange, ...restProps } = _props;
         const { options = [], uiType, label } = restProps;
-        let _commonProps = { value, defaultValue, onChange };
+        let _commonProps = { value, defaultValue, onChange, allowClear: true };
         return (
             <Select style={{ maxWidth: '358px' }}
                 placeholder={`请选择${label}`}
                 mode='multiple'
                 showSearch={true}
+                labelInValue={true}
                 filterOption={(inputValue, option) =>
                     option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
                     option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
@@ -329,7 +332,7 @@ function ProductPublish(props: {}) {
                     const uiType = sm.type == 'singlecheck' ? 'select' : sm.type;
                     return (
                         <Grid.GridItem key={'cpi' + si} style={{ maxWidth: '358px' }}>
-                            <FormItem key={'si' + si} {...sm} uiType={uiType} />
+                            <FormItem key={'si' + si} {...sm} uiType={uiType} hideLabel />
                         </Grid.GridItem>
                     )
                 })}
@@ -352,7 +355,8 @@ function ProductPublish(props: {}) {
         const uiType = getDefaultUiType(_props);
         const props = { ..._props, uiType }
 
-        const { type, label, value, name, namePath = [], rules: propRules } = props || {};
+        const { type, label: propLabel, value, name, namePath = [],
+            hideLabel, rules: propRules } = props || {};
         const { tips, disable, ...restRules } = propRules || {};
         const rules = getValiRules(restRules);
 
@@ -363,6 +367,7 @@ function ProductPublish(props: {}) {
         const shouldUpdate = (prev: any, next: any, info: any) => {
             return tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
         }
+        const label = (uiType == 'checkbox' || hideLabel) ? undefined : propLabel;
         const isComplex = type?.toLowerCase().indexOf('complex') !== -1;
         return (<>
             <Form.Item noStyle shouldUpdate={shouldUpdate} >
@@ -374,8 +379,7 @@ function ProductPublish(props: {}) {
                         <div className="arco-form-extra">{extra}</div>
                     </> : label;
                     return _disable ? undefined :
-                        <Form.Item initialValue={value}
-                            label={uiType != 'checkbox' ? _label : undefined}
+                        <Form.Item initialValue={value} label={_label}
                             field={field} rules={rules}
                             extra={isComplex == false ? extra : undefined}>
                             {type == 'input' ? (
