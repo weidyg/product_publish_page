@@ -1,6 +1,6 @@
 import React, { ChangeEvent, ReactNode, useEffect, useRef, useState } from 'react';
-import { Form, Input, Radio, Select, InputNumber, Grid, Upload, Checkbox, Card } from '@arco-design/web-react';
-import { IconPlus } from '@arco-design/web-react/icon';
+import { Form, Input, Radio, Select, InputNumber, Grid, Upload, Checkbox, Card, Space, Button } from '@arco-design/web-react';
+import { IconDelete, IconPlus, IconPublic } from '@arco-design/web-react/icon';
 import publishSchema from './publishSchema.json';
 import styles from './ProductPublish.module.less'
 import ReactQuill from 'react-quill';
@@ -260,13 +260,14 @@ function ProductPublish(props: {}) {
             ) : uiType == 'select' ? (
                 <Select style={{ maxWidth: '358px' }}
                     placeholder={`请选择${label}`}
-                    showSearch={true}
-                    labelInValue={true}
                     filterOption={(inputValue, option) =>
                         option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
                         option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
                     }
-                    options={options} {..._commonProps} />
+                    options={options} {..._commonProps}
+                    showSearch
+                // labelInValue allowCreate
+                />
             ) : uiType == 'checkbox' ? (
                 <Checkbox {..._commonProps}>{label}</Checkbox>
             ) : <></>
@@ -277,16 +278,15 @@ function ProductPublish(props: {}) {
         const { options = [], uiType, label } = restProps;
         let _commonProps = { value, defaultValue, onChange, allowClear: true };
         return (
-            <Select style={{ maxWidth: '358px' }}
+            <Select mode='multiple' style={{ maxWidth: '358px' }}
                 placeholder={`请选择${label}`}
-                mode='multiple'
-                showSearch={true}
-                labelInValue={true}
                 filterOption={(inputValue, option) =>
                     option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
                     option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
                 }
                 options={options} {..._commonProps}
+                showSearch
+            // labelInValue allowCreate
             />
         )
     }
@@ -340,6 +340,61 @@ function ProductPublish(props: {}) {
         }</>)
     }
 
+    function RenderMultiComplex0(_props: MyFormItemProps) {
+        const { name, formItems } = _props;
+        return (<>{
+            <Form.List field='users'>
+                {(fields, { add, remove, move }) => {
+                    if (fields.length == 0) { add(); }
+                    return (
+                        <div>
+                            {fields.map((item, index) => {
+                                return (
+                                    <div key={item.key}>
+                                        <Form.Item>
+                                            <Space>
+                                                <Form.Item field={item.field + '.address'} rules={[{ required: true }]} noStyle>
+                                                    <Input />
+                                                </Form.Item>
+                                                {
+                                                    (fields.length != 1 )
+                                                        ? <Button icon={<IconDelete />} type='text' onClick={() => remove(index)}></Button>
+                                                        : undefined
+                                                }{
+                                                    index == fields.length - 1
+                                                        ? <Button icon={<IconPlus />} type='text' onClick={() => add(index)}></Button>
+                                                        : undefined
+                                                }
+                                            </Space>
+                                        </Form.Item>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    );
+                }}
+            </Form.List>
+        }</>)
+    }
+    // function RenderMultiComplex1(_props: MyFormItemProps) {
+    //     const { name, formItems } = _props;
+    //     return (<>{
+    //         <Form.Item label={'User ' + index}>
+    //             <Space>
+    //                 <Form.Item field={item.field + '.username'} rules={[{ required: true }]} noStyle >
+    //                     <Input />
+    //                 </Form.Item>
+    //                 <Form.Item field={item.field + '.address'} rules={[{ required: true }]} noStyle     >
+    //                     <Input />
+    //                 </Form.Item>
+    //                 <Button icon={<IconDelete />} shape='circle' status='danger' onClick={() => remove(index)}    ></Button>
+    //             </Space>
+    //         </Form.Item>
+    //     }</>)
+    // }
+
+
+
     const getDefaultUiType = (_props: MyFormItemProps) => {
         const { type, options = [], uiType } = _props;
         const length = options.length;
@@ -391,7 +446,7 @@ function ProductPublish(props: {}) {
                             ) : type == 'complex' ? (
                                 <RenderComplex {...props} />
                             ) : type == 'multicomplex' ? (
-                                <RenderMultiComplex {...props} />
+                                <RenderMultiComplex0 {...props} />
                             ) : undefined}
                         </Form.Item>;
                 }}
