@@ -1,78 +1,39 @@
 import React, { ChangeEvent, ReactNode, useEffect, useRef, useState } from 'react';
-import { Form, Input, Radio, Select, InputNumber, Grid, Upload, Checkbox, Card, Space, Button } from '@arco-design/web-react';
-import { IconDelete, IconPlus, IconPublic } from '@arco-design/web-react/icon';
+import { Form, Input, Radio, Select, InputNumber, Grid, Upload, Checkbox, Card, Space, Button, Spin } from '@arco-design/web-react';
+import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import publishSchema from './publishSchema.json';
-import styles from './ProductPublish.module.less'
+import styles from './index.module.less'
 import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-
-type MyFormNumRules = {
-    value?: any,
-    include?: boolean
-}
-
-type MyFormDependRules = {
-    value?: any,
-    dependGroup?: MyFormDependGroup
-}
-
-type MyFormDependGroup = {
-    operator?: 'and' | 'or',
-    expresses?: MyFormDependExpress[],
-    groups?: MyFormDependGroup[],
-}
-type MyFormDependExpress = {
-    namePath: string[];
-    fieldName: string,
-    fieldValue: string,
-    symbol?: '==' | '!='
-}
+import { FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from './interface';
 
 
-type MyFormRules = {
-    required?: boolean;
-    valueType?: string;
-    regex?: string;
-    maxLength?: MyFormNumRules;
-    maxValue?: MyFormNumRules;
-    minValue?: MyFormNumRules;
+const data = {
+    shopId: 0,
+    spuId: 0,
+};
 
-    tips?: MyFormDependRules[];
-    disable?: MyFormDependRules;
-}
-type MyFormItemProps = {
-    label?: string;
-    name?: string;
-    namePath?: string[];
-    type?: string;
-    rules?: MyFormRules;
-    options?: {
-        label: string;
-        value: string;
-    }[];
-    formItems?: MyFormItemProps[];
-    isCateProp?: boolean;
-    uiType?: string;
 
-    // [key: string]: any;
-    value?: any;
-    defaultValue?: any;
-    onChange?: any;
-    hideLabel?: boolean;
-}
+const formSchemaJson = publishSchema as MyFormItemProps[]
+
 function ProductPublish(props: {}) {
     const formRef = useRef<any>();
+    const [loading, setLoading] = useState(true);
+    const [formSchema, setFormSchema] = useState<MyFormItemProps[]>([]);
 
     useEffect(() => {
-        formRef.current.setFieldsValue(
-            {
-                "invoice": "1",
-                "stuffStatus": "5",
-                "subStock": "0",
-                "p-20000": "1472037269"
-            }
-        );
+        loadingInitData();
     }, [])
+
+    const loadingInitData = () => {
+        const formValues = { title: '242' }
+        setTimeout(() => {
+            setFormSchema(formSchemaJson);
+            setLoading(false);
+            formRef?.current?.setFieldsValue(formValues);
+        }, 1000);
+    }
+
 
     const getValiRules = (rp: MyFormRules) => {
         let rules: any[] = [];
@@ -210,14 +171,15 @@ function ProductPublish(props: {}) {
     function RenderInput(_props: MyFormItemProps) {
         const { value, defaultValue, onChange, ...restProps } = _props;
         const { uiType, label, name, rules = {} } = restProps;
-        const _commonProps = { value, defaultValue, onChange };
+        const readOnly = _props?.rules?.readOnly;
+        let _commonProps = { value, defaultValue, onChange, disabled: readOnly };
 
         const numReg = /^[0-9]+.?[0-9]*/;
         const isNum = numReg.test(rules.maxValue?.value) || numReg.test(rules.minValue?.value);
 
-        const _uiType = uiType || (name == 'desc' ? 'input-html' : isNum ? 'input-number' : undefined);
+        const _uiType = uiType || (name == 'desc' ? 'inputHtml' : isNum ? 'inputNumber' : undefined);
         return (
-            _uiType == 'upload' ? (
+            _uiType == 'imageUpload' ? (
                 <Upload action='/'
                     showUploadList={false}
                     onProgress={(currentFile) => { }}
@@ -230,11 +192,11 @@ function ProductPublish(props: {}) {
                         </div>
                     </div>
                 </Upload>
-            ) : _uiType == 'input-number' ? (
+            ) : _uiType == 'inputNumber' ? (
                 <InputNumber style={{ maxWidth: '358px' }}
                     placeholder={`请输入${label}`}
                     {..._commonProps} />
-            ) : _uiType == 'input-html' ? (
+            ) : _uiType == 'inputHtml' ? (
                 <ReactQuill theme="snow" {..._commonProps} />
             ) : (
                 <Input allowClear style={{ maxWidth: '734px' }}
@@ -246,9 +208,11 @@ function ProductPublish(props: {}) {
     function RenderSingleCheck(_props: MyFormItemProps) {
         const { value, defaultValue, onChange, ...restProps } = _props;
         const { options = [], uiType, label } = restProps;
-        let _commonProps = { value, defaultValue, onChange, allowClear: true };
+        const readOnly = _props?.rules?.readOnly;
+        const allowCustom = _props?.rules?.allowCustom;
+        let _commonProps = { value, defaultValue, onChange, disabled: readOnly, allowClear: true };
 
-        if (uiType == 'checkbox' && options.every(e => ['0', '1'].includes(e.value))) {
+        if (uiType == 'checkBox' && options.every(e => ['0', '1'].includes(e.value))) {
             _commonProps.onChange = (checked: boolean, e: Event) => {
                 return onChange(checked ? '1' : '0', e)
             }
@@ -258,17 +222,18 @@ function ProductPublish(props: {}) {
             uiType == 'radio' ? (
                 <Radio.Group options={options} {..._commonProps} />
             ) : uiType == 'select' ? (
-                <Select style={{ maxWidth: '358px' }}
+                <Select showSearch
+                    style={{ maxWidth: '358px' }} //labelInValue
                     placeholder={`请选择${label}`}
                     filterOption={(inputValue, option) =>
                         option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
                         option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
                     }
-                    options={options} {..._commonProps}
-                    showSearch
-                // labelInValue allowCreate
+                    options={options}
+                    allowCreate={allowCustom}
+                    {..._commonProps}
                 />
-            ) : uiType == 'checkbox' ? (
+            ) : uiType == 'checkBox' ? (
                 <Checkbox {..._commonProps}>{label}</Checkbox>
             ) : <></>
         )
@@ -276,17 +241,21 @@ function ProductPublish(props: {}) {
     function RenderMultiCheck(_props: MyFormItemProps) {
         const { value, defaultValue, onChange, ...restProps } = _props;
         const { options = [], uiType, label } = restProps;
-        let _commonProps = { value, defaultValue, onChange, allowClear: true };
+        const readOnly = _props?.rules?.readOnly;
+        const allowCustom = _props?.rules?.allowCustom;
+        let _commonProps = { value, defaultValue, onChange, disabled: readOnly, allowClear: true };
         return (
-            <Select mode='multiple' style={{ maxWidth: '358px' }}
+            <Select showSearch
+                mode='multiple'
+                style={{ maxWidth: '358px' }} //labelInValue
                 placeholder={`请选择${label}`}
                 filterOption={(inputValue, option) =>
                     option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
                     option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
                 }
-                options={options} {..._commonProps}
-                showSearch
-            // labelInValue allowCreate
+                options={options}
+                allowCreate={allowCustom}
+                {..._commonProps}
             />
         )
     }
@@ -298,7 +267,7 @@ function ProductPublish(props: {}) {
             isCateProp ? (
                 <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
                     {formItems?.map((sm, si) => {
-                        const uiType = sm.type == 'singlecheck' ? 'select' : sm.type;
+                        const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                         return (
                             <Grid.GridItem key={'cpi' + si} style={{ maxWidth: '358px' }}>
                                 <FormItem key={'si' + si} {...sm} uiType={uiType} />
@@ -309,7 +278,7 @@ function ProductPublish(props: {}) {
             ) : isMainImg ? (
                 <Grid cols={5} colGap={12}>
                     {formItems?.map((sm, si) => {
-                        const uiType = 'upload';
+                        const uiType: FieldUiType = 'imageUpload';
                         return (
                             <Grid.GridItem key={'cpi' + si}>
                                 <FormItem key={'si' + si} {...sm} uiType={uiType} />
@@ -329,7 +298,7 @@ function ProductPublish(props: {}) {
         return (<>{
             <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
                 {formItems?.map((sm, si) => {
-                    const uiType = sm.type == 'singlecheck' ? 'select' : sm.type;
+                    const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                     return (
                         <Grid.GridItem key={'cpi' + si} style={{ maxWidth: '358px' }}>
                             <FormItem key={'si' + si} {...sm} uiType={uiType} hideLabel />
@@ -357,7 +326,7 @@ function ProductPublish(props: {}) {
                                                     <Input />
                                                 </Form.Item>
                                                 {
-                                                    (fields.length != 1 )
+                                                    (fields.length != 1)
                                                         ? <Button icon={<IconDelete />} type='text' onClick={() => remove(index)}></Button>
                                                         : undefined
                                                 }{
@@ -400,7 +369,7 @@ function ProductPublish(props: {}) {
         const length = options.length;
 
         if (uiType) { return uiType; }
-        if (type == 'singlecheck') {
+        if (type == 'singleCheck') {
             return length > 3 ? 'select' : 'radio';
         }
         return uiType;
@@ -422,7 +391,7 @@ function ProductPublish(props: {}) {
         const shouldUpdate = (prev: any, next: any, info: any) => {
             return tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
         }
-        const label = (uiType == 'checkbox' || hideLabel) ? undefined : propLabel;
+        const label = (uiType == 'checkBox' || hideLabel) ? undefined : propLabel;
         const isComplex = type?.toLowerCase().indexOf('complex') !== -1;
         return (<>
             <Form.Item noStyle shouldUpdate={shouldUpdate} >
@@ -439,14 +408,14 @@ function ProductPublish(props: {}) {
                             extra={isComplex == false ? extra : undefined}>
                             {type == 'input' ? (
                                 <RenderInput {...props} />
-                            ) : type == 'singlecheck' ? (
+                            ) : type == 'singleCheck' ? (
                                 <RenderSingleCheck {...props} />
-                            ) : type == 'multicheck' ? (
+                            ) : type == 'multiCheck' ? (
                                 <RenderMultiCheck {...props} />
                             ) : type == 'complex' ? (
                                 <RenderComplex {...props} />
-                            ) : type == 'multicomplex' ? (
-                                <RenderMultiComplex0 {...props} />
+                            ) : type == 'multiComplex' ? (
+                                <RenderMultiComplex {...props} />
                             ) : undefined}
                         </Form.Item>;
                 }}
@@ -455,23 +424,25 @@ function ProductPublish(props: {}) {
         </>)
     }
     return (
-        <div className={styles['struct-content']}>
-            <Card className={styles['sell-card']}>
-                <Form
-                    ref={formRef}
-                    layout='vertical'
-                    autoComplete='off'
-                    onValuesChange={(_, values) => {
-                        console.log(values);
-                    }}
-                >
-                    {publishSchema.map((m, i) => {
-                        return <FormItem key={i} {...m as any} />
-                    })}
-                </Form>
-            </Card>
-
-        </div>
+        <Spin loading={loading} dot tip='页面加载中，请稍后...'
+            className={styles['product']} >
+            <div className={styles['product-content']}>
+                <Card className={styles['product-content-card']}>
+                    <Form
+                        ref={formRef}
+                        layout='vertical'
+                        autoComplete='off'
+                        onValuesChange={(_, values) => {
+                            console.log(values);
+                        }}
+                    >
+                        {formSchema.map((m, i) => {
+                            return <FormItem key={i} {...m as any} />
+                        })}
+                    </Form>
+                </Card>
+            </div>
+        </Spin>
     );
 }
 

@@ -1,5 +1,5 @@
 import reactLogo from './assets/react.svg'
-import ProductPublish from './components/ProductPublish';
+import ProductPublish from './pages/product';
 import './app.css'
 
 function App() {
