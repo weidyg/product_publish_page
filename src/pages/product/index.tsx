@@ -224,7 +224,7 @@ function ProductPublish(props: {}) {
             ) : uiType == 'select' ? (
                 <Select showSearch
                     style={{ maxWidth: '358px' }} //labelInValue
-                    placeholder={`请选择${label}`}
+                    placeholder={`请选择${allowCustom ? '或输入' : ''}${label}`}
                     filterOption={(inputValue, option) =>
                         option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
                         option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
@@ -248,7 +248,7 @@ function ProductPublish(props: {}) {
             <Select showSearch
                 mode='multiple'
                 style={{ maxWidth: '358px' }} //labelInValue
-                placeholder={`请选择${label}`}
+                placeholder={`请选择${allowCustom ? '或输入' : ''}${label}`}
                 filterOption={(inputValue, option) =>
                     option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
                     option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
@@ -345,32 +345,35 @@ function ProductPublish(props: {}) {
             </Form.List>
         }</>)
     }
-    // function RenderMultiComplex1(_props: MyFormItemProps) {
-    //     const { name, formItems } = _props;
-    //     return (<>{
-    //         <Form.Item label={'User ' + index}>
-    //             <Space>
-    //                 <Form.Item field={item.field + '.username'} rules={[{ required: true }]} noStyle >
-    //                     <Input />
-    //                 </Form.Item>
-    //                 <Form.Item field={item.field + '.address'} rules={[{ required: true }]} noStyle     >
-    //                     <Input />
-    //                 </Form.Item>
-    //                 <Button icon={<IconDelete />} shape='circle' status='danger' onClick={() => remove(index)}    ></Button>
-    //             </Space>
-    //         </Form.Item>
-    //     }</>)
-    // }
+    function RenderMultiComplexSku(_props: MyFormItemProps) {
+        const { name, formItems } = _props;
+        return (<>{formItems?.map(m => {
+            return (<></>);
+        })
+            // <Form.Item label={'User ' + index}>
+            //     <Space>
+            //         <Form.Item field={item.field + '.username'} rules={[{ required: true }]} noStyle >
+            //             <Input />
+            //         </Form.Item>
+            //         <Form.Item field={item.field + '.address'} rules={[{ required: true }]} noStyle     >
+            //             <Input />
+            //         </Form.Item>
+            //         <Button icon={<IconDelete />} shape='circle' status='danger' onClick={() => remove(index)}    ></Button>
+            //     </Space>
+            // </Form.Item>
+        }</>)
+    }
 
 
 
     const getDefaultUiType = (_props: MyFormItemProps) => {
         const { type, options = [], uiType } = _props;
         const length = options.length;
+        const allowCustom = _props?.rules?.allowCustom;
 
         if (uiType) { return uiType; }
         if (type == 'singleCheck') {
-            return length > 3 ? 'select' : 'radio';
+            return (length > 3 || allowCustom) ? 'select' : 'radio';
         }
         return uiType;
     }
@@ -403,8 +406,8 @@ function ProductPublish(props: {}) {
                         <div className="arco-form-extra">{extra}</div>
                     </> : label;
                     return _disable ? undefined :
-                        <Form.Item initialValue={value} label={_label}
-                            field={field} rules={rules}
+                        <Form.Item initialValue={value}
+                            label={_label} field={field} rules={rules}
                             extra={isComplex == false ? extra : undefined}>
                             {type == 'input' ? (
                                 <RenderInput {...props} />
@@ -415,7 +418,9 @@ function ProductPublish(props: {}) {
                             ) : type == 'complex' ? (
                                 <RenderComplex {...props} />
                             ) : type == 'multiComplex' ? (
-                                <RenderMultiComplex {...props} />
+                                name == 'sku'
+                                    ? <RenderMultiComplexSku {...props} />
+                                    : <RenderMultiComplex {...props} />
                             ) : undefined}
                         </Form.Item>;
                 }}
