@@ -5,7 +5,7 @@ import publishSchema from './publishSchema.json';
 import styles from './index.module.less'
 import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import { FieldUiType, MyFormDependRules, MyFormItemProps, MyFormRules } from './interface';
+import { FieldUiType, MyFormDependRules, MyFormItemProps } from './interface';
 import SkuEditableTable from '../../components/SkuEditableTable';
 import { checkDependRules, getValiRules } from '../../components/untis';
 import * as _ from "lodash"
@@ -295,8 +295,8 @@ function ProductPublish(props: {}) {
                     {formItems?.map((sm, si) => {
                         const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                         return (
-                            <Grid.GridItem key={'cpi' + si} style={{ maxWidth: '358px' }}>
-                                <FormItem key={'si' + si} {...sm} uiType={uiType} />
+                            <Grid.GridItem key={'gcpi0' + si} style={{ maxWidth: '358px' }}>
+                                {FormItem({ ...sm, uiType })}
                             </Grid.GridItem>
                         )
                     })}
@@ -306,14 +306,16 @@ function ProductPublish(props: {}) {
                     {formItems?.map((sm, si) => {
                         const uiType: FieldUiType = 'imageUpload';
                         return (
-                            <Grid.GridItem key={'cpi' + si}>
-                                <FormItem key={'si' + si} {...sm} uiType={uiType} />
+                            <Grid.GridItem key={'gcpi1' + si}>
+                                {FormItem({ ...sm, uiType })}
                             </Grid.GridItem>
                         )
                     })}
                 </Grid>
             ) : formItems?.map((sm, si) => {
-                return <FormItem key={'si' + si} {...sm} />
+                return <span key={'si11' + si}>
+                    {FormItem(sm)}
+                </span>
             })
         }</>)
     }
@@ -327,7 +329,7 @@ function ProductPublish(props: {}) {
                     const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                     return (
                         <Grid.GridItem key={'cpi' + si} style={{ maxWidth: '358px' }}>
-                            <FormItem key={'si' + si} {...sm} uiType={uiType} noLabel />
+                            {FormItem({ ...sm, uiType, noLabel: true })}
                         </Grid.GridItem>
                     )
                 })}
@@ -388,7 +390,7 @@ function ProductPublish(props: {}) {
         }
         const label = (uiType == 'checkBox' || noLabel) ? undefined : propLabel;
         const isComplex = type?.toLowerCase().indexOf('complex') !== -1;
-        return (<>
+        return (
             <Form.Item noStyle shouldUpdate={shouldUpdate} >
                 {(values) => {
                     const _disable = getDisValue(values) === true;
@@ -400,27 +402,27 @@ function ProductPublish(props: {}) {
                     return _disable ? undefined :
                         <Form.Item initialValue={value} noStyle={noStyle}
                             label={_label} field={field} rules={rules}
-                            extra={isComplex == false ? extra : undefined}>
+                            extra={isComplex == false ? extra : undefined}
+                        >
                             {type == 'input' ? (
-                                <RenderInput {...props} />
+                                RenderInput(props)
                             ) : type == 'singleCheck' ? (
-                                <RenderSingleCheck {...props} />
+                                RenderSingleCheck(props)
                             ) : type == 'multiCheck' ? (
-                                <RenderMultiCheck {...props} />
+                                RenderMultiCheck(props)
                             ) : type == 'complex' ? (
-                                <RenderComplex {...props} />
+                                RenderComplex(props)
                             ) : type == 'multiComplex' ? (
                                 name == 'sku'
                                     ? <SkuEditableTable {...props}
                                         allFormItems={formSchema}
                                         values={values} />
-                                    : <RenderMultiComplex {...props} />
+                                    : RenderMultiComplex(props)
                             ) : undefined}
                         </Form.Item>;
                 }}
             </Form.Item>
-            {/* {JSON.stringify(p)} */}
-        </>)
+        )
     }
 
     const handleSave = async () => {
@@ -452,7 +454,7 @@ function ProductPublish(props: {}) {
                         }}
                     >
                         {formSchema.map((m, i) => {
-                            return <FormItem key={i} {...m as any} />
+                            return <div key={i}>{FormItem(m)}</div>
                         })}
                     </Form>
                 </Card>
