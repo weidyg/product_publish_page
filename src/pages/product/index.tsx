@@ -1,12 +1,14 @@
-import React, { ChangeEvent, ReactNode, useEffect, useRef, useState } from 'react';
-import { Form, Input, Radio, Select, InputNumber, Grid, Upload, Checkbox, Card, Space, Button, Spin } from '@arco-design/web-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Form, Input, Radio, Select, InputNumber, Grid, Upload, Checkbox, Card, Space, Button, Spin, Table, Message } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import publishSchema from './publishSchema.json';
 import styles from './index.module.less'
 import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import { FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from './interface';
-
+import { FieldUiType, MyFormDependRules, MyFormItemProps, MyFormRules } from './interface';
+import SkuEditableTable from '../../components/SkuEditableTable';
+import { checkDependRules, getValiRules } from '../../components/untis';
+import * as _ from "lodash"
 
 const data = {
     shopId: 0,
@@ -19,6 +21,7 @@ const formSchemaJson = publishSchema as MyFormItemProps[]
 function ProductPublish(props: {}) {
     const formRef = useRef<any>();
     const [loading, setLoading] = useState(true);
+    const [saveLoading, setSaveLoading] = useState(true);
     const [formSchema, setFormSchema] = useState<MyFormItemProps[]>([]);
 
     useEffect(() => {
@@ -26,118 +29,129 @@ function ProductPublish(props: {}) {
     }, [])
 
     const loadingInitData = () => {
-        const formValues = { title: '242' }
-        setTimeout(() => {
-            setFormSchema(formSchemaJson);
-            setLoading(false);
-            formRef?.current?.setFieldsValue(formValues);
-        }, 1000);
-    }
-
-
-    const getValiRules = (rp: MyFormRules) => {
-        let rules: any[] = [];
-        if (rp) {
-            const type = rp.valueType;
-            if (rp.required) {
-                rules.push({ required: true });
-            }
-            if (rp.regex) {
-                rules.push({ type: 'string', match: new RegExp(rp.regex) });
-            }
-            if (rp.maxLength) {
-                const { value: maxLength, include: includes } = rp.maxLength;
-                rules.push({ type: 'string', maxLength, includes });
-            }
-            if (rp.maxValue) {
-                const { value: max, include: includes } = rp.maxValue;
-                rules.push({ type: 'number', max, includes });
-            }
-            if (rp.minValue) {
-                const { value: min, include: includes } = rp.minValue;
-                rules.push({ type: 'number', min, includes });
-            }
-            if (rules.every(e => e !== type)) {
-                rules.push({ type: type });
-            }
-        }
-        return rules;
-    }
-
-    const checkDependGroup = (dependGroup: MyFormDependGroup, values: any): boolean | undefined => {
-
-        const getDeepValue = (values: any, fieldName: string, namePath: string[]) => {
-            let value = values[fieldName];
-            if (!value && namePath?.length > 0) {
-                let _values = values;
-                namePath?.forEach(field => {
-                    if (typeof _values == 'object') {
-                        _values = _values[field];
+        const formValues = {
+            "title": "测试标题",
+            "sku": [
+                {
+                    "key": "p-20509_649458002|p-1627207_28321",
+                    "props": {
+                        "p-1627207": "28321",
+                        "p-20509": "649458002"
+                    },
+                    "skuQuality": "mainSku",
+                    "skuPrice": 120,
+                    "skuStock": 100
+                },
+                {
+                    "key": "p-20509_649458002|p-1627207_28320",
+                    "props": {
+                        "p-1627207": "28320",
+                        "p-20509": "649458002"
+                    },
+                    "skuQuality": "multipleMainSku",
+                    "skuPrice": 10,
+                    "skuStock": 1000
+                },
+                {
+                    "key": "p-20509_66579689|p-1627207_28321",
+                    "props": {
+                        "p-1627207": "28321",
+                        "p-20509": "66579689"
+                    },
+                    "skuQuality": "multipleMainSku",
+                    "skuPrice": 14,
+                    "skuStock": 1000
+                },
+                {
+                    "key": "p-20509_66579689|p-1627207_28320",
+                    "props": {
+                        "p-1627207": "28320",
+                        "p-20509": "66579689"
+                    },
+                    "skuQuality": "multipleMainSku",
+                    "skuPrice": 100,
+                    "skuStock": 1000
+                }
+            ],
+            "stuffStatus": "5",
+            "catProp": {
+                "p-13021751": "hh",
+                "p-20000": "3407618",
+                "p-149422948": {
+                    "material_prop_name": "人造革",
+                    "material_prop_content": 100
+                },
+                "p-151386995": {
+                    "material_prop_name": "三乙烯基纤维",
+                    "material_prop_content": 100
+                },
+                "p-8560225": "740132938",
+                "p-6103476": "100",
+                // "p-122216608": "3493528",
+                "p-21548": "81826195",
+                "p-25206543": "7695765855",
+                "p-122216345": [
+                    "29456",
+                    "30264400"
+                ],
+                "p-8418084": "493280569",
+                "p-122276315": "80270793",
+                "p-122216589": [
+                    "80211937",
+                    "66036976"
+                ],
+                "p-21299": "27013",
+                "p-20019": [
+                    "7850140",
+                    "3217611"
+                ],
+                "p-122216688": [
+                    "4428937",
+                    "103411"
+                ],
+                "p-20551": "39026210",
+                "p-122216562": "44597",
+                "p-115930179": "483276326",
+                "p-122216586": "4042331"
+            },
+            "globalStock": {
+                "globalStockNav": "0"
+            },
+            "saleProp": {
+                "p-1627207": [
+                    "28321",
+                    "28320"
+                ],
+                "p-20509": {
+                    "p-20509-sizeGroup": "136553091-women_outdoor_tops",
+                    "p-20509-sizeValue": {
+                        "size-136553091-women_outdoor_tops": [
+                            "649458002",
+                            "66579689"
+                        ]
                     }
-                });
-                value = _values;
-            }
-            return value
+                }
+            },
+            "deliveryTimeType": "0",
+            "quantity": 10000,
+            "images": {},
+            "subStock": "1",
+            "tbExtractWay": {},
+            "sellPromise": "1",
+            "sevenDaySupport": "true",
+            "guaranteeService": [],
+            "startTime": "0",
+            "tbDeliveryTime": "3",
+            "price": 100,
+            "warranty": "1"
         }
-
-        const operator = dependGroup?.operator;
-        const expresses = dependGroup?.expresses || [];
-        const groups = dependGroup?.groups || [];
-        const expressLength = expresses?.length || 0;
-        const groupLength = groups?.length || 0;
-        if (!operator || (expressLength == 0 && groupLength == 0)) { return undefined }
-        values = values || {};
-        let _isMatcheds: (boolean | undefined)[] = [];
-        // let log = "";
-        for (let i = 0; i < expressLength; i++) {
-            const exp = expresses[i];
-            const _val = getDeepValue(values, exp.fieldName, exp.namePath);
-            if (exp.symbol == '!=') {
-                _isMatcheds.push(_val != exp.fieldValue);
-            } else if (exp.symbol == '==') {
-                _isMatcheds.push(_val == exp.fieldValue);
-            }
-            // log += `\n ${exp.fieldName}:${exp.fieldValue} ${exp.symbol} ${_val} `;
-        }
-
-        for (let j = 0; j < expressLength; j++) {
-            const group = groups[j];
-            const checkGroup = checkDependGroup(group, values);
-            _isMatcheds.push(checkGroup);
-        }
-
-        let isMatched: boolean | undefined = undefined;
-        _isMatcheds = _isMatcheds.filter(f => f != undefined);
-        if (_isMatcheds.length > 0) {
-            if (operator == 'and') {
-                isMatched = _isMatcheds.every(e => e === true);
-            } else if (operator == 'or') {
-                isMatched = _isMatcheds.some(e => e === true);
-            }
-        }
-        // console.log("eee", log, isMatched, operator, _isMatcheds);
-        return isMatched;
+        // setTimeout(() => {
+        setLoading(false);
+        setFormSchema(formSchemaJson);
+        formRef?.current?.setFieldsValue(formValues);
+        // }, 1000);
     }
 
-    const checkDependRules = (dependRules: MyFormDependRules): [
-        (prev: any, next: any, info: any) => boolean,
-        (values: any) => any
-    ] => {
-        const dependGroup = dependRules?.dependGroup;
-        const operator = dependGroup?.operator;
-        const expressLength = dependGroup?.expresses?.length || 0;
-        const groupLength = dependGroup?.groups?.length || 0;
-
-        const shouldUpdate = (prev: any, next: any, info: any) => {
-            return !!operator && (expressLength > 0 || groupLength > 0);
-        }
-        const getValue = (values: any) => {
-            let isMatched = dependGroup && checkDependGroup(dependGroup, values);
-            return isMatched === false ? undefined : dependRules?.value;
-        };
-
-        return [shouldUpdate, getValue];
-    }
     const getTips = (tipRules: MyFormDependRules[]): [
         (prev: any, next: any, info: any) => boolean,
         (values: any) => any
@@ -166,6 +180,18 @@ function ProductPublish(props: {}) {
             }));
         };
         return [shouldUpdate, getValues];
+    }
+
+    const getDefaultUiType = (_props: MyFormItemProps) => {
+        const { type, options = [], uiType } = _props;
+        const length = options.length;
+        const allowCustom = _props?.rules?.allowCustom;
+
+        if (uiType) { return uiType; }
+        if (type == 'singleCheck') {
+            return (length > 3 || allowCustom) ? 'select' : 'radio';
+        }
+        return uiType;
     }
 
     function RenderInput(_props: MyFormItemProps) {
@@ -301,14 +327,13 @@ function ProductPublish(props: {}) {
                     const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                     return (
                         <Grid.GridItem key={'cpi' + si} style={{ maxWidth: '358px' }}>
-                            <FormItem key={'si' + si} {...sm} uiType={uiType} hideLabel />
+                            <FormItem key={'si' + si} {...sm} uiType={uiType} noLabel />
                         </Grid.GridItem>
                     )
                 })}
             </Grid>
         }</>)
     }
-
     function RenderMultiComplex0(_props: MyFormItemProps) {
         const { name, formItems } = _props;
         return (<>{
@@ -345,56 +370,23 @@ function ProductPublish(props: {}) {
             </Form.List>
         }</>)
     }
-    function RenderMultiComplexSku(_props: MyFormItemProps) {
-        const { name, formItems } = _props;
-        return (<>{formItems?.map(m => {
-            return (<></>);
-        })
-            // <Form.Item label={'User ' + index}>
-            //     <Space>
-            //         <Form.Item field={item.field + '.username'} rules={[{ required: true }]} noStyle >
-            //             <Input />
-            //         </Form.Item>
-            //         <Form.Item field={item.field + '.address'} rules={[{ required: true }]} noStyle     >
-            //             <Input />
-            //         </Form.Item>
-            //         <Button icon={<IconDelete />} shape='circle' status='danger' onClick={() => remove(index)}    ></Button>
-            //     </Space>
-            // </Form.Item>
-        }</>)
-    }
-
-
-
-    const getDefaultUiType = (_props: MyFormItemProps) => {
-        const { type, options = [], uiType } = _props;
-        const length = options.length;
-        const allowCustom = _props?.rules?.allowCustom;
-
-        if (uiType) { return uiType; }
-        if (type == 'singleCheck') {
-            return (length > 3 || allowCustom) ? 'select' : 'radio';
-        }
-        return uiType;
-    }
-
     function FormItem(_props: MyFormItemProps) {
         const uiType = getDefaultUiType(_props);
         const props = { ..._props, uiType }
 
         const { type, label: propLabel, value, name, namePath = [],
-            hideLabel, rules: propRules } = props || {};
+            noStyle, noLabel, rules: propRules } = props || {};
         const { tips, disable, ...restRules } = propRules || {};
-        const rules = getValiRules(restRules);
+        const rules = getValiRules(restRules, propLabel);
 
         const field = namePath.join('.');
         const [tipShouldUpdate, getTipValues] = getTips(tips || []);
         const [disShouldUpdate, getDisValue] = checkDependRules(disable || {});
 
         const shouldUpdate = (prev: any, next: any, info: any) => {
-            return tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
+            return name == 'sku' || tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
         }
-        const label = (uiType == 'checkBox' || hideLabel) ? undefined : propLabel;
+        const label = (uiType == 'checkBox' || noLabel) ? undefined : propLabel;
         const isComplex = type?.toLowerCase().indexOf('complex') !== -1;
         return (<>
             <Form.Item noStyle shouldUpdate={shouldUpdate} >
@@ -406,7 +398,7 @@ function ProductPublish(props: {}) {
                         <div className="arco-form-extra">{extra}</div>
                     </> : label;
                     return _disable ? undefined :
-                        <Form.Item initialValue={value}
+                        <Form.Item initialValue={value} noStyle={noStyle}
                             label={_label} field={field} rules={rules}
                             extra={isComplex == false ? extra : undefined}>
                             {type == 'input' ? (
@@ -419,7 +411,9 @@ function ProductPublish(props: {}) {
                                 <RenderComplex {...props} />
                             ) : type == 'multiComplex' ? (
                                 name == 'sku'
-                                    ? <RenderMultiComplexSku {...props} />
+                                    ? <SkuEditableTable {...props}
+                                        allFormItems={formSchema}
+                                        values={values} />
                                     : <RenderMultiComplex {...props} />
                             ) : undefined}
                         </Form.Item>;
@@ -428,6 +422,21 @@ function ProductPublish(props: {}) {
             {/* {JSON.stringify(p)} */}
         </>)
     }
+
+    const handleSave = async () => {
+        if (formRef.current) {
+            setSaveLoading(true);
+            try {
+                const values = await formRef.current.validate();
+                Message.info('校验通过，提交成功！' + JSON.stringify(values));
+            } catch (error) {
+                Message.error('校验失败，请检查字段！' + JSON.stringify(error));
+            } finally {
+                setSaveLoading(false);
+            }
+        }
+    }
+
     return (
         <Spin loading={loading} dot tip='页面加载中，请稍后...'
             className={styles['product']} >
@@ -437,14 +446,20 @@ function ProductPublish(props: {}) {
                         ref={formRef}
                         layout='vertical'
                         autoComplete='off'
+                        scrollToFirstError={true}
                         onValuesChange={(_, values) => {
-                            console.log(values);
+                            // console.log(values);
                         }}
                     >
                         {formSchema.map((m, i) => {
                             return <FormItem key={i} {...m as any} />
                         })}
                     </Form>
+                </Card>
+                <Card>
+                    <Space style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Button type='primary' size='large' loading={loading} onClick={handleSave}>保存</Button>
+                    </Space>
                 </Card>
             </div>
         </Spin>

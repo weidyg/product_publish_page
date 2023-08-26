@@ -52,7 +52,8 @@ export type MyFormItemProps = {
     value?: any;
     defaultValue?: any;
     onChange?: any;
-    hideLabel?: boolean;
+    noLabel?: boolean;
+    noStyle?: boolean;
 }
 
 export type FieldUiType = 'input' | 'inputNumber' | 'radio' | 'select' | 'checkBox' | 'multiSelect' | 'imageUpload';
