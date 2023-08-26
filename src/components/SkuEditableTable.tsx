@@ -3,9 +3,10 @@ import { Table, Input, Select, Form, FormInstance, InputNumber, TableColumnProps
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import { MyFormDependRules, MyFormItemProps } from '../pages/product/interface';
 import { checkDependRules, getUniquekey, getValiRules, smoothData } from './untis';
+import styles from './SkuEditableTable.module.less'
 import * as _ from "lodash"
-
-const EditableContext = React.createContext<{ getForm?: () => FormInstance }>({});
+const EditableContext = React.createContext<{ addRowFormRef?: (p: () => FormInstance) => void }>({});
+const EditableRowContext = React.createContext<{ getForm?: () => FormInstance }>({});
 
 type SkuColumnProps = TableColumnProps & { formProps: MyFormItemProps };
 
@@ -68,8 +69,13 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], pName?: string): SkuCo
             columns = columns.concat(_columns);
         } else {
             columns.push({
-                title: <div>
-                    {label}
+                title: <div className={styles['product-sku-table-title']}>
+                    {skuItem?.rules?.required ? (
+                        <span className={styles['product-sku-table-symbol']}>
+                            <svg fill="currentColor" viewBox="0 0 1024 1024" width="1em" height="1em"><path d="M583.338667 17.066667c18.773333 0 34.133333 15.36 34.133333 34.133333v349.013333l313.344-101.888a34.133333 34.133333 0 0 1 43.008 22.016l42.154667 129.706667a34.133333 34.133333 0 0 1-21.845334 43.178667l-315.733333 102.4 208.896 287.744a34.133333 34.133333 0 0 1-7.509333 47.786666l-110.421334 80.213334a34.133333 34.133333 0 0 1-47.786666-7.509334L505.685333 706.218667 288.426667 1005.226667a34.133333 34.133333 0 0 1-47.786667 7.509333l-110.421333-80.213333a34.133333 34.133333 0 0 1-7.509334-47.786667l214.186667-295.253333L29.013333 489.813333a34.133333 34.133333 0 0 1-22.016-43.008l42.154667-129.877333a34.133333 34.133333 0 0 1 43.008-22.016l320.512 104.106667L412.672 51.2c0-18.773333 15.36-34.133333 34.133333-34.133333h136.533334z"></path></svg>
+                        </span>
+                    ) : undefined}
+                    <span> {label}</span>
                     {tips.length > 0 ? (
                         <Popover content={getTipValues({})}
                             triggerProps={{
@@ -100,12 +106,14 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], pName?: string): SkuCo
 
 function EditableRow(props: any) {
     const { children, record, className, ...rest } = props;
+    const { addRowFormRef } = useContext(EditableContext);
+
     const refForm = useRef(null);
-    const providerValue: any = {
-        getForm: () => refForm.current
-    }
+    const getForm = () => refForm.current;
+    const providerValue: any = { getForm }
+    addRowFormRef && addRowFormRef(getForm as any);
     return (
-        <EditableContext.Provider value={providerValue}>
+        <EditableRowContext.Provider value={providerValue}>
             <Form size='small'
                 style={{ display: 'table-row' }}
                 className={`${className} editable-row`}
@@ -114,13 +122,13 @@ function EditableRow(props: any) {
                 wrapper='tr'
                 wrapperProps={rest}
             />
-        </EditableContext.Provider>
+        </EditableRowContext.Provider>
     );
 }
 
 function EditableCell(props: any) {
     const { children, record, rowData, column, onHandleSave } = props;
-    const { getForm } = useContext(EditableContext);
+    const { getForm } = useContext(EditableRowContext);
 
     const { dataIndex, formProps, } = column;
     const { name, rules = {}, options = [] } = formProps || {};
@@ -254,40 +262,47 @@ function SkuEditableTable(props: SkuEditableTableProps) {
         setData(newData);
     }, [JSON.stringify(skuSaleData)])
 
+    const addRowFormRef = (getForm?: () => FormInstance) => {
+        console.log('addRowFormRef');
+    }
+
+
     return (
         <>
-            <Table
-                data={data}
-                components={{
-                    body: {
-                        row: EditableRow,
-                        cell: EditableCell,
-                    },
-                }}
-                columns={columns.map((column) => {
-                    const onCell = column.editable
-                        ? () => ({ onHandleSave: handleSave, })
-                        : undefined
-                    return {
-                        ...column,
-                        render(value, item, index) {
-                            if (value) {
-                                const lastName = column.dataIndex?.split('.')?.findLast(f => true);
-                                if (!lastName) { return value; }
-                                const skuProp: any[] = skuSaleData[lastName] || [];
-                                const label = skuProp?.find(f => f.value == value)?.label;
-                                return label || value;
-                            }
-                            return value;
+            <EditableContext.Provider value={{ addRowFormRef: addRowFormRef }} >
+                <Table
+                    data={data}
+                    components={{
+                        body: {
+                            row: EditableRow,
+                            cell: EditableCell,
                         },
-                        onCell: onCell,
-                    }
-                })}
-                size='small'
-                border={{ wrapper: true, cell: true }}
-                scroll={{ y: 320, x: true }}
-                pagination={false}
-            />
+                    }}
+                    columns={columns.map((column) => {
+                        const onCell = column.editable
+                            ? () => ({ onHandleSave: handleSave, })
+                            : undefined
+                        return {
+                            ...column,
+                            render(value, item, index) {
+                                if (value) {
+                                    const lastName = column.dataIndex?.split('.')?.findLast(f => true);
+                                    if (!lastName) { return value; }
+                                    const skuProp: any[] = skuSaleData[lastName] || [];
+                                    const label = skuProp?.find(f => f.value == value)?.label;
+                                    return label || value;
+                                }
+                                return value;
+                            },
+                            onCell: onCell,
+                        }
+                    })}
+                    size='small'
+                    border={{ wrapper: true, cell: true }}
+                    scroll={{ y: 320, x: true }}
+                    pagination={false}
+                />
+            </EditableContext.Provider>
         </>
     );
 }

@@ -100,23 +100,25 @@ export function getValiRules(rp: MyFormRules, label?: string) {
 }
 export function smoothData(skuSaleData: { [key: string]: any[] }, getValue?: (val: any) => any) {
     let newObjs: any[] = [];
-    Object.keys(skuSaleData).forEach((key, index) => {
+    const keys = Object.keys(skuSaleData);
+    for (let index = keys.length - 1; index >= 0; index--) {
         let tempObjs: any[] = [];
+        const key = keys[index];
         const vals = skuSaleData[key] || [];
         vals.forEach((val: any) => {
             const value = getValue ? getValue(val) : val;
-            if (index == 0) {
+            if (index == keys.length - 1) {
                 const newObj = { [key]: value }
                 tempObjs.push(newObj);
             } else {
                 newObjs.forEach((obj: any) => {
-                    const newObj = { ...obj, [key]: value }
+                    const newObj = { [key]: value, ...obj }
                     tempObjs.push(newObj);
                 });
             }
         });
         newObjs = [...tempObjs];
-    });
+    }
     return newObjs;
 }
 
