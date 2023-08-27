@@ -15,6 +15,7 @@ const data = {
     spuId: 0,
 };
 
+const skuPropName = 'sku';
 
 const formSchemaJson = publishSchema as MyFormItemProps[]
 
@@ -39,7 +40,6 @@ function ProductPublish(props: {}) {
                         "p-20509": "649458002"
                     },
                     "skuQuality": "mainSku",
-                    "skuPrice": 120,
                     "skuStock": 100
                 },
                 {
@@ -413,7 +413,7 @@ function ProductPublish(props: {}) {
                             ) : type == 'complex' ? (
                                 RenderComplex(props)
                             ) : type == 'multiComplex' ? (
-                                name == 'sku'
+                                name == skuPropName
                                     ? <SkuEditableTable {...props}
                                         allFormItems={formSchema}
                                         values={values} />
@@ -425,17 +425,19 @@ function ProductPublish(props: {}) {
         )
     }
 
+    const [skuForms, setSkuForms] = useState<any>({});
     const handleSave = async () => {
-        if (formRef.current) {
-            setSaveLoading(true);
-            try {
-                const values = await formRef.current.validate();
-                Message.info('校验通过，提交成功！' + JSON.stringify(values));
-            } catch (error) {
-                Message.error('校验失败，请检查字段！' + JSON.stringify(error));
-            } finally {
-                setSaveLoading(false);
-            }
+        setSaveLoading(true);
+        try {
+            Object.keys(skuForms || {}).forEach(async (n) => {
+                try { await skuForms[n]?.validate(); } catch (error) { }
+            });
+            const values = await formRef.current.validate();
+            Message.info('校验通过，提交成功！' + JSON.stringify(values));
+        } catch (error) {
+            Message.error('校验失败，请检查字段！' + JSON.stringify(error));
+        } finally {
+            setSaveLoading(false);
         }
     }
 
@@ -444,19 +446,31 @@ function ProductPublish(props: {}) {
             className={styles['product']} >
             <div className={styles['product-content']}>
                 <Card className={styles['product-content-card']}>
-                    <Form
-                        ref={formRef}
-                        layout='vertical'
-                        autoComplete='off'
-                        scrollToFirstError={true}
-                        onValuesChange={(_, values) => {
-                            // console.log(values);
+                    <Form.Provider
+                        onFormValuesChange={(name, changedValues, info) => {
+                            if (name == 'spuForm' && changedValues?.hasOwnProperty(skuPropName)) {
+                                const { spuForm, ...skuforms } = info?.forms || {};
+                                setSkuForms(skuforms)
+                            }
+                            console.log('onFormValuesChange: ', name, changedValues, info);
                         }}
-                    >
-                        {formSchema.map((m, i) => {
-                            return <div key={i}>{FormItem(m)}</div>
-                        })}
-                    </Form>
+                        onFormSubmit={(name, values, info) => {
+                            console.log('onFormSubmit: ', name, values, info);
+                        }}>
+                        <Form id='spuForm'
+                            ref={formRef}
+                            layout='vertical'
+                            autoComplete='off'
+                            scrollToFirstError={true}
+                            onValuesChange={(_, values) => {
+                                // console.log(values);
+                            }}
+                        >
+                            {formSchema.map((m, i) => {
+                                return <div key={i}>{FormItem(m)}</div>
+                            })}
+                        </Form>
+                    </Form.Provider>
                 </Card>
                 <Card>
                     <Space style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -27,6 +27,7 @@ export type MyFormRules = {
     allowCustom?: boolean;
     valueType?: string;
     regex?: string;
+    maxInputNum?: MyFormNumRules;
     maxLength?: MyFormNumRules;
     maxValue?: MyFormNumRules;
     minValue?: MyFormNumRules;

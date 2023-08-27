@@ -83,6 +83,10 @@ export function getValiRules(rp: MyFormRules, label?: string) {
         if (rp.maxLength) {
             const { value: maxLength, include: includes } = rp.maxLength;
             rules.push({ type: 'string', maxLength, includes, message: `${label}长度${includes ? '不能超过' : '需小于'}${maxLength}个字符` });
+        }  
+        if (rp.maxInputNum) {
+            const { value: maxLength, include: includes } = rp.maxInputNum;
+            rules.push({ type: 'array', maxLength, includes, message: `${label}${includes ? '不能超过' : '需小于'}${maxLength}条` });
         }
         if (rp.maxValue) {
             const { value: max, include: includes } = rp.maxValue;
