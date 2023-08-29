@@ -379,7 +379,7 @@ function ProductPublish(props: {}) {
                                                                         key={item.key + m.name}
                                                                         field={item.field + '.' + m.name}
                                                                         rules={_rules}
-                                                                        >
+                                                                    >
                                                                         {
                                                                             m.type == 'input' ? (
                                                                                 RenderInput({ ...m })
