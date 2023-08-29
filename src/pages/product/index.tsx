@@ -77,14 +77,14 @@ function ProductPublish(props: {}) {
             "catProp": {
                 "p-13021751": "hh",
                 "p-20000": "3407618",
-                "p-149422948": {
+                "p-149422948": [{
                     "material_prop_name": "人造革",
                     "material_prop_content": 100
-                },
-                "p-151386995": {
+                }],
+                "p-151386995": [{
                     "material_prop_name": "三乙烯基纤维",
                     "material_prop_content": 100
-                },
+                }],
                 "p-8560225": "740132938",
                 "p-6103476": "100",
                 // "p-122216608": "3493528",
@@ -319,59 +319,7 @@ function ProductPublish(props: {}) {
             })
         }</>)
     }
-    function RenderMultiComplex(_props: MyFormItemProps) {
-        const { name, formItems } = _props;
-        // const isCateProp = name == "catProp";//p.isCateProp;
-        // const isMainImg = name == "images";//TODO:主图图片字段类型
-        return (<>{
-            <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
-                {formItems?.map((sm, si) => {
-                    const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
-                    return (
-                        <Grid.GridItem key={'cpi' + si} style={{ maxWidth: '358px' }}>
-                            {FormItem({ ...sm, uiType, noLabel: true })}
-                        </Grid.GridItem>
-                    )
-                })}
-            </Grid>
-        }</>)
-    }
-    function RenderMultiComplex0(_props: MyFormItemProps) {
-        const { name, formItems } = _props;
-        return (<>{
-            <Form.List field='users'>
-                {(fields, { add, remove, move }) => {
-                    if (fields.length == 0) { add(); }
-                    return (
-                        <div>
-                            {fields.map((item, index) => {
-                                return (
-                                    <div key={item.key}>
-                                        <Form.Item>
-                                            <Space>
-                                                <Form.Item field={item.field + '.address'} rules={[{ required: true }]} noStyle>
-                                                    <Input />
-                                                </Form.Item>
-                                                {
-                                                    (fields.length != 1)
-                                                        ? <Button icon={<IconDelete />} type='text' onClick={() => remove(index)}></Button>
-                                                        : undefined
-                                                }{
-                                                    index == fields.length - 1
-                                                        ? <Button icon={<IconPlus />} type='text' onClick={() => add(index)}></Button>
-                                                        : undefined
-                                                }
-                                            </Space>
-                                        </Form.Item>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    );
-                }}
-            </Form.List>
-        }</>)
-    }
+
     function FormItem(_props: MyFormItemProps) {
         const uiType = getDefaultUiType(_props);
         const props = { ..._props, uiType }
@@ -417,9 +365,56 @@ function ProductPublish(props: {}) {
                                     ? <SkuEditableTable {...props}
                                         allFormItems={formSchema}
                                         values={values} />
-                                    : RenderMultiComplex(props)
+                                    : <Form.List field={`${field}`} initialValue={value} noStyle>
+                                        {(fields, { add, remove, move }) => {
+                                            if (fields.length == 0) { add(); }
+                                            return (fields.map((item, index) => {
+                                                return (
+                                                    <Form.Item key={item.key} noStyle>
+                                                        <Space>
+                                                            {
+                                                                props?.formItems?.map((m: any, i: any) => {
+                                                                    const _rules = getValiRules(m.rules, m.label);
+                                                                    return <Form.Item
+                                                                        key={item.key + m.name}
+                                                                        field={item.field + '.' + m.name}
+                                                                        rules={_rules}
+                                                                    >
+                                                                        {
+                                                                            m.type == 'input' ? (
+                                                                                RenderInput({ ...m })
+                                                                            ) : m.type == 'singleCheck' ? (
+                                                                                RenderSingleCheck({ ...m, uiType: 'select' })
+                                                                            ) : m.type == 'multiCheck' ? (
+                                                                                RenderMultiCheck({ ...m, uiType: 'multiSelect' })
+                                                                            ) : undefined
+                                                                        }
+                                                                    </Form.Item>
+                                                                })
+                                                            }
+                                                            {
+                                                                (fields.length != 1)
+                                                                    ? <Form.Item >
+                                                                        <Button icon={<IconDelete />} type='text' onClick={() => remove(index)} />
+                                                                    </Form.Item>
+                                                                    : undefined
+                                                            }{
+                                                                index == fields.length - 1
+                                                                    ? <Form.Item >
+                                                                        <Button icon={<IconPlus />} type='text' onClick={() => {
+                                                                            add();
+                                                                        }} />
+                                                                    </Form.Item>
+                                                                    : undefined
+                                                            }
+                                                        </Space>
+                                                    </Form.Item>
+                                                );
+                                            }));
+                                        }}
+                                    </Form.List>
                             ) : undefined}
-                        </Form.Item>;
+                        </Form.Item>
                 }}
             </Form.Item>
         )
@@ -463,7 +458,7 @@ function ProductPublish(props: {}) {
                             autoComplete='off'
                             scrollToFirstError={true}
                             onValuesChange={(_, values) => {
-                                // console.log(values);
+                                console.log(values);
                             }}
                         >
                             {formSchema.map((m, i) => {

@@ -277,7 +277,8 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                     ...column,
                     render(value, item, index) {
                         if (value) {
-                            const lastName = column.dataIndex?.split('.')?.findLast(f => true);
+                            const lastName1 = column.dataIndex?.split('.');
+                            const lastName =lastName1&& lastName1[lastName1?.length-1];
                             if (!lastName) { return value; }
                             const skuProp: any[] = skuSaleData[lastName] || [];
                             const label = skuProp?.find(f => f.value == value)?.label;
