@@ -1,6 +1,6 @@
 
 import { useRef, useState } from 'react';
-import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps } from '@arco-design/web-react';
+import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconEdit } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { FieldUiType, MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
@@ -55,27 +55,19 @@ const getUiTypeOrDefault = (_props: MyFormItemProps): FieldUiType | undefined =>
             {
                 return 'multiSelect'
             }
-        case 'complex':
-            {
-
-            }
-        case 'multiComplex':
-            {
-
-            }
     }
 }
 
 
 
 
-function PictureUpload(props: { value?: string, onChange?: (value: string) => {} }) {
-    const { value, onChange } = props;
+function PictureUpload(props: { text?: string, value?: string, onChange?: (value: string) => {} }) {
+    const { text, value, onChange } = props;
     const [file, setFile] = useState<any>({ uid: value, url: value });
     const cs = `${file && file.status === 'error' ? ' is-error' : ''}`;
     return (
         <Upload
-            action='https://arco.design/'
+            action='/'
             fileList={file ? [file] : []}
             onChange={(_, currentFile) => {
                 const url = URL.createObjectURL(currentFile?.originFile as any);
@@ -107,7 +99,7 @@ function PictureUpload(props: { value?: string, onChange?: (value: string) => {}
                     <div className={styles['upload-trigger']}>
                         <div className={styles['upload-trigger-text']}>
                             <IconPlus />
-                            <div>图片</div>
+                            <div title={text}>{text}</div>
                         </div>
                     </div>
                 )}
@@ -118,48 +110,35 @@ function PictureUpload(props: { value?: string, onChange?: (value: string) => {}
 
 
 
-function ProFormList(props: {
-    field: string,
-    // children: (field: string) => React.ReactNode
-}) {
+function ProFormList(props: MyFormItemProps) {
+    const { name, namePath, subItems = [] } = props;
+    const field = namePath?.join('.') || name;
     return (
-        <Form.List field={props.field}>
+        <Form.List field={field!} noStyle>
             {(fields, { add, remove, move }) => {
                 return (
                     <Space wrap>
-                        {fields.map(({ field, key }) => {
+                        {fields.map(({ field }, index) => {
                             return (
-                                <Space key={key}>
-                                    <Form.Item
-                                        field={field + '.img'}
-                                    >
-                                        <PictureUpload />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        field={field + '.value'}
-                                    >
-                                        <Select options={[
-                                            { label: 'one', value: 0, },
-                                            { label: 'two', value: 1, },
-                                            { label: 'three', value: 2, },
-                                        ]} style={{ width: '220px' }} />
-                                    </Form.Item>
-
-                                    <Form.Item
-                                        field={field + '.remark'}
-                                    >
-                                        <Input
-                                            style={{ width: '100px' }} />
-                                    </Form.Item>
-
-                                    <Form.Item>
+                                <Space key={index}>
+                                    {subItems?.map((sm, si) => {
+                                        const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
+                                        return (
+                                            <ProFormItem key={si}
+                                                {...sm}
+                                                uiType={uiType}
+                                                noStyle
+                                                fieldName={field + '.' + sm.name}
+                                            />
+                                        )
+                                    })}
+                                    <Form.Item noStyle>
                                         <Button
                                             icon={<IconDelete />}
                                             type='text'
                                             status='danger'
                                             onClick={() => {
-                                                remove(key);
+                                                remove(index);
                                                 if (fields.length == 1) {
                                                     add();
                                                 }
@@ -169,7 +148,7 @@ function ProFormList(props: {
                                 </Space>
                             );
                         })}
-                        <Form.Item>
+                        <Form.Item noStyle>
                             <Button
                                 icon={<IconPlus />}
                                 type='text'
@@ -177,7 +156,6 @@ function ProFormList(props: {
                                     add();
                                 }}
                             >
-                                添加规格
                             </Button>
                         </Form.Item>
                     </Space>
@@ -189,27 +167,13 @@ function ProFormList(props: {
 
 
 export function ProFormItem(props: MyFormItemProps) {
-    // const uiType = getDefaultUiType(_props);
-    // const props = { ..._props, uiType }
+    const {
+        type, label, name, namePath, value, options = [],
+        subItems = [], hide, tips, rules, readOnly,
+        fieldName, noStyle
+    } = props || {};
 
-    // const { type, label: propLabel, value, name, namePath = [],
-    //     noStyle, noLabel, 
-    //     tips, hide,  rules: propRules 
-    // } = props || {};
-
-    // const rules = getValiRules(propRules, propLabel);
-
-    // const field = namePath.join('.');
-    // const [tipShouldUpdate, getTipValues] = getTips(tips || []);
-    // const [disShouldUpdate, getDisValue] = checkDependRules(hide || {});
-
-
-    // const label = (uiType == 'checkBox' || noLabel) ? undefined : propLabel;
-    // const isComplex = type?.toLowerCase().indexOf('complex') !== -1;
-
-
-    const { label, name, namePath, value, options = [], hide, tips, rules, readOnly } = props || {};
-
+    const _fieldName = fieldName || namePath?.join('.') || name;
     const _uiType = getUiTypeOrDefault(props);
     const _rules = getValiRules(rules);
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
@@ -229,13 +193,14 @@ export function ProFormItem(props: MyFormItemProps) {
                     rules: _rules,
                     disabled: readOnly,
                     initialValue: value,
-                    field: namePath?.join('.') || name,
+                    field: _fieldName,
+                    noStyle: noStyle,
                 }
                 return _uiType == 'input' ? (
                     <Form.Item {...formItemProps} >
                         <Input
                             allowClear
-                            style={{ maxWidth: '734px' }}
+                            style={{ maxWidth: '734px', minWidth: '220px' }}
                         />
                     </Form.Item>
                 ) : _uiType == 'inputNumber' ? (
@@ -255,14 +220,37 @@ export function ProFormItem(props: MyFormItemProps) {
                             options={options}
                             allowClear
                             showSearch
-                            style={{ maxWidth: '358px' }}
+                            style={{ maxWidth: '358px', minWidth: '220px' }}
                         />
                     </Form.Item>
                 ) : _uiType == 'imageUpload' ? (
                     <Form.Item {...formItemProps}>
                         <PictureUpload />
                     </Form.Item >
-                ) : undefined;
+                ) : type == 'complex' ? (
+                    <>
+                        <Form.Item {...formItemProps}>
+                            <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
+                                {/* <Space wrap> */}
+                                {subItems?.map((sm, si) => {
+                                    const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
+                                    return (
+                                        <Grid.GridItem key={'complex' + si} style={{ maxWidth: '358px' }}>
+                                            <ProFormItem key={si} {...sm} uiType={uiType} />
+                                        </Grid.GridItem>
+                                    )
+                                })}
+                                {/* </Space> */}
+                            </Grid>
+                        </Form.Item >
+                    </>
+                ) : type == 'multiComplex' ? (
+                    <>
+                        <Form.Item {...formItemProps}>
+                            <ProFormList {...props} />
+                        </Form.Item >
+                    </>
+                ) : <div>---{label}---</div>;
             }}
         </Form.Item>
     )

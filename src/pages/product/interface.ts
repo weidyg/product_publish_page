@@ -15,8 +15,9 @@ export type MyFormItemProps = {
 
     tips?: MyFormDependRules[];
     hide?: MyFormDependRules;
-    
+
     // // [key: string]: any;
+    fieldName?:string;
     defaultValue?: any;
     onChange?: any;
     noLabel?: boolean;

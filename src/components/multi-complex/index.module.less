@@ -1,8 +1,9 @@
-@picture-size: 32px;
+@picture-size: 80px;
+@picture-text-size: 18px;
 
 .upload {
     &-trigger {
-        min-width: @picture-size;
+        width: @picture-size;
         height: @picture-size;
         color: var(--color-text-2);
         text-align: center;
@@ -15,9 +16,12 @@
         &-text {
             top: 50%;
             position: relative;
-            font-size: 12px;
+            font-size: @picture-text-size;
             color: var(--color-text-3);
             transform: translateY(-50%) scale(0.8);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
     }
 
