@@ -10,8 +10,8 @@ const EditableRowContext = React.createContext<{ getForm?: () => FormInstance }>
 type SkuColumnProps = TableColumnProps & { formProps: MyFormItemProps };
 
 const getDefaultUiType = (props: MyFormItemProps) => {
-    const { type, options = [], uiType, rules = {} } = props;
-    const { allowCustom, valueType, maxValue, minValue, ..._rules } = rules;
+    const { allowCustom, type, options = [], uiType, rules = {} } = props;
+    const { valueType, maxValue, minValue, ..._rules } = rules;
     const length = options.length;
 
     if (uiType) { return uiType; }
@@ -58,13 +58,12 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], pName?: string): SkuCo
     let columns: SkuColumnProps[] = [];
     for (let index = 0; index < formItems.length; index++) {
         const skuItem = formItems[index];
-        const { label, name, type } = skuItem;
+        const { label, name, type, tips = [] } = skuItem;
         let dataIndex = pName ? `${pName}.${name}` : name;
-        const tips = skuItem?.rules?.tips || [];
         const [_, getTipValues] = getTips(tips);
         const uiType = getDefaultUiType(skuItem);
         if (type?.includes('complex')) {
-            const _columns = getSkuTableColumns(skuItem?.formItems || [], dataIndex);
+            const _columns = getSkuTableColumns(skuItem?.subItems || [], dataIndex);
             columns = columns.concat(_columns);
         } else {
             columns.push({
@@ -183,9 +182,9 @@ function EditableCell(props: any) {
 
 type SkuEditableTableProps = MyFormItemProps & { allFormItems: MyFormItemProps[], values: any };
 function SkuEditableTable(props: SkuEditableTableProps) {
-    const { allFormItems = [], formItems = [], values, name, value: propValue, onChange, ...restProps } = props;
+    const { allFormItems = [], subItems = [], values, name, value: propValue, onChange, ...restProps } = props;
     const [data, setData] = useState<Array<any>>([]);
-    const columns = getSkuTableColumns(formItems);
+    const columns = getSkuTableColumns(subItems);
 
     function handleSave(row: any) {
         const newData = [...data];
@@ -204,8 +203,8 @@ function SkuEditableTable(props: SkuEditableTableProps) {
     const salePropName = 'saleProp';
     const skuSaleData = useMemo(() => {
         let _skuSaleData: any = {};
-        const skuSaleProps = formItems.find(f => f.name == skuPropName)?.formItems || [];
-        const salePropForms = allFormItems.find(f => f.name == salePropName)?.formItems || [];
+        const skuSaleProps = subItems.find(f => f.name == skuPropName)?.subItems || [];
+        const salePropForms = allFormItems.find(f => f.name == salePropName)?.subItems || [];
         for (let index = 0; index < skuSaleProps.length; index++) {
             const { name } = skuSaleProps[index];
             if (name) {
@@ -222,12 +221,12 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                         }
                     }
                 } else {
-                    const dd = _prop?.formItems || [];
+                    const dd = _prop?.subItems || [];
                     const dds = dd.find(f => f.name?.includes('sizeGroup'))?.namePath;
                     if (dds) {
                         const vvvv = _.get(values, dds);
                         if (vvvv) {
-                            const svfis = dd.find(f => f.name?.includes('sizeValue'))?.formItems || [];
+                            const svfis = dd.find(f => f.name?.includes('sizeValue'))?.subItems || [];
                             const svfi = svfis.find(f => f.name == `size-${vvvv}`)
                             const svfinp = svfi?.namePath || [];
                             if (svfinp?.length > 0) {
@@ -278,7 +277,7 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                     render(value, item, index) {
                         if (value) {
                             const lastName1 = column.dataIndex?.split('.');
-                            const lastName =lastName1&& lastName1[lastName1?.length-1];
+                            const lastName = lastName1 && lastName1[lastName1?.length - 1];
                             if (!lastName) { return value; }
                             const skuProp: any[] = skuSaleData[lastName] || [];
                             const label = skuProp?.find(f => f.value == value)?.label;

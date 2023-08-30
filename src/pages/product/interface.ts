@@ -1,13 +1,43 @@
-export type MyFormNumRules = {
-    value?: any,
-    include?: boolean
+export type MyFormItemProps = {
+    type?: FormItemType;
+    label?: string;
+    name?: string;
+    namePath?: string[];
+    value?: any;
+    rules?: MyFormRules;
+    options?: { label: string; value: string; }[];
+    subItems?: MyFormItemProps[];
+    nestItems?: MyFormItemProps[];
+
+    uiType?: FieldUiType;
+    readOnly?: boolean;
+    allowCustom?: boolean;
+
+    tips?: MyFormDependRules[];
+    hide?: MyFormDependRules;
+    
+    // // [key: string]: any;
+    defaultValue?: any;
+    onChange?: any;
+    noLabel?: boolean;
+    noStyle?: boolean;
 }
+export type MyFormRules = {
+    valueType?: string;
+    required?: boolean;
+    regex?: string;
+    maxValue?: number;
+    minValue?: number;
+    maxLength?: number;
+    minLength?: number;
+}
+export type FormItemType = 'input' | 'multiInput' | 'singleCheck' | 'multiCheck' | 'complex' | 'multiComplex';
+export type FieldUiType = 'input' | 'inputNumber' | 'radio' | 'select' | 'checkBox' | 'multiSelect' | 'imageUpload';
 
 export type MyFormDependRules = {
     value?: any,
     dependGroup?: MyFormDependGroup
 }
-
 export type MyFormDependGroup = {
     operator?: 'and' | 'or',
     expresses?: MyFormDependExpress[],
@@ -21,41 +51,3 @@ export type MyFormDependExpress = {
 }
 
 
-export type MyFormRules = {
-    required?: boolean;
-    readOnly?: boolean;
-    allowCustom?: boolean;
-    valueType?: string;
-    regex?: string;
-    maxInputNum?: MyFormNumRules;
-    maxLength?: MyFormNumRules;
-    maxValue?: MyFormNumRules;
-    minValue?: MyFormNumRules;
-
-    tips?: MyFormDependRules[];
-    disable?: MyFormDependRules;
-}
-export type MyFormItemProps = {
-    label?: string;
-    name?: string;
-    namePath?: string[];
-    type?: FormItemType;
-    rules?: MyFormRules;
-    options?: {
-        label: string;
-        value: string;
-    }[];
-    formItems?: MyFormItemProps[];
-    isCateProp?: boolean;
-    uiType?: FieldUiType;
-
-    // [key: string]: any;
-    value?: any;
-    defaultValue?: any;
-    onChange?: any;
-    noLabel?: boolean;
-    noStyle?: boolean;
-}
-
-export type FieldUiType = 'input' | 'inputNumber' | 'radio' | 'select' | 'checkBox' | 'multiSelect' | 'imageUpload';
-export type FormItemType = 'input' | 'multiInput' | 'singleCheck' | 'multiCheck' | 'complex' | 'multiComplex';

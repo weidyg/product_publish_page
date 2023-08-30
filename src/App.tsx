@@ -5,8 +5,8 @@ import MultiComplex from './components/multi-complex';
 
 function App() {
   return (<>
-    {/* <ProductPublish/> */}
-    <MultiComplex />
+    <ProductPublish/>
+    {/* <MultiComplex /> */}
   </>)
 }
 

@@ -53,6 +53,8 @@ function PictureUpload(props: { value?: string, onChange?: (value: string) => {}
     );
 }
 
+
+
 function ProFormList(props: {
     field: string,
     // children: (field: string) => React.ReactNode
@@ -129,16 +131,39 @@ function MultiComplex() {
             <Form
                 ref={formRef}
                 autoComplete='off'
-                initialValues={{
-                    "p-1627207": [{
-                        "img": "blob:http://127.0.0.1:5173/cd1ef5c2-db3c-4862-867e-0f957ae98c7a"
-                    }]
-                }}
+                initialValues={{}}
                 onValuesChange={(_, v) => {
                     console.log(_, JSON.stringify(v));
                 }}
             >
-                <ProFormList field='p-1627207'/>
+                {/* <ProFormList field='p-1627207'/> */}
+                <Form.Item
+                    field={'value'}
+                    rules={[
+                        { required: true },
+                        { type: 'number', max: 10, min: 2.01, includes: true },
+                        // { type: 'string', maxLength: 10, minLength: 2 },
+                        // { type: 'array', minLength: 2, maxLength: 3 }
+                    ]}
+                >
+                    <Input />
+                    {/* <Select options={[
+                        { label: 'one', value: 0, },
+                        { label: 'two', value: 1, },
+                        { label: 'three', value: 2, },
+                        { label: 'three', value: 3, },
+                        { label: 'three', value: 12, },
+                    ]}
+                        mode='multiple'
+                        allowCreate
+                        style={{ width: '220px' }}
+                    /> */}
+                </Form.Item>
+
+                <Button onClick={async () => {
+                    const values = await formRef.current.validate();
+
+                }}>提交</Button>
             </Form>
         </div>
     );

@@ -2,6 +2,7 @@
 	"type": "singleCheck",
 	"label": "宝贝类型",
 	"name": "stuffStatus",
+	"namePath": ["stuffStatus"],
 	"value": "5",
 	"rules": {
 		"required": true
@@ -12,58 +13,45 @@
 	}, {
 		"label": "二手",
 		"value": "6"
-	}],
-	"namePath": ["stuffStatus"]
+	}]
 }, {
 	"type": "input",
 	"label": "宝贝标题",
 	"name": "title",
+	"namePath": ["title"],
 	"rules": {
-		"valueType": "string",
+		"valueType": "text",
 		"required": true,
-		"maxLength": {
-			"value": 60,
-			"include": true
-		},
-		"tips": [{
-			"value": "标题和描述关键词是否违规自检工具：<a href='//ss.taobao.com/compliance#/main' target='_blank'>商品合规工具</a>"
-		}, {
-			"value": "标题直接影响商品的搜索曝光机会，请<a href='//market.m.taobao.com/app/qn/toutiao-new/index-pc.html#/detail/10682439?_k=rkwe5f' target='_blank'>点此查看详情</a>学习标题填写规范及优化知识"
-		}, {
-			"value": "即日起，标题中请勿使用制表符、换行符。若填入制表符、换行符，系统将自动替换成空格"
-		}, {
-			"value": "最多允许输入30个汉字（60字符）"
-		}]
+		"maxLength": 60
 	},
-	"namePath": ["title"]
+	"tips": [{
+		"value": "标题和描述关键词是否违规自检工具：<a href='//ss.taobao.com/compliance#/main' target='_blank'>商品合规工具</a>"
+	}, {
+		"value": "标题直接影响商品的搜索曝光机会，请<a href='//market.m.taobao.com/app/qn/toutiao-new/index-pc.html#/detail/10682439?_k=rkwe5f' target='_blank'>点此查看详情</a>学习标题填写规范及优化知识"
+	}, {
+		"value": "即日起，标题中请勿使用制表符、换行符。若填入制表符、换行符，系统将自动替换成空格"
+	}, {
+		"value": "最多允许输入30个汉字（60字符）"
+	}]
 }, {
 	"type": "complex",
 	"label": "类目属性",
 	"name": "catProp",
-	"rules": {
-		"required": false,
-		"tips": [{
-			"value": "错误填写宝贝属性，可能会引起宝贝下架或搜索流量减少，影响您的正常销售，请认真准确填写！"
-		}, {
-			"value": "下方未找到合适的选项,<a target = '_blank' href=https://cpv.taobao.com/report/categoryPropertyReport.htm?categoryId=50014785&channelId=1&type=1>去申请</a>"
-		}]
-	},
-	"formItems": [{
+	"namePath": ["catProp"],
+	"subItems": [{
 		"type": "input",
 		"label": "货号",
 		"name": "p-13021751",
+		"namePath": ["catProp", "p-13021751"],
 		"rules": {
 			"required": false,
-			"maxLength": {
-				"value": 128,
-				"include": true
-			}
-		},
-		"namePath": ["catProp", "p-13021751"]
+			"maxLength": 128
+		}
 	}, {
 		"type": "singleCheck",
 		"label": "主流品牌",
 		"name": "p-20000",
+		"namePath": ["catProp", "p-20000"],
 		"rules": {
 			"required": true
 		},
@@ -91,30 +79,21 @@
 		}, {
 			"label": "龙鹃",
 			"value": "6870120411"
-		}],
-		"namePath": ["catProp", "p-20000"]
+		}]
 	}, {
 		"type": "multiComplex",
 		"label": "材质成分",
 		"name": "p-149422948",
+		"namePath": ["catProp", "p-149422948"],
 		"rules": {
 			"required": false,
-			"maxLength": {
-				"value": 9999,
-				"include": true
-			},
-			"maxInputNum": {
-				"value": 7,
-				"include": true
-			},
-			"tips": [{
-				"value": "点击查看材质数据<a href='https://helpcenter.taobao.com/servicehall/knowledge_detail?kwdContentId=208256727891648512' target='_blank'>填写须知</a>"
-			}]
+			"maxLength": 7
 		},
-		"formItems": [{
+		"subItems": [{
 			"type": "singleCheck",
 			"label": "材质",
 			"name": "material_prop_name",
+			"namePath": ["catProp", "p-149422948", "material_prop_name"],
 			"options": [{
 				"label": "三乙烯基纤维",
 				"value": "三乙烯基纤维"
@@ -490,243 +469,230 @@
 			}, {
 				"label": "鼬鼠毛",
 				"value": "鼬鼠毛"
-			}],
-			"namePath": ["catProp", "p-149422948", "material_prop_name"]
+			}]
 		}, {
 			"type": "input",
 			"label": "含量(%)",
 			"name": "material_prop_content",
+			"namePath": ["catProp", "p-149422948", "material_prop_content"],
 			"rules": {
-				"valueType": "number",
+				"valueType": "decimal",
 				"required": true,
 				"regex": "^\\d+(\\.\\d{1,2})?$",
-				"maxValue": {
-					"value": 100,
-					"include": true
-				},
-				"minValue": {
-					"value": 0,
-					"include": false
-				},
-				"disable": {
-					"value": true,
-					"dependGroup": {
-						"operator": "or",
-						"expresses": [{
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "二层牛皮（除牛反绒）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "二层猪皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "兔毛皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "其他",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "头层牛皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "头层牛皮（除牛反绒）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "头层猪皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "孔雀皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "山羊皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "树膏皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "水貂毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "牛二层皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "牛二层皮覆膜",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "牛反绒（磨砂皮）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "牛皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "狐狸毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "猪皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "獭兔毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "珍珠鱼皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "紫貂毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "绵羊皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊反绒（羊猄）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊皮毛一体",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊皮（除羊反绒，羊猄）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊驼皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "蛇皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "蜥蜴皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "袋鼠皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "裘皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "貉子毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "马皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "鳄鱼皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "鳗鱼皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "鸵鸟皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "鹿皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-149422948", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "麂皮",
-							"symbol": "=="
-						}],
-						"groups": []
-					}
-				}
+				"maxValue": "100",
+				"minValue": "0"
 			},
-			"namePath": ["catProp", "p-149422948", "material_prop_content"]
+			"hide": {
+				"value": true,
+				"dependGroup": {
+					"operator": "or",
+					"expresses": [{
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "二层牛皮（除牛反绒）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "二层猪皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "兔毛皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "其他",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "头层牛皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "头层牛皮（除牛反绒）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "头层猪皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "孔雀皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "山羊皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "树膏皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "水貂毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "牛二层皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "牛二层皮覆膜",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "牛反绒（磨砂皮）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "牛皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "狐狸毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "猪皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "獭兔毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "珍珠鱼皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "紫貂毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "绵羊皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊反绒（羊猄）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊皮毛一体",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊皮（除羊反绒，羊猄）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊驼皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "蛇皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "蜥蜴皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "袋鼠皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "裘皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "貉子毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "马皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "鳄鱼皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "鳗鱼皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "鸵鸟皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "鹿皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-149422948", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "麂皮",
+						"symbol": "=="
+					}],
+					"groups": []
+				}
+			}
 		}],
-		"namePath": ["catProp", "p-149422948"]
+		"tips": [{
+			"value": "点击查看材质数据<a href='https://helpcenter.taobao.com/servicehall/knowledge_detail?kwdContentId=208256727891648512' target='_blank'>填写须知</a>"
+		}]
 	}, {
 		"type": "multiComplex",
 		"label": "里料材质成分",
 		"name": "p-151386995",
+		"namePath": ["catProp", "p-151386995"],
 		"rules": {
 			"required": false,
-			"maxLength": {
-				"value": 9999,
-				"include": true
-			},
-			"maxInputNum": {
-				"value": 7,
-				"include": true
-			},
-			"tips": [{
-				"value": "点击查看材质数据<a href='https://helpcenter.taobao.com/servicehall/knowledge_detail?kwdContentId=208256727891648512' target='_blank'>填写须知</a>"
-			}]
+			"maxLength": 7
 		},
-		"formItems": [{
+		"subItems": [{
 			"type": "singleCheck",
 			"label": "材质",
 			"name": "material_prop_name",
+			"namePath": ["catProp", "p-151386995", "material_prop_name"],
 			"options": [{
 				"label": "三乙烯基纤维",
 				"value": "三乙烯基纤维"
@@ -1099,225 +1065,221 @@
 			}, {
 				"label": "鼬鼠毛",
 				"value": "鼬鼠毛"
-			}],
-			"namePath": ["catProp", "p-151386995", "material_prop_name"]
+			}]
 		}, {
 			"type": "input",
 			"label": "含量(%)",
 			"name": "material_prop_content",
+			"namePath": ["catProp", "p-151386995", "material_prop_content"],
 			"rules": {
-				"valueType": "number",
+				"valueType": "decimal",
 				"required": true,
 				"regex": "^\\d+(\\.\\d{1,2})?$",
-				"maxValue": {
-					"value": 100,
-					"include": true
-				},
-				"minValue": {
-					"value": 0,
-					"include": false
-				},
-				"disable": {
-					"value": true,
-					"dependGroup": {
-						"operator": "or",
-						"expresses": [{
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "二层牛皮（除牛反绒）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "二层猪皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "兔毛皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "其他",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "头层牛皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "头层牛皮（除牛反绒）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "头层猪皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "孔雀皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "山羊皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "树膏皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "水貂毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "牛二层皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "牛二层皮覆膜",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "牛反绒（磨砂皮）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "牛皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "狐狸毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "猪皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "獭兔毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "珍珠鱼皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "紫貂毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "绵羊皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊反绒（羊猄）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊皮毛一体",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊皮（除羊反绒，羊猄）",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "羊驼皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "蛇皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "蜥蜴皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "袋鼠皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "裘皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "貉子毛",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "马皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "鳄鱼皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "鳗鱼皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "鸵鸟皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "鹿皮",
-							"symbol": "=="
-						}, {
-							"namePath": ["catProp", "p-151386995", "material_prop_name"],
-							"fieldName": "material_prop_name",
-							"fieldValue": "麂皮",
-							"symbol": "=="
-						}],
-						"groups": []
-					}
-				}
+				"maxValue": "100",
+				"minValue": "0"
 			},
-			"namePath": ["catProp", "p-151386995", "material_prop_content"]
+			"hide": {
+				"value": true,
+				"dependGroup": {
+					"operator": "or",
+					"expresses": [{
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "二层牛皮（除牛反绒）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "二层猪皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "兔毛皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "其他",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "头层牛皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "头层牛皮（除牛反绒）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "头层猪皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "孔雀皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "山羊皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "树膏皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "水貂毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "牛二层皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "牛二层皮覆膜",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "牛反绒（磨砂皮）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "牛皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "狐狸毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "猪皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "獭兔毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "珍珠鱼皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "紫貂毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "绵羊皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊反绒（羊猄）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊皮毛一体",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊皮（除羊反绒，羊猄）",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "羊驼皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "蛇皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "蜥蜴皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "袋鼠皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "裘皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "貉子毛",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "马皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "鳄鱼皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "鳗鱼皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "鸵鸟皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "鹿皮",
+						"symbol": "=="
+					}, {
+						"namePath": ["catProp", "p-151386995", "material_prop_name"],
+						"fieldName": "material_prop_name",
+						"fieldValue": "麂皮",
+						"symbol": "=="
+					}],
+					"groups": []
+				}
+			}
 		}],
-		"namePath": ["catProp", "p-151386995"]
+		"tips": [{
+			"value": "点击查看材质数据<a href='https://helpcenter.taobao.com/servicehall/knowledge_detail?kwdContentId=208256727891648512' target='_blank'>填写须知</a>"
+		}]
 	}, {
 		"type": "singleCheck",
 		"label": "上市时间",
 		"name": "p-8560225",
+		"namePath": ["catProp", "p-8560225"],
 		"options": [{
 			"label": "2015年冬季",
 			"value": "740132938"
@@ -1489,24 +1451,21 @@
 		}, {
 			"label": "2023年冬季",
 			"value": "17308280890"
-		}],
-		"namePath": ["catProp", "p-8560225"]
+		}]
 	}, {
 		"type": "input",
 		"label": "吊牌价",
 		"name": "p-6103476",
+		"namePath": ["catProp", "p-6103476"],
 		"rules": {
 			"required": true,
-			"maxLength": {
-				"value": 100,
-				"include": true
-			}
-		},
-		"namePath": ["catProp", "p-6103476"]
+			"maxLength": 100
+		}
 	}, {
 		"type": "singleCheck",
 		"label": "适用对象",
 		"name": "p-122216608",
+		"namePath": ["catProp", "p-122216608"],
 		"rules": {
 			"required": true
 		},
@@ -1531,12 +1490,12 @@
 		}, {
 			"label": "青少年",
 			"value": "42007"
-		}],
-		"namePath": ["catProp", "p-122216608"]
+		}]
 	}, {
 		"type": "singleCheck",
 		"label": "价格区间",
 		"name": "p-21548",
+		"namePath": ["catProp", "p-21548"],
 		"options": [{
 			"label": "100-300元",
 			"value": "81826195"
@@ -1567,12 +1526,12 @@
 		}, {
 			"label": "拍卖",
 			"value": "39414"
-		}],
-		"namePath": ["catProp", "p-21548"]
+		}]
 	}, {
 		"type": "singleCheck",
 		"label": "商品系列",
 		"name": "p-25206543",
+		"namePath": ["catProp", "p-25206543"],
 		"options": [{
 			"label": "山系户外",
 			"value": "7695765855"
@@ -1582,12 +1541,12 @@
 		}, {
 			"label": "旅行户外",
 			"value": "82648532"
-		}],
-		"namePath": ["catProp", "p-25206543"]
+		}]
 	}, {
 		"type": "multiCheck",
 		"label": "适用季节",
 		"name": "p-122216345",
+		"namePath": ["catProp", "p-122216345"],
 		"value": [],
 		"rules": {
 			"required": true
@@ -1613,12 +1572,12 @@
 		}, {
 			"label": "四季通用",
 			"value": "33551588"
-		}],
-		"namePath": ["catProp", "p-122216345"]
+		}]
 	}, {
 		"type": "singleCheck",
 		"label": "防水透气指数",
 		"name": "p-8418084",
+		"namePath": ["catProp", "p-8418084"],
 		"rules": {
 			"required": true
 		},
@@ -1637,21 +1596,17 @@
 		}, {
 			"label": "20000mm以上",
 			"value": "478694233"
-		}],
-		"namePath": ["catProp", "p-8418084"]
+		}]
 	}, {
 		"type": "singleCheck",
 		"label": "款式",
 		"name": "p-122276315",
+		"namePath": ["catProp", "p-122276315"],
 		"value": "-100",
 		"rules": {
-			"valueType": "string",
-			"allowCustom": true,
+			"valueType": "text",
 			"required": false,
-			"maxLength": {
-				"value": 100,
-				"include": true
-			}
+			"maxLength": 100
 		},
 		"options": [{
 			"label": "单层冲锋衣（3层压胶夹克））",
@@ -1669,20 +1624,17 @@
 			"label": "other",
 			"value": "-1"
 		}],
-		"namePath": ["catProp", "p-122276315"]
+		"allowCustom": true
 	}, {
 		"type": "multiCheck",
 		"label": "服饰工艺",
 		"name": "p-122216589",
+		"namePath": ["catProp", "p-122216589"],
 		"value": [],
 		"rules": {
-			"valueType": "string",
-			"allowCustom": true,
+			"valueType": "text",
 			"required": false,
-			"maxLength": {
-				"value": 100,
-				"include": true
-			}
+			"maxLength": 100
 		},
 		"options": [{
 			"label": "接缝全压胶",
@@ -1742,19 +1694,16 @@
 			"label": "other",
 			"value": "-1"
 		}],
-		"namePath": ["catProp", "p-122216589"]
+		"allowCustom": true
 	}, {
 		"type": "singleCheck",
 		"label": "产地",
 		"name": "p-21299",
+		"namePath": ["catProp", "p-21299"],
 		"rules": {
-			"valueType": "string",
-			"allowCustom": true,
+			"valueType": "text",
 			"required": false,
-			"maxLength": {
-				"value": 100,
-				"include": true
-			}
+			"maxLength": 100
 		},
 		"options": [{
 			"label": "中国",
@@ -1814,20 +1763,17 @@
 			"label": "other",
 			"value": "-1"
 		}],
-		"namePath": ["catProp", "p-21299"]
+		"allowCustom": true
 	}, {
 		"type": "multiCheck",
 		"label": "主要功能",
 		"name": "p-20019",
+		"namePath": ["catProp", "p-20019"],
 		"value": [],
 		"rules": {
-			"valueType": "string",
-			"allowCustom": true,
+			"valueType": "text",
 			"required": false,
-			"maxLength": {
-				"value": 100,
-				"include": true
-			}
+			"maxLength": 100
 		},
 		"options": [{
 			"label": "防水",
@@ -1899,20 +1845,17 @@
 			"label": "other",
 			"value": "-1"
 		}],
-		"namePath": ["catProp", "p-20019"]
+		"allowCustom": true
 	}, {
 		"type": "multiCheck",
 		"label": "运动户外项目",
 		"name": "p-122216688",
+		"namePath": ["catProp", "p-122216688"],
 		"value": [],
 		"rules": {
-			"valueType": "string",
-			"allowCustom": true,
+			"valueType": "text",
 			"required": false,
-			"maxLength": {
-				"value": 100,
-				"include": true
-			}
+			"maxLength": 100
 		},
 		"options": [{
 			"label": "郊游",
@@ -1954,19 +1897,16 @@
 			"label": "other",
 			"value": "-1"
 		}],
-		"namePath": ["catProp", "p-122216688"]
+		"allowCustom": true
 	}, {
 		"type": "singleCheck",
 		"label": "面料科技",
 		"name": "p-20551",
+		"namePath": ["catProp", "p-20551"],
 		"rules": {
-			"valueType": "string",
-			"allowCustom": true,
+			"valueType": "text",
 			"required": true,
-			"maxLength": {
-				"value": 100,
-				"include": true
-			}
+			"maxLength": 100
 		},
 		"options": [{
 			"label": "Gore-Tex",
@@ -2170,11 +2110,12 @@
 			"label": "other",
 			"value": "-1"
 		}],
-		"namePath": ["catProp", "p-20551"]
+		"allowCustom": true
 	}, {
 		"type": "singleCheck",
 		"label": "衣长",
 		"name": "p-122216562",
+		"namePath": ["catProp", "p-122216562"],
 		"rules": {
 			"required": true
 		},
@@ -2190,12 +2131,12 @@
 		}, {
 			"label": "短款",
 			"value": "47502"
-		}],
-		"namePath": ["catProp", "p-122216562"]
+		}]
 	}, {
 		"type": "singleCheck",
 		"label": "内胆类型",
 		"name": "p-115930179",
+		"namePath": ["catProp", "p-115930179"],
 		"rules": {
 			"required": true
 		},
@@ -2223,12 +2164,12 @@
 		}, {
 			"label": "软壳内胆",
 			"value": "103110208"
-		}],
-		"namePath": ["catProp", "p-115930179"]
+		}]
 	}, {
 		"type": "singleCheck",
 		"label": "服装版型",
 		"name": "p-122216586",
+		"namePath": ["catProp", "p-122216586"],
 		"options": [{
 			"label": "宽松型",
 			"value": "4042331"
@@ -2238,10 +2179,13 @@
 		}, {
 			"label": "修身型",
 			"value": "3267162"
-		}],
-		"namePath": ["catProp", "p-122216586"]
+		}]
 	}],
-	"namePath": ["catProp"]
+	"tips": [{
+		"value": "错误填写宝贝属性，可能会引起宝贝下架或搜索流量减少，影响您的正常销售，请认真准确填写！"
+	}, {
+		"value": "下方未找到合适的选项,<a target = '_blank' href=https://cpv.taobao.com/report/categoryPropertyReport.htm?categoryId=50014785&channelId=1&type=1>去申请</a>"
+	}]
 }, {
 	"type": "complex",
 	"label": "商品资质",
@@ -2251,40 +2195,29 @@
 	"type": "complex",
 	"label": "采购地",
 	"name": "globalStock",
+	"namePath": ["globalStock"],
 	"rules": {
 		"required": true
 	},
-	"formItems": [{
+	"subItems": [{
 		"type": "singleCheck",
 		"label": "采购地",
 		"name": "globalStockNav",
+		"namePath": ["globalStock", "globalStockNav"],
 		"options": [{
 			"label": "中国内地（大陆）",
 			"value": "0"
 		}, {
 			"label": "中国港澳台地区及其他国家和地区",
 			"value": "1"
-		}],
-		"namePath": ["globalStock", "globalStockNav"]
+		}]
 	}, {
 		"type": "singleCheck",
 		"label": "地区/国家",
 		"name": "country",
+		"namePath": ["globalStock", "country"],
 		"rules": {
-			"required": true,
-			"disable": {
-				"value": true,
-				"dependGroup": {
-					"operator": "and",
-					"expresses": [{
-						"namePath": ["globalStock", "globalStockNav"],
-						"fieldName": "globalStockNav",
-						"fieldValue": "1",
-						"symbol": "!="
-					}],
-					"groups": []
-				}
-			}
+			"required": true
 		},
 		"options": [{
 			"label": "澳门",
@@ -3058,26 +2991,26 @@
 			"label": "中途岛(美)",
 			"value": "中途岛(美)"
 		}],
-		"namePath": ["globalStock", "country"]
+		"hide": {
+			"value": true,
+			"dependGroup": {
+				"operator": "and",
+				"expresses": [{
+					"namePath": ["globalStock", "globalStockNav"],
+					"fieldName": "globalStockNav",
+					"fieldValue": "1",
+					"symbol": "!="
+				}],
+				"groups": []
+			}
+		}
 	}, {
 		"type": "singleCheck",
 		"label": "库存类型",
 		"name": "stockType",
+		"namePath": ["globalStock", "stockType"],
 		"rules": {
-			"required": true,
-			"disable": {
-				"value": true,
-				"dependGroup": {
-					"operator": "and",
-					"expresses": [{
-						"namePath": ["globalStock", "globalStockNav"],
-						"fieldName": "globalStockNav",
-						"fieldValue": "1",
-						"symbol": "!="
-					}],
-					"groups": []
-				}
-			}
+			"required": true
 		},
 		"options": [{
 			"label": "现货（可快速发货）",
@@ -3086,29 +3019,7 @@
 			"label": "非现货（无现货，需采购）",
 			"value": "4674"
 		}],
-		"namePath": ["globalStock", "stockType"]
-	}],
-	"namePath": ["globalStock"]
-}, {
-	"type": "singleCheck",
-	"label": "发货地",
-	"name": "departurePlace",
-	"rules": {
-		"required": false,
-		"tips": [{
-			"value": "<div><div>如发布宝贝需要展示海外直邮标识，保证全链路的物流信息完整，并符合平台的展示要求，在商品发布后，请到卖家中心－淘宝服务加入 海外直邮服务。<br>若您已签署服务合约，您可在卖家中心－淘宝服务 <a href='https://xiaobao.taobao.com/service/itemManager.htm?spm=a215o.7394214.1.2.ksWzTq' target='_blank'>服务商品管理</a>，为符合服务承诺的商品添加海外直邮服务协议。<br>若您未签署服务合约，您可在卖家中心－淘宝服务 <a href='https://xiaobao.taobao.com/service/serviceList.htm?spm=a215o.7394217.0.0.6fggRl' target='_blank'>加入服务－海外直邮服务</a>，签署海外直邮服务合约。</div></div>",
-			"dependGroup": {
-				"operator": "and",
-				"expresses": [{
-					"namePath": ["departurePlace"],
-					"fieldName": "departurePlace",
-					"fieldValue": "1",
-					"symbol": "=="
-				}],
-				"groups": []
-			}
-		}],
-		"disable": {
+		"hide": {
 			"value": true,
 			"dependGroup": {
 				"operator": "and",
@@ -3121,6 +3032,14 @@
 				"groups": []
 			}
 		}
+	}]
+}, {
+	"type": "singleCheck",
+	"label": "发货地",
+	"name": "departurePlace",
+	"namePath": ["departurePlace"],
+	"rules": {
+		"required": false
 	},
 	"options": [{
 		"label": "中国内地（大陆）",
@@ -3129,36 +3048,39 @@
 		"label": "中国港澳台地区及其他国家和地区",
 		"value": "1"
 	}],
-	"namePath": ["departurePlace"]
+	"tips": [{
+		"value": "<div><div>如发布宝贝需要展示海外直邮标识，保证全链路的物流信息完整，并符合平台的展示要求，在商品发布后，请到卖家中心－淘宝服务加入 海外直邮服务。<br>若您已签署服务合约，您可在卖家中心－淘宝服务 <a href='https://xiaobao.taobao.com/service/itemManager.htm?spm=a215o.7394214.1.2.ksWzTq' target='_blank'>服务商品管理</a>，为符合服务承诺的商品添加海外直邮服务协议。<br>若您未签署服务合约，您可在卖家中心－淘宝服务 <a href='https://xiaobao.taobao.com/service/serviceList.htm?spm=a215o.7394217.0.0.6fggRl' target='_blank'>加入服务－海外直邮服务</a>，签署海外直邮服务合约。</div></div>",
+		"dependGroup": {
+			"operator": "and",
+			"expresses": [{
+				"namePath": ["departurePlace"],
+				"fieldName": "departurePlace",
+				"fieldValue": "1",
+				"symbol": "=="
+			}],
+			"groups": []
+		}
+	}],
+	"hide": {
+		"value": true,
+		"dependGroup": {
+			"operator": "and",
+			"expresses": [{
+				"namePath": ["globalStock", "globalStockNav"],
+				"fieldName": "globalStockNav",
+				"fieldValue": "1",
+				"symbol": "!="
+			}],
+			"groups": []
+		}
+	}
 }, {
 	"type": "singleCheck",
 	"label": "报关方式",
 	"name": "legalCustoms",
+	"namePath": ["legalCustoms"],
 	"rules": {
-		"required": false,
-		"disable": {
-			"value": true,
-			"dependGroup": {
-				"operator": "or",
-				"expresses": [{
-					"namePath": ["globalStock", "globalStockNav"],
-					"fieldName": "globalStockNav",
-					"fieldValue": "1",
-					"symbol": "!="
-				}, {
-					"namePath": ["departurePlace"],
-					"fieldName": "departurePlace",
-					"fieldValue": "0",
-					"symbol": "!="
-				}, {
-					"namePath": ["globalStock", "stockType"],
-					"fieldName": "stockType",
-					"fieldValue": "4738",
-					"symbol": "!="
-				}],
-				"groups": []
-			}
-		}
+		"required": false
 	},
 	"options": [{
 		"label": "一般贸易进口",
@@ -3167,33 +3089,45 @@
 		"label": "其它",
 		"value": "1"
 	}],
-	"namePath": ["legalCustoms"]
+	"hide": {
+		"value": true,
+		"dependGroup": {
+			"operator": "or",
+			"expresses": [{
+				"namePath": ["globalStock", "globalStockNav"],
+				"fieldName": "globalStockNav",
+				"fieldValue": "1",
+				"symbol": "!="
+			}, {
+				"namePath": ["departurePlace"],
+				"fieldName": "departurePlace",
+				"fieldValue": "0",
+				"symbol": "!="
+			}, {
+				"namePath": ["globalStock", "stockType"],
+				"fieldName": "stockType",
+				"fieldValue": "4738",
+				"symbol": "!="
+			}],
+			"groups": []
+		}
+	}
 }, {
 	"type": "complex",
 	"label": "销售属性",
 	"name": "saleProp",
-	"formItems": [{
+	"namePath": ["saleProp"],
+	"subItems": [{
 		"type": "multiCheck",
 		"label": "颜色分类",
 		"name": "p-1627207",
+		"namePath": ["saleProp", "p-1627207"],
 		"value": [],
 		"rules": {
-			"valueType": "string",
-			"allowCustom": true,
+			"valueType": "text",
 			"required": false,
-			"maxValue": {
-				"value": 600,
-				"include": true
-			},
-			"maxLength": {
-				"value": 30,
-				"include": true
-			},
-			"tips": [{
-				"value": "<b style='color:#ff6600'>请选择或直接输入主色，标准颜色可增加搜索/导购机会</b>，还可填写颜色备注信息（偏深、偏亮等），建议不要超过15个字。<a href='//helpcenter.tmall.com/servicehall/knowledge_detail?knowledgeId=1060905572' target='_blank'>查看详情</a><br>属性图上传功能更新，亲可以在属性选择后直接上传图片哦！"
-			}, {
-				"value": "颜色名称最大长度为130个字符(65个汉字)"
-			}]
+			"maxValue": "600",
+			"maxLength": 30
 		},
 		"options": [{
 			"label": "乳白色",
@@ -3364,15 +3298,35 @@
 			"label": "透明",
 			"value": "107121"
 		}],
-		"namePath": ["saleProp", "p-1627207"]
+		"nestItems": [{
+			"type": "input",
+			"label": "属性备注",
+			"name": "remark",
+			"namePath": ["saleProp", "p-1627207", "remark"],
+			"uiType": "input"
+		}, {
+			"type": "input",
+			"label": "属性图",
+			"name": "img",
+			"namePath": ["saleProp", "p-1627207", "img"],
+			"uiType": "imageUpload"
+		}],
+		"allowCustom": true,
+		"tips": [{
+			"value": "<b style='color:#ff6600'>请选择或直接输入主色，标准颜色可增加搜索/导购机会</b>，还可填写颜色备注信息（偏深、偏亮等），建议不要超过15个字。<a href='//helpcenter.tmall.com/servicehall/knowledge_detail?knowledgeId=1060905572' target='_blank'>查看详情</a><br>属性图上传功能更新，亲可以在属性选择后直接上传图片哦！"
+		}, {
+			"value": "颜色名称最大长度为130个字符(65个汉字)"
+		}]
 	}, {
 		"type": "complex",
 		"label": "尺码",
 		"name": "p-20509",
-		"formItems": [{
+		"namePath": ["saleProp", "p-20509"],
+		"subItems": [{
 			"type": "singleCheck",
 			"label": "尺码分组",
 			"name": "p-20509-sizeGroup",
+			"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
 			"rules": {
 				"required": true
 			},
@@ -3403,35 +3357,23 @@
 			}, {
 				"label": "均码",
 				"value": "28383-women_outdoor_tops"
-			}],
-			"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"]
+			}]
 		}, {
 			"type": "complex",
 			"label": "尺码值",
 			"name": "p-20509-sizeValue",
+			"namePath": ["saleProp", "p-20509", "p-20509-sizeValue"],
 			"rules": {
 				"required": true
 			},
-			"formItems": [{
+			"subItems": [{
 				"type": "multiCheck",
 				"label": "中国号型A(女上装)(女上装)",
 				"name": "size-136553091-women_outdoor_tops",
+				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-136553091-women_outdoor_tops"],
 				"value": [],
 				"rules": {
-					"required": false,
-					"disable": {
-						"value": true,
-						"dependGroup": {
-							"operator": "and",
-							"expresses": [{
-								"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
-								"fieldName": "p-20509-sizeGroup",
-								"fieldValue": "136553091-women_outdoor_tops",
-								"symbol": "!="
-							}],
-							"groups": []
-						}
-					}
+					"required": false
 				},
 				"options": [{
 					"label": "145/80A",
@@ -3470,27 +3412,27 @@
 					"label": "other",
 					"value": "-1"
 				}],
-				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-136553091-women_outdoor_tops"]
+				"hide": {
+					"value": true,
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [{
+							"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
+							"fieldName": "p-20509-sizeGroup",
+							"fieldValue": "136553091-women_outdoor_tops",
+							"symbol": "!="
+						}],
+						"groups": []
+					}
+				}
 			}, {
 				"type": "multiCheck",
 				"label": "中国号型A(男上装)(男上装)",
 				"name": "size-136553091-men_outdoor_tops",
+				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-136553091-men_outdoor_tops"],
 				"value": [],
 				"rules": {
-					"required": false,
-					"disable": {
-						"value": true,
-						"dependGroup": {
-							"operator": "and",
-							"expresses": [{
-								"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
-								"fieldName": "p-20509-sizeGroup",
-								"fieldValue": "136553091-men_outdoor_tops",
-								"symbol": "!="
-							}],
-							"groups": []
-						}
-					}
+					"required": false
 				},
 				"options": [{
 					"label": "165/88A",
@@ -3538,27 +3480,27 @@
 					"label": "other",
 					"value": "-1"
 				}],
-				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-136553091-men_outdoor_tops"]
+				"hide": {
+					"value": true,
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [{
+							"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
+							"fieldName": "p-20509-sizeGroup",
+							"fieldValue": "136553091-men_outdoor_tops",
+							"symbol": "!="
+						}],
+						"groups": []
+					}
+				}
 			}, {
 				"type": "multiCheck",
 				"label": "中国码(男上装)(男上装)",
 				"name": "size-27013-men_outdoor_tops",
+				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27013-men_outdoor_tops"],
 				"value": [],
 				"rules": {
-					"required": false,
-					"disable": {
-						"value": true,
-						"dependGroup": {
-							"operator": "and",
-							"expresses": [{
-								"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
-								"fieldName": "p-20509-sizeGroup",
-								"fieldValue": "27013-men_outdoor_tops",
-								"symbol": "!="
-							}],
-							"groups": []
-						}
-					}
+					"required": false
 				},
 				"options": [{
 					"label": "S",
@@ -3576,27 +3518,27 @@
 					"label": "other",
 					"value": "-1"
 				}],
-				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27013-men_outdoor_tops"]
+				"hide": {
+					"value": true,
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [{
+							"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
+							"fieldName": "p-20509-sizeGroup",
+							"fieldValue": "27013-men_outdoor_tops",
+							"symbol": "!="
+						}],
+						"groups": []
+					}
+				}
 			}, {
 				"type": "multiCheck",
 				"label": "中国码(女上装)(女上装)",
 				"name": "size-27013-women_outdoor_tops",
+				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27013-women_outdoor_tops"],
 				"value": [],
 				"rules": {
-					"required": false,
-					"disable": {
-						"value": true,
-						"dependGroup": {
-							"operator": "and",
-							"expresses": [{
-								"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
-								"fieldName": "p-20509-sizeGroup",
-								"fieldValue": "27013-women_outdoor_tops",
-								"symbol": "!="
-							}],
-							"groups": []
-						}
-					}
+					"required": false
 				},
 				"options": [{
 					"label": "XXS",
@@ -3635,27 +3577,27 @@
 					"label": "other",
 					"value": "-1"
 				}],
-				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27013-women_outdoor_tops"]
+				"hide": {
+					"value": true,
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [{
+							"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
+							"fieldName": "p-20509-sizeGroup",
+							"fieldValue": "27013-women_outdoor_tops",
+							"symbol": "!="
+						}],
+						"groups": []
+					}
+				}
 			}, {
 				"type": "multiCheck",
 				"label": "英码(女上装)(女上装)",
 				"name": "size-27411-women_outdoor_tops",
+				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27411-women_outdoor_tops"],
 				"value": [],
 				"rules": {
-					"required": false,
-					"disable": {
-						"value": true,
-						"dependGroup": {
-							"operator": "and",
-							"expresses": [{
-								"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
-								"fieldName": "p-20509-sizeGroup",
-								"fieldValue": "27411-women_outdoor_tops",
-								"symbol": "!="
-							}],
-							"groups": []
-						}
-					}
+					"required": false
 				},
 				"options": [{
 					"label": "4",
@@ -3676,27 +3618,27 @@
 					"label": "other",
 					"value": "-1"
 				}],
-				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27411-women_outdoor_tops"]
+				"hide": {
+					"value": true,
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [{
+							"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
+							"fieldName": "p-20509-sizeGroup",
+							"fieldValue": "27411-women_outdoor_tops",
+							"symbol": "!="
+						}],
+						"groups": []
+					}
+				}
 			}, {
 				"type": "multiCheck",
 				"label": "英码(男上装)(男上装)",
 				"name": "size-27411-men_outdoor_tops",
+				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27411-men_outdoor_tops"],
 				"value": [],
 				"rules": {
-					"required": false,
-					"disable": {
-						"value": true,
-						"dependGroup": {
-							"operator": "and",
-							"expresses": [{
-								"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
-								"fieldName": "p-20509-sizeGroup",
-								"fieldValue": "27411-men_outdoor_tops",
-								"symbol": "!="
-							}],
-							"groups": []
-						}
-					}
+					"required": false
 				},
 				"options": [{
 					"label": "4",
@@ -3720,27 +3662,27 @@
 					"label": "other",
 					"value": "-1"
 				}],
-				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27411-men_outdoor_tops"]
+				"hide": {
+					"value": true,
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [{
+							"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
+							"fieldName": "p-20509-sizeGroup",
+							"fieldValue": "27411-men_outdoor_tops",
+							"symbol": "!="
+						}],
+						"groups": []
+					}
+				}
 			}, {
 				"type": "multiCheck",
 				"label": "美码(男上装)(男上装)",
 				"name": "size-27409-men_outdoor_tops",
+				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27409-men_outdoor_tops"],
 				"value": [],
 				"rules": {
-					"required": false,
-					"disable": {
-						"value": true,
-						"dependGroup": {
-							"operator": "and",
-							"expresses": [{
-								"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
-								"fieldName": "p-20509-sizeGroup",
-								"fieldValue": "27409-men_outdoor_tops",
-								"symbol": "!="
-							}],
-							"groups": []
-						}
-					}
+					"required": false
 				},
 				"options": [{
 					"label": "5",
@@ -3767,27 +3709,27 @@
 					"label": "other",
 					"value": "-1"
 				}],
-				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27409-men_outdoor_tops"]
+				"hide": {
+					"value": true,
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [{
+							"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
+							"fieldName": "p-20509-sizeGroup",
+							"fieldValue": "27409-men_outdoor_tops",
+							"symbol": "!="
+						}],
+						"groups": []
+					}
+				}
 			}, {
 				"type": "multiCheck",
 				"label": "美码(女上装)(女上装)",
 				"name": "size-27409-women_outdoor_tops",
+				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27409-women_outdoor_tops"],
 				"value": [],
 				"rules": {
-					"required": false,
-					"disable": {
-						"value": true,
-						"dependGroup": {
-							"operator": "and",
-							"expresses": [{
-								"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
-								"fieldName": "p-20509-sizeGroup",
-								"fieldValue": "27409-women_outdoor_tops",
-								"symbol": "!="
-							}],
-							"groups": []
-						}
-					}
+					"required": false
 				},
 				"options": [{
 					"label": "8",
@@ -3808,27 +3750,27 @@
 					"label": "other",
 					"value": "-1"
 				}],
-				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-27409-women_outdoor_tops"]
+				"hide": {
+					"value": true,
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [{
+							"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
+							"fieldName": "p-20509-sizeGroup",
+							"fieldValue": "27409-women_outdoor_tops",
+							"symbol": "!="
+						}],
+						"groups": []
+					}
+				}
 			}, {
 				"type": "multiCheck",
 				"label": "均码",
 				"name": "size-28383-women_outdoor_tops",
+				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-28383-women_outdoor_tops"],
 				"value": [],
 				"rules": {
-					"required": false,
-					"disable": {
-						"value": true,
-						"dependGroup": {
-							"operator": "and",
-							"expresses": [{
-								"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
-								"fieldName": "p-20509-sizeGroup",
-								"fieldValue": "28383-women_outdoor_tops",
-								"symbol": "!="
-							}],
-							"groups": []
-						}
-					}
+					"required": false
 				},
 				"options": [{
 					"label": "均码",
@@ -3837,25 +3779,30 @@
 					"label": "other",
 					"value": "-1"
 				}],
-				"namePath": ["saleProp", "p-20509", "p-20509-sizeValue", "size-28383-women_outdoor_tops"]
-			}],
-			"namePath": ["saleProp", "p-20509", "p-20509-sizeValue"]
-		}],
-		"namePath": ["saleProp", "p-20509"]
-	}],
-	"namePath": ["saleProp"]
+				"hide": {
+					"value": true,
+					"dependGroup": {
+						"operator": "and",
+						"expresses": [{
+							"namePath": ["saleProp", "p-20509", "p-20509-sizeGroup"],
+							"fieldName": "p-20509-sizeGroup",
+							"fieldValue": "28383-women_outdoor_tops",
+							"symbol": "!="
+						}],
+						"groups": []
+					}
+				}
+			}]
+		}]
+	}]
 }, {
 	"type": "singleCheck",
 	"label": "发货时效",
 	"name": "deliveryTimeType",
+	"namePath": ["deliveryTimeType"],
 	"value": "0",
 	"rules": {
-		"required": true,
-		"tips": [{
-			"value": "<b style='color:#ff6600'>平台默认48小时发货，同时您可根据商品实际库存进行自定义发货时间。如果违背发货时效承诺，将会受到平台处罚。具体可点击查看<a href='https://rule.taobao.com/detail-539.htm?tag=self' target='_blank'>违背承诺规则</a></b>"
-		}, {
-			"value": "点击查看<a href='https://rule.taobao.com/?type=detail&ruleId=20000710&cId=87#/ruleStudy/detail?ruleId=20000710&cId=87' target='_blank'>发货时效设置指南。</a><span style='color:#ff6600'>若需要更长发货时效，请在发布商品后<a href='https://www.yuque.com/docs/share/e67a0582-1fd5-4fd4-8301-8f4bed5014d1' target='_blank'>设置分阶段预售</a>；也可以在消费者下单后<a href='https://rulechannel.taobao.com/?spm=a2177.12575716.0.0.486717eanpwhjT&type=detail&ruleId=20000670&cId=87#/ruleStudy/detail?ruleId=20000670&cId=87' target='_blank'>自行约定发货时间</a></span>"
-		}]
+		"required": true
 	},
 	"options": [{
 		"label": "24小时内发货",
@@ -3867,17 +3814,16 @@
 		"label": "大于48小时发货",
 		"value": "2"
 	}],
-	"namePath": ["deliveryTimeType"]
+	"tips": [{
+		"value": "<b style='color:#ff6600'>平台默认48小时发货，同时您可根据商品实际库存进行自定义发货时间。如果违背发货时效承诺，将会受到平台处罚。具体可点击查看<a href='https://rule.taobao.com/detail-539.htm?tag=self' target='_blank'>违背承诺规则</a></b>"
+	}, {
+		"value": "点击查看<a href='https://rule.taobao.com/?type=detail&ruleId=20000710&cId=87#/ruleStudy/detail?ruleId=20000710&cId=87' target='_blank'>发货时效设置指南。</a><span style='color:#ff6600'>若需要更长发货时效，请在发布商品后<a href='https://www.yuque.com/docs/share/e67a0582-1fd5-4fd4-8301-8f4bed5014d1' target='_blank'>设置分阶段预售</a>；也可以在消费者下单后<a href='https://rulechannel.taobao.com/?spm=a2177.12575716.0.0.486717eanpwhjT&type=detail&ruleId=20000670&cId=87#/ruleStudy/detail?ruleId=20000670&cId=87' target='_blank'>自行约定发货时间</a></span>"
+	}]
 }, {
 	"type": "singleCheck",
 	"label": "发货时间天数",
 	"name": "tbDeliveryTime",
-	"rules": {
-		"required": false,
-		"tips": [{
-			"value": "发货时间大于48h请选择「大于48小时发货」，消费者一次性付款，您需要按照约定时间发货，逾期将承担延迟发货责任。<a href='https://rule.taobao.com/detail-539.htm?tag=self' target='_blank'>点击查看详情</a>"
-		}]
-	},
+	"namePath": ["tbDeliveryTime"],
 	"options": [{
 		"label": "3天",
 		"value": "3"
@@ -3918,39 +3864,31 @@
 		"label": "15天",
 		"value": "15"
 	}],
-	"namePath": ["tbDeliveryTime"]
+	"tips": [{
+		"value": "发货时间大于48h请选择「大于48小时发货」，消费者一次性付款，您需要按照约定时间发货，逾期将承担延迟发货责任。<a href='https://rule.taobao.com/detail-539.htm?tag=self' target='_blank'>点击查看详情</a>"
+	}]
 }, {
 	"type": "input",
 	"label": "一口价",
 	"name": "price",
+	"namePath": ["price"],
 	"rules": {
 		"required": true,
 		"regex": "([0-9]{0,9})(\\.[0-9]{0,2})?",
-		"maxValue": {
-			"value": 10000000,
-			"include": false
-		},
-		"minValue": {
-			"value": 0,
-			"include": true
-		}
-	},
-	"namePath": ["price"]
+		"maxValue": "10000000",
+		"minValue": "0"
+	}
 }, {
 	"type": "multiComplex",
 	"label": "宝贝销售规格",
 	"name": "sku",
-	"rules": {
-		"required": false,
-		"tips": [{
-			"value": "近期将持续升级销售规格编辑面板，<a href='https://www.yuque.com/qvda7g/gqp7o3/ybgwai72dimq1i20' target='_blank'> 点击查看具体说明 <a/>。"
-		}]
-	},
-	"formItems": [{
+	"namePath": ["sku"],
+	"subItems": [{
 		"type": "complex",
 		"label": "属性对",
 		"name": "props",
-		"formItems": [{
+		"namePath": ["sku", "props"],
+		"subItems": [{
 			"type": "singleCheck",
 			"label": "颜色分类",
 			"name": "p-1627207",
@@ -3960,27 +3898,21 @@
 			"label": "尺码",
 			"name": "p-20509",
 			"namePath": ["sku", "props", "p-20509"]
-		}],
-		"namePath": ["sku", "props"]
+		}]
 	}, {
 		"type": "input",
 		"label": "skuId",
 		"name": "skuId",
+		"namePath": ["sku", "skuId"],
 		"rules": {
-			"valueType": "number",
+			"valueType": "long",
 			"required": false
-		},
-		"namePath": ["sku", "skuId"]
+		}
 	}, {
 		"type": "singleCheck",
 		"label": "SKU分类",
 		"name": "skuQuality",
-		"rules": {
-			"required": false,
-			"tips": [{
-				"value": "<p style='margin:1px'>请务必对SKU完成分类标记，<span style='color:#ff6600;font-weight:500'>合理的标记</span>可能会让您的宝贝<span style='color:#ff6600;font-weight:500'>获得更多曝光机会</span>。<span style='color:#ff6600;font-weight:500'>有误的标记</span>或者<span style='color:#ff6600;font-weight:500'>未标记</span>，可能会<span style='color:#ff6600;font-weight:500'>影响宝贝的曝光流量获取</span>以及宝贝信息展现。</p><br><p style='margin:1px'>为减少您的操作成本，系统已根据sku信息进行分类预判与回填。<span style='color:#ff6600;font-weight:500'>如看到下图所示代表已预填，若预填有误请按实际售卖情况修改。（图片根据实际效果截图）</span>。</p><br><p style='margin:1px'>所有SKU被消费者拍下后均需遵守平台发货规则，请谨慎选择SKU分类。建议选择信息说明（非卖品）后，将库存设置为0。</p><br><img style='max-width:450px;display:block' src='//img.alicdn.com/imgextra/i2/O1CN01r2Pau51yUbg4UW0sc_!!6000000006582-0-tps-900-626.jpg'>"
-			}]
-		},
+		"namePath": ["sku", "skuQuality"],
 		"options": [{
 			"label": "单品",
 			"value": "mainSku"
@@ -4000,183 +3932,161 @@
 			"label": "信息说明（非卖品）",
 			"value": "unsaleableItem"
 		}],
-		"namePath": ["sku", "skuQuality"]
+		"tips": [{
+			"value": "<p style='margin:1px'>请务必对SKU完成分类标记，<span style='color:#ff6600;font-weight:500'>合理的标记</span>可能会让您的宝贝<span style='color:#ff6600;font-weight:500'>获得更多曝光机会</span>。<span style='color:#ff6600;font-weight:500'>有误的标记</span>或者<span style='color:#ff6600;font-weight:500'>未标记</span>，可能会<span style='color:#ff6600;font-weight:500'>影响宝贝的曝光流量获取</span>以及宝贝信息展现。</p><br><p style='margin:1px'>为减少您的操作成本，系统已根据sku信息进行分类预判与回填。<span style='color:#ff6600;font-weight:500'>如看到下图所示代表已预填，若预填有误请按实际售卖情况修改。（图片根据实际效果截图）</span>。</p><br><p style='margin:1px'>所有SKU被消费者拍下后均需遵守平台发货规则，请谨慎选择SKU分类。建议选择信息说明（非卖品）后，将库存设置为0。</p><br><img style='max-width:450px;display:block' src='//img.alicdn.com/imgextra/i2/O1CN01r2Pau51yUbg4UW0sc_!!6000000006582-0-tps-900-626.jpg'>"
+		}]
 	}, {
 		"type": "input",
 		"label": "价格(元)",
 		"name": "skuPrice",
+		"namePath": ["sku", "skuPrice"],
 		"rules": {
 			"required": true,
-			"maxValue": {
-				"value": 10000000,
-				"include": false
-			},
-			"minValue": {
-				"value": 0,
-				"include": false
-			}
-		},
-		"namePath": ["sku", "skuPrice"]
+			"maxValue": "10000000",
+			"minValue": "0"
+		}
 	}, {
 		"type": "input",
 		"label": "数量(件)",
 		"name": "skuStock",
+		"namePath": ["sku", "skuStock"],
 		"rules": {
-			"valueType": "number",
+			"valueType": "long",
 			"required": false
-		},
-		"namePath": ["sku", "skuStock"]
+		}
 	}, {
 		"type": "input",
 		"label": "商家编码",
 		"name": "skuOuterId",
+		"namePath": ["sku", "skuOuterId"],
 		"rules": {
-			"valueType": "string",
+			"valueType": "text",
 			"required": false,
-			"maxLength": {
-				"value": 64,
-				"include": true
-			}
-		},
-		"namePath": ["sku", "skuOuterId"]
+			"maxLength": 64
+		}
 	}, {
 		"type": "input",
 		"label": "商品条形码",
 		"name": "skuBarcode",
+		"namePath": ["sku", "skuBarcode"],
 		"rules": {
-			"valueType": "string",
+			"valueType": "text",
 			"required": false,
-			"maxLength": {
-				"value": 32,
-				"include": true
-			},
-			"tips": [{
-				"value": "请填写正确条码，将有助于平台准确识别您的商品，消费者能更方便找到您的商品，也可以提供更准确、全面的信息导购。"
-			}]
+			"maxLength": 32
 		},
-		"namePath": ["sku", "skuBarcode"]
+		"tips": [{
+			"value": "请填写正确条码，将有助于平台准确识别您的商品，消费者能更方便找到您的商品，也可以提供更准确、全面的信息导购。"
+		}]
 	}],
-	"namePath": ["sku"]
+	"tips": [{
+		"value": "近期将持续升级销售规格编辑面板，<a href='https://www.yuque.com/qvda7g/gqp7o3/ybgwai72dimq1i20' target='_blank'> 点击查看具体说明 <a/>。"
+	}]
 }, {
 	"type": "input",
 	"label": "总数量",
 	"name": "quantity",
+	"namePath": ["quantity"],
 	"value": "1",
 	"rules": {
-		"valueType": "number",
+		"valueType": "integer",
 		"required": true,
 		"regex": "([1-9][0-9]+|[0-9])",
-		"maxValue": {
-			"value": 100000000,
-			"include": false
-		},
-		"minValue": {
-			"value": 0,
-			"include": true
-		},
-		"tips": [{
-			"value": "总数量范围是0件~100000000件之间，默认为1件"
-		}]
+		"maxValue": "100000000",
+		"minValue": "0"
 	},
-	"namePath": ["quantity"]
+	"tips": [{
+		"value": "总数量范围是0件~100000000件之间，默认为1件"
+	}]
 }, {
 	"type": "input",
 	"label": "商家编码",
 	"name": "outerId",
+	"namePath": ["outerId"],
 	"rules": {
-		"valueType": "string",
+		"valueType": "text",
 		"required": false,
-		"maxLength": {
-			"value": 64,
-			"include": true
-		}
-	},
-	"namePath": ["outerId"]
+		"maxLength": 64
+	}
 }, {
 	"type": "input",
 	"label": "商品条形码",
 	"name": "barcode",
+	"namePath": ["barcode"],
 	"rules": {
-		"valueType": "string",
+		"valueType": "text",
 		"required": false,
-		"maxLength": {
-			"value": 32,
-			"include": true
-		}
-	},
-	"namePath": ["barcode"]
+		"maxLength": 32
+	}
 }, {
 	"type": "complex",
 	"label": "主图图片",
 	"name": "images",
-	"rules": {
-		"required": false,
-		"tips": [{
-			"value": "宝贝主图大小不能超过3MB；700*700 以上图片上传后宝贝详情页自动提供放大镜功能。第五张图发布规范的白底图可增加手淘个性化曝光机会 <a href='//helpcenter.taobao.com/servicehall/knowledge_detail?kwdContentId=10235684456498182' target='_blank'>查看规范</a> "
-		}, {
-			"value": "商品图片中的一张设为淘宝直通车推广创意时，更新此图片会同步至淘宝直通车创意。"
-		}]
-	},
-	"formItems": [{
+	"namePath": ["images"],
+	"subItems": [{
 		"type": "input",
 		"label": "主图图片",
 		"name": "images_0",
+		"namePath": ["images", "images_0"],
 		"rules": {
 			"valueType": "url",
 			"required": true
-		},
-		"namePath": ["images", "images_0"]
+		}
 	}, {
 		"type": "input",
 		"label": "主图图片",
 		"name": "images_1",
+		"namePath": ["images", "images_1"],
 		"rules": {
 			"valueType": "url",
 			"required": false
-		},
-		"namePath": ["images", "images_1"]
+		}
 	}, {
 		"type": "input",
 		"label": "主图图片",
 		"name": "images_2",
+		"namePath": ["images", "images_2"],
 		"rules": {
 			"valueType": "url",
 			"required": false
-		},
-		"namePath": ["images", "images_2"]
+		}
 	}, {
 		"type": "input",
 		"label": "主图图片",
 		"name": "images_3",
+		"namePath": ["images", "images_3"],
 		"rules": {
 			"valueType": "url",
 			"required": false
-		},
-		"namePath": ["images", "images_3"]
+		}
 	}, {
 		"type": "input",
 		"label": "非模特白底图",
 		"name": "images_4",
+		"namePath": ["images", "images_4"],
 		"rules": {
 			"valueType": "url",
 			"required": false
-		},
-		"namePath": ["images", "images_4"]
+		}
 	}],
-	"namePath": ["images"]
+	"tips": [{
+		"value": "宝贝主图大小不能超过3MB；700*700 以上图片上传后宝贝详情页自动提供放大镜功能。第五张图发布规范的白底图可增加手淘个性化曝光机会 <a href='//helpcenter.taobao.com/servicehall/knowledge_detail?kwdContentId=10235684456498182' target='_blank'>查看规范</a> "
+	}, {
+		"value": "商品图片中的一张设为淘宝直通车推广创意时，更新此图片会同步至淘宝直通车创意。"
+	}]
 }, {
 	"type": "input",
 	"label": "PC端详情描述",
 	"name": "desc",
+	"namePath": ["desc"],
 	"rules": {
-		"valueType": "string",
+		"valueType": "text",
 		"required": false
-	},
-	"namePath": ["desc"]
+	}
 }, {
 	"type": "singleCheck",
 	"label": "库存扣减方式",
 	"name": "subStock",
+	"namePath": ["subStock"],
 	"value": "1",
 	"rules": {
 		"required": true
@@ -4187,78 +4097,70 @@
 	}, {
 		"label": "买家付款减库存",
 		"value": "0"
-	}],
-	"namePath": ["subStock"]
+	}]
 }, {
 	"type": "complex",
 	"label": "运费",
 	"name": "tbExtractWay",
+	"namePath": ["tbExtractWay"],
 	"rules": {
 		"required": true
 	},
-	"formItems": [{
+	"subItems": [{
 		"type": "input",
 		"label": "运费模板",
 		"name": "template",
+		"namePath": ["tbExtractWay", "template"],
 		"rules": {
-			"valueType": "string",
-			"required": false,
-			"tips": [{
-				"value": "使用官方寄件，一键发货，全程保障。当日揽收，更优惠更便捷。<a href='//fahuo.cainiao.com/consigns/order/ggSend.htm?tab=tb_order&s_c=spfb001' target='_blank'>点击体验</a>"
-			}]
+			"valueType": "text",
+			"required": false
 		},
-		"namePath": ["tbExtractWay", "template"]
-	}],
-	"namePath": ["tbExtractWay"]
+		"tips": [{
+			"value": "使用官方寄件，一键发货，全程保障。当日揽收，更优惠更便捷。<a href='//fahuo.cainiao.com/consigns/order/ggSend.htm?tab=tb_order&s_c=spfb001' target='_blank'>点击体验</a>"
+		}]
+	}]
 }, {
 	"type": "input",
 	"label": "物流体积",
 	"name": "deliverVolumn",
+	"namePath": ["deliverVolumn"],
 	"rules": {
-		"valueType": "string",
-		"required": false,
-		"tips": [{
-			"value": "当前运费模板，按物流体积（含包装）计费"
-		}]
+		"valueType": "text",
+		"required": false
 	},
-	"namePath": ["deliverVolumn"]
+	"tips": [{
+		"value": "当前运费模板，按物流体积（含包装）计费"
+	}]
 }, {
 	"type": "input",
 	"label": "物流重量",
 	"name": "deliverWeight",
+	"namePath": ["deliverWeight"],
 	"rules": {
-		"valueType": "string",
-		"required": false,
-		"tips": [{
-			"value": "当前运费模板，按物流重量（含包装）计费"
-		}]
+		"valueType": "text",
+		"required": false
 	},
-	"namePath": ["deliverWeight"]
+	"tips": [{
+		"value": "当前运费模板，按物流重量（含包装）计费"
+	}]
 }, {
 	"type": "singleCheck",
 	"label": "保修服务",
 	"name": "warranty",
+	"namePath": ["warranty"],
 	"options": [{
 		"label": "是",
 		"value": "1"
 	}, {
 		"label": "否",
 		"value": "0"
-	}],
-	"namePath": ["warranty"]
+	}]
 }, {
 	"type": "singleCheck",
 	"label": "退换货承诺",
 	"name": "sellPromise",
+	"namePath": ["sellPromise"],
 	"value": "1",
-	"rules": {
-		"required": false,
-		"tips": [{
-			"value": "亲爱的商家，【退换货承诺】组件我们计划4月初下线，如您还需维护，可联系客服小二给我们反馈。"
-		}, {
-			"value": "凡使用支付宝服务付款购买本店商品，若存在质量问题或与描述不符，本店将主动提供退换货服务并承担来回邮费"
-		}]
-	},
 	"options": [{
 		"label": "是",
 		"value": "1"
@@ -4266,19 +4168,17 @@
 		"label": "否",
 		"value": "0"
 	}],
-	"namePath": ["sellPromise"]
+	"tips": [{
+		"value": "亲爱的商家，【退换货承诺】组件我们计划4月初下线，如您还需维护，可联系客服小二给我们反馈。"
+	}, {
+		"value": "凡使用支付宝服务付款购买本店商品，若存在质量问题或与描述不符，本店将主动提供退换货服务并承担来回邮费"
+	}]
 }, {
 	"type": "singleCheck",
 	"label": "服务承诺：该类商品，必须支持【七天退货】服务",
 	"name": "sevenDaySupport",
+	"namePath": ["sevenDaySupport"],
 	"value": "true",
-	"rules": {
-		"readOnly": true,
-		"required": false,
-		"tips": [{
-			"value": " 承诺更好服务可通过【<a href='//xiaobao.taobao.com/service/serviceList.htm' target='_blank'>交易合约</a>】设置"
-		}]
-	},
 	"options": [{
 		"label": "是",
 		"value": "true"
@@ -4286,27 +4186,28 @@
 		"label": "否",
 		"value": "false"
 	}],
-	"namePath": ["sevenDaySupport"]
+	"readOnly": true,
+	"tips": [{
+		"value": " 承诺更好服务可通过【<a href='//xiaobao.taobao.com/service/serviceList.htm' target='_blank'>交易合约</a>】设置"
+	}]
 }, {
 	"type": "multiCheck",
 	"label": "保障服务",
 	"name": "guaranteeService",
+	"namePath": ["guaranteeService"],
 	"value": [],
 	"options": [{
 		"label": "海外直邮（新）",
 		"value": "PLAT-SEC-taoOverseaDirectMail"
-	}],
-	"namePath": ["guaranteeService"]
+	}]
 }, {
 	"type": "singleCheck",
 	"label": "上架时间",
 	"name": "startTime",
+	"namePath": ["startTime"],
 	"value": "0",
 	"rules": {
-		"required": true,
-		"tips": [{
-			"value": "定时上架的商品在上架前请到“仓库中的宝贝”里编辑商品。"
-		}]
+		"required": true
 	},
 	"options": [{
 		"label": "立刻上架",
@@ -4318,5 +4219,7 @@
 		"label": "放入仓库",
 		"value": "2"
 	}],
-	"namePath": ["startTime"]
+	"tips": [{
+		"value": "定时上架的商品在上架前请到“仓库中的宝贝”里编辑商品。"
+	}]
 }]

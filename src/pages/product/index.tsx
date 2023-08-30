@@ -185,7 +185,7 @@ function ProductPublish(props: {}) {
     const getDefaultUiType = (_props: MyFormItemProps) => {
         const { type, options = [], uiType } = _props;
         const length = options.length;
-        const allowCustom = _props?.rules?.allowCustom;
+        const allowCustom = _props?.allowCustom;
 
         if (uiType) { return uiType; }
         if (type == 'singleCheck') {
@@ -195,13 +195,12 @@ function ProductPublish(props: {}) {
     }
 
     function RenderInput(_props: MyFormItemProps) {
-        const { value, defaultValue, onChange, ...restProps } = _props;
+        const { value, defaultValue, onChange, readOnly, ...restProps } = _props;
         const { uiType, label, name, rules = {} } = restProps;
-        const readOnly = _props?.rules?.readOnly;
         let _commonProps = { value, defaultValue, onChange, disabled: readOnly };
 
         const numReg = /^[0-9]+.?[0-9]*/;
-        const isNum = numReg.test(rules.maxValue?.value) || numReg.test(rules.minValue?.value);
+        const isNum = numReg.test(`${rules.maxValue}`) || numReg.test(`${rules.minValue}`);
 
         const _uiType = uiType || (name == 'desc' ? 'inputHtml' : isNum ? 'inputNumber' : undefined);
         return (
@@ -232,10 +231,7 @@ function ProductPublish(props: {}) {
         )
     }
     function RenderSingleCheck(_props: MyFormItemProps) {
-        const { value, defaultValue, onChange, ...restProps } = _props;
-        const { options = [], uiType, label } = restProps;
-        const readOnly = _props?.rules?.readOnly;
-        const allowCustom = _props?.rules?.allowCustom;
+        const { value, defaultValue, onChange, readOnly, allowCustom, options = [], uiType, label } = _props;
         let _commonProps = { value, defaultValue, onChange, disabled: readOnly, allowClear: true };
 
         if (uiType == 'checkBox' && options.every(e => ['0', '1'].includes(e.value))) {
@@ -264,11 +260,9 @@ function ProductPublish(props: {}) {
             ) : <></>
         )
     }
+
     function RenderMultiCheck(_props: MyFormItemProps) {
-        const { value, defaultValue, onChange, ...restProps } = _props;
-        const { options = [], uiType, label } = restProps;
-        const readOnly = _props?.rules?.readOnly;
-        const allowCustom = _props?.rules?.allowCustom;
+        const { value, defaultValue, onChange, options = [], uiType, label, readOnly, allowCustom } = _props;
         let _commonProps = { value, defaultValue, onChange, disabled: readOnly, allowClear: true };
         return (
             <Select showSearch
@@ -285,14 +279,15 @@ function ProductPublish(props: {}) {
             />
         )
     }
+    
     function RenderComplex(_props: MyFormItemProps) {
-        const { name, formItems } = _props;
+        const { name, subItems } = _props;
         const isCateProp = name == "catProp";//p.isCateProp;
         const isMainImg = name == "images";//TODO:主图图片字段类型
         return (<>{
             isCateProp ? (
                 <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
-                    {formItems?.map((sm, si) => {
+                    {subItems?.map((sm, si) => {
                         const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                         return (
                             <Grid.GridItem key={'gcpi0' + si} style={{ maxWidth: '358px' }}>
@@ -303,7 +298,7 @@ function ProductPublish(props: {}) {
                 </Grid>
             ) : isMainImg ? (
                 <Grid cols={5} colGap={12}>
-                    {formItems?.map((sm, si) => {
+                    {subItems?.map((sm, si) => {
                         const uiType: FieldUiType = 'imageUpload';
                         return (
                             <Grid.GridItem key={'gcpi1' + si}>
@@ -312,7 +307,7 @@ function ProductPublish(props: {}) {
                         )
                     })}
                 </Grid>
-            ) : formItems?.map((sm, si) => {
+            ) : subItems?.map((sm, si) => {
                 return <span key={'si11' + si}>
                     {FormItem(sm)}
                 </span>
@@ -325,13 +320,15 @@ function ProductPublish(props: {}) {
         const props = { ..._props, uiType }
 
         const { type, label: propLabel, value, name, namePath = [],
-            noStyle, noLabel, rules: propRules } = props || {};
-        const { tips, disable, ...restRules } = propRules || {};
-        const rules = getValiRules(restRules, propLabel);
+            noStyle, noLabel, 
+            tips, hide,  rules: propRules 
+        } = props || {};
+
+        const rules = getValiRules(propRules, propLabel);
 
         const field = namePath.join('.');
         const [tipShouldUpdate, getTipValues] = getTips(tips || []);
-        const [disShouldUpdate, getDisValue] = checkDependRules(disable || {});
+        const [disShouldUpdate, getDisValue] = checkDependRules(hide || {});
 
         const shouldUpdate = (prev: any, next: any, info: any) => {
             return name == 'sku' || tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
@@ -373,7 +370,7 @@ function ProductPublish(props: {}) {
                                                     <Form.Item key={item.key} noStyle>
                                                         <Space>
                                                             {
-                                                                props?.formItems?.map((m: any, i: any) => {
+                                                                props?.subItems?.map((m: any, i: any) => {
                                                                     const _rules = getValiRules(m.rules, m.label);
                                                                     return <Form.Item
                                                                         key={item.key + m.name}

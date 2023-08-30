@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { isNumber } from "lodash";
 import { MyFormDependGroup, MyFormDependRules, MyFormRules } from "../pages/product/interface";
 
 export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): boolean | undefined {
@@ -69,35 +69,26 @@ export function checkDependRules(dependRules: MyFormDependRules): [
     return [shouldUpdate, getValue];
 }
 
-export function getValiRules(rp: MyFormRules, label?: string) {
+export function getValiRules(rp?: MyFormRules, label?: string) {
     let rules: any[] = [];
     if (rp) {
         label = label || '值';
         const type = rp.valueType;
+
         if (rp.required) {
             rules.push({ required: true, message: `${label}不能为空` });
         }
+
         if (rp.regex) {
             rules.push({ type: 'string', match: new RegExp(rp.regex), message: `${label}格式错误` });
         }
-        if (rp.maxLength) {
-            const { value: maxLength, include: includes } = rp.maxLength;
-            rules.push({ type: 'string', maxLength, includes, message: `${label}长度${includes ? '不能超过' : '需小于'}${maxLength}个字符` });
-        }  
-        // if (rp.maxInputNum) {
-        //     const { value: maxLength, include: includes } = rp.maxInputNum;
-        //     rules.push({ type: 'array', maxLength, includes, message: `${label}${includes ? '不能超过' : '需小于'}${maxLength}条` });
-        // }
-        if (rp.maxValue) {
-            const { value: max, include: includes } = rp.maxValue;
-            rules.push({ type: 'number', max, includes, message: `${label}不能大于${includes ? '' : '或等于'}${max}` });
+
+        if (isNumber(rp.maxLength) || isNumber(rp.minLength)) {
+            rules.push({ maxLength: rp.maxLength, minLength: rp.minLength });
         }
-        if (rp.minValue) {
-            const { value: min, include: includes } = rp.minValue;
-            rules.push({ type: 'number', min, includes, message: `${label}不能小于${includes ? '' : '或等于'}${min}` });
-        }
-        if (rules.every(e => e !== type)) {
-            rules.push({ type: type });
+        
+        if (isNumber(rp.maxValue) || isNumber(rp.minValue)) {
+            rules.push({ type: 'number', max: rp.maxValue, min: rp.minValue });
         }
     }
     return rules;
