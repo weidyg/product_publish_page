@@ -460,7 +460,7 @@ function ProductPublish(props: {}) {
                             }}
                         >
                             {formSchema.map((m, i) => {
-                                return <ProFormItem key={i} {...m} />
+                                return <ProFormItem key={i} {...m} formSchema={formSchema}/>
                                 // return <div key={i}>{FormItem(m)}</div>
                                 //  return <div key={i}>{ProFormItem(m)}</div>
                             })}

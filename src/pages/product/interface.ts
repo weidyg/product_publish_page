@@ -17,7 +17,7 @@ export type MyFormItemProps = {
     hide?: MyFormDependRules;
 
     // // [key: string]: any;
-    fieldName?:string;
+    fieldName?: string;
     defaultValue?: any;
     onChange?: any;
     noLabel?: boolean;
@@ -33,7 +33,8 @@ export type MyFormRules = {
     minLength?: number;
 }
 export type FormItemType = 'input' | 'multiInput' | 'singleCheck' | 'multiCheck' | 'complex' | 'multiComplex';
-export type FieldUiType = 'input' | 'inputNumber' | 'radio' | 'select' | 'checkBox' | 'multiSelect' | 'imageUpload';
+export type FieldUiType = 'input' | 'inputNumber' | 'radio' | 'select' | 'checkBox' | 'multiSelect' | 'imageUpload'
+    | 'skuEditTable';
 
 export type MyFormDependRules = {
     value?: any,

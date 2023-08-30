@@ -1,10 +1,11 @@
 
 import { useRef, useState } from 'react';
-import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid } from '@arco-design/web-react';
+import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, List } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconEdit } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { FieldUiType, MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
 import { checkDependRules, getValiRules } from '../untis';
+import SkuEditableTable from '../SkuEditableTable';
 
 const getTips = (tipRules: MyFormDependRules[]): [
     (prev: any, next: any, info: any) => boolean,
@@ -166,7 +167,7 @@ function ProFormList(props: MyFormItemProps) {
 }
 
 
-export function ProFormItem(props: MyFormItemProps) {
+export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemProps[] }) {
     const {
         type, label, name, namePath, value, options = [],
         subItems = [], hide, tips, rules, readOnly,
@@ -227,6 +228,10 @@ export function ProFormItem(props: MyFormItemProps) {
                     <Form.Item {...formItemProps}>
                         <PictureUpload />
                     </Form.Item >
+                ) : _uiType == 'skuEditTable' ? (
+                    <SkuEditableTable {...props}
+                        allFormItems={props.formSchema || []}
+                        values={values} />
                 ) : type == 'complex' ? (
                     <>
                         <Form.Item {...formItemProps}>
