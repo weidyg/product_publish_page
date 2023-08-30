@@ -1,7 +1,7 @@
 
 import { useRef, useState } from 'react';
 import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, List } from '@arco-design/web-react';
-import { IconDelete, IconPlus, IconEdit } from '@arco-design/web-react/icon';
+import { IconDelete, IconPlus, IconEdit, IconImageClose } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { FieldUiType, MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
 import { checkDependRules, getValiRules } from '../untis';
@@ -38,8 +38,11 @@ const getTips = (tipRules: MyFormDependRules[]): [
 }
 
 const getUiTypeOrDefault = (_props: MyFormItemProps): FieldUiType | undefined => {
-    const { uiType, type, allowCustom, options = [], rules = {} } = _props;
+    const { uiType, type, name, allowCustom, options = [], rules = {} } = _props;
     if (uiType) { return uiType; }
+    if (name == 'sku') {
+        return 'skuEditTable';
+    }
     switch (type) {
         case 'input':
             {
@@ -61,11 +64,15 @@ const getUiTypeOrDefault = (_props: MyFormItemProps): FieldUiType | undefined =>
 
 
 
-
-function PictureUpload(props: { text?: string, value?: string, onChange?: (value: string) => {} }) {
-    const { text, value, onChange } = props;
-    const [file, setFile] = useState<any>({ uid: value, url: value });
-    const cs = `${file && file.status === 'error' ? ' is-error' : ''}`;
+let uuid = 0;
+function PictureUpload(props: {
+    size?: 'default' | 'mini',
+    text?: string,
+    value?: string,
+    onChange?: (value: string) => {}
+}) {
+    const { size = 'default', text = '', value, onChange } = props;
+    const [file, setFile] = useState<any>(value && { uid: new Date(), url: value });
     return (
         <Upload
             action='/'
@@ -77,32 +84,33 @@ function PictureUpload(props: { text?: string, value?: string, onChange?: (value
             }}
             onProgress={(currentFile) => {
                 setFile(currentFile);
-                console.log('currentFile', currentFile);
             }}
             showUploadList={false}
         >
-            <div className={cs}>
-                {file && file.url ? (
-                    <div className={styles['upload-picture']}>
-                        <img src={file.url} />
-                        <div className={styles['upload-picture-mask']}>
-                            <IconEdit />
-                        </div>
-                        {file.status === 'uploading' && file.percent < 100 && (
-                            <Progress
-                                size='mini'
-                                percent={file.percent}
-                                className={styles['upload-picture-progress']}
-                            />
-                        )}
+            <div className={`${styles['upload-picture']} ${size == 'mini' && styles['mini']}`}>
+                {file?.url ? (<>
+                    <img src={file.url} />
+                    <div className={styles['upload-picture-mask']}>
+                        <IconEdit />
                     </div>
-                ) : (
-                    <div className={styles['upload-trigger']}>
-                        <div className={styles['upload-trigger-text']}>
-                            <IconPlus />
-                            <div title={text}>{text}</div>
-                        </div>
+                </>) : file?.status === 'error' ? (
+                    <div className={styles['upload-picture-error']}>
+                        <IconImageClose />
                     </div>
+                ) :
+                    <div title={text}
+                        className={styles['upload-picture-text']}>
+                        <IconPlus />
+                        {size != 'mini' && <div>{text}</div>}
+                    </div>
+                }
+                {file?.status === 'uploading' && file.percent < 100 && (
+                    <Progress
+                        size={size}
+                        type='circle'
+                        percent={file.percent}
+                        className={styles['upload-picture-progress']}
+                    />
                 )}
             </div>
         </Upload>
@@ -170,7 +178,7 @@ function ProFormList(props: MyFormItemProps) {
 export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemProps[] }) {
     const {
         type, label, name, namePath, value, options = [],
-        subItems = [], hide, tips, rules, readOnly,
+        subItems = [], hide, tips, rules, readOnly, allowCustom,
         fieldName, noStyle
     } = props || {};
 
@@ -184,7 +192,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
     }
 
     return (
-        <Form.Item noStyle shouldUpdate={shouldUpdate} >
+        <Form.Item noStyle shouldUpdate={true} >
             {(values) => {
                 const _hide = isHide(values) === true;
                 if (_hide) { return; }
@@ -216,11 +224,10 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     </Form.Item>
                 ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
                     <Form.Item {...formItemProps}>
-                        <Select
-                            mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
+                        <Select allowClear showSearch
                             options={options}
-                            allowClear
-                            showSearch
+                            allowCreate={allowCustom}
+                            mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
                             style={{ maxWidth: '358px', minWidth: '220px' }}
                         />
                     </Form.Item>
@@ -229,14 +236,15 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                         <PictureUpload />
                     </Form.Item >
                 ) : _uiType == 'skuEditTable' ? (
-                    <SkuEditableTable {...props}
-                        allFormItems={props.formSchema || []}
-                        values={values} />
+                    <Form.Item {...formItemProps}>
+                        <SkuEditableTable {...props}
+                            allFormItems={props.formSchema || []}
+                            values={values} />
+                    </Form.Item >
                 ) : type == 'complex' ? (
-                    <>
-                        <Form.Item {...formItemProps}>
+                    <Form.Item {...formItemProps}>
+                        {name == 'catProp' ? (
                             <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
-                                {/* <Space wrap> */}
                                 {subItems?.map((sm, si) => {
                                     const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                                     return (
@@ -245,10 +253,16 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                                         </Grid.GridItem>
                                     )
                                 })}
-                                {/* </Space> */}
                             </Grid>
-                        </Form.Item >
-                    </>
+                        ) : (
+                            <Space wrap>
+                                {subItems?.map((sm, si) => {
+                                    return (<ProFormItem key={si} {...sm} />)
+                                })}
+                            </Space>
+                        )}
+
+                    </Form.Item >
                 ) : type == 'multiComplex' ? (
                     <>
                         <Form.Item {...formItemProps}>
