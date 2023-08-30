@@ -9,6 +9,7 @@ import { FieldUiType, MyFormDependRules, MyFormItemProps } from './interface';
 import SkuEditableTable from '../../components/SkuEditableTable';
 import { checkDependRules, getValiRules } from '../../components/untis';
 import * as _ from "lodash"
+import { ProFormItem } from '../../components/multi-complex';
 
 const data = {
     shopId: 0,
@@ -279,7 +280,7 @@ function ProductPublish(props: {}) {
             />
         )
     }
-    
+
     function RenderComplex(_props: MyFormItemProps) {
         const { name, subItems } = _props;
         const isCateProp = name == "catProp";//p.isCateProp;
@@ -320,8 +321,8 @@ function ProductPublish(props: {}) {
         const props = { ..._props, uiType }
 
         const { type, label: propLabel, value, name, namePath = [],
-            noStyle, noLabel, 
-            tips, hide,  rules: propRules 
+            noStyle, noLabel,
+            tips, hide, rules: propRules
         } = props || {};
 
         const rules = getValiRules(propRules, propLabel);
@@ -459,7 +460,9 @@ function ProductPublish(props: {}) {
                             }}
                         >
                             {formSchema.map((m, i) => {
-                                return <div key={i}>{FormItem(m)}</div>
+                                return <ProFormItem key={i} {...m} />
+                                // return <div key={i}>{FormItem(m)}</div>
+                                //  return <div key={i}>{ProFormItem(m)}</div>
                             })}
                         </Form>
                     </Form.Provider>

@@ -1,8 +1,71 @@
 
 import { useRef, useState } from 'react';
-import { Form, Space, Input, Button, Grid, Select, Upload, Progress } from '@arco-design/web-react';
-import { IconArrowRise, IconArrowFall, IconDelete, IconPlus, IconEdit } from '@arco-design/web-react/icon';
+import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps } from '@arco-design/web-react';
+import { IconDelete, IconPlus, IconEdit } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
+import { FieldUiType, MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
+import { checkDependRules, getValiRules } from '../untis';
+
+const getTips = (tipRules: MyFormDependRules[]): [
+    (prev: any, next: any, info: any) => boolean,
+    (values: any) => any
+] => {
+    let shouldUpdateList: Array<(prev: any, next: any, info: any) => boolean> = [];
+    let getValuefunList: Array<(values: any) => any> = [];
+    tipRules?.forEach(tipRule => {
+        const [_shouldUpdate, _getValue] = checkDependRules(tipRule || {});
+        shouldUpdateList.push(_shouldUpdate);
+        getValuefunList.push(_getValue);
+    });
+
+    const shouldUpdate = (prev: any, next: any, info: any) => {
+        for (let index = 0; index < shouldUpdateList.length; index++) {
+            const fun = shouldUpdateList[index];
+            const value = fun && fun(prev, next, info);
+            if (value == true) { return true; }
+        }
+        return false;
+    };
+
+    const getValues = (values: any) => {
+        return (getValuefunList.map((fun, index) => {
+            const value = fun && fun(values);
+            if (value) { return <div key={index} dangerouslySetInnerHTML={{ __html: value }} /> }
+        }));
+    };
+    return [shouldUpdate, getValues];
+}
+
+const getUiTypeOrDefault = (_props: MyFormItemProps): FieldUiType | undefined => {
+    const { uiType, type, allowCustom, options = [], rules = {} } = _props;
+    if (uiType) { return uiType; }
+    switch (type) {
+        case 'input':
+            {
+                const numReg = /^[0-9]+.?[0-9]*/;
+                const isNum = numReg.test(`${rules.maxValue}`) || numReg.test(`${rules.minValue}`);
+                return rules.valueType == 'url' ? 'imageUpload' : isNum ? 'inputNumber' : 'input';
+            }
+        case 'singleCheck':
+            {
+                const length = options.length;
+                return (length > 3 || allowCustom) ? 'select' : 'radio';
+            }
+        case 'multiCheck':
+            {
+                return 'multiSelect'
+            }
+        case 'complex':
+            {
+
+            }
+        case 'multiComplex':
+            {
+
+            }
+    }
+}
+
 
 
 
@@ -123,6 +186,91 @@ function ProFormList(props: {
         </Form.List>
     );
 }
+
+
+export function ProFormItem(props: MyFormItemProps) {
+    // const uiType = getDefaultUiType(_props);
+    // const props = { ..._props, uiType }
+
+    // const { type, label: propLabel, value, name, namePath = [],
+    //     noStyle, noLabel, 
+    //     tips, hide,  rules: propRules 
+    // } = props || {};
+
+    // const rules = getValiRules(propRules, propLabel);
+
+    // const field = namePath.join('.');
+    // const [tipShouldUpdate, getTipValues] = getTips(tips || []);
+    // const [disShouldUpdate, getDisValue] = checkDependRules(hide || {});
+
+
+    // const label = (uiType == 'checkBox' || noLabel) ? undefined : propLabel;
+    // const isComplex = type?.toLowerCase().indexOf('complex') !== -1;
+
+
+    const { label, name, namePath, value, options = [], hide, tips, rules, readOnly } = props || {};
+
+    const _uiType = getUiTypeOrDefault(props);
+    const _rules = getValiRules(rules);
+    const [tipShouldUpdate, getTipValues] = getTips(tips || []);
+    const [disShouldUpdate, isHide] = checkDependRules(hide || {});
+    const shouldUpdate = (prev: any, next: any, info: any) => {
+        return tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
+    }
+
+    return (
+        <Form.Item noStyle shouldUpdate={shouldUpdate} >
+            {(values) => {
+                const _hide = isHide(values) === true;
+                if (_hide) { return; }
+                const extra = getTipValues(values);
+                const formItemProps: FormItemProps = {
+                    label, extra,
+                    rules: _rules,
+                    disabled: readOnly,
+                    initialValue: value,
+                    field: namePath?.join('.') || name,
+                }
+                return _uiType == 'input' ? (
+                    <Form.Item {...formItemProps} >
+                        <Input
+                            allowClear
+                            style={{ maxWidth: '734px' }}
+                        />
+                    </Form.Item>
+                ) : _uiType == 'inputNumber' ? (
+                    <Form.Item {...formItemProps}>
+                        <InputNumber
+                            style={{ maxWidth: '358px' }}
+                        />
+                    </Form.Item>
+                ) : _uiType == 'radio' ? (
+                    <Form.Item {...formItemProps}>
+                        <Radio.Group options={options} />
+                    </Form.Item>
+                ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
+                    <Form.Item {...formItemProps}>
+                        <Select
+                            mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
+                            options={options}
+                            allowClear
+                            showSearch
+                            style={{ maxWidth: '358px' }}
+                        />
+                    </Form.Item>
+                ) : _uiType == 'imageUpload' ? (
+                    <Form.Item {...formItemProps}>
+                        <PictureUpload />
+                    </Form.Item >
+                ) : undefined;
+            }}
+        </Form.Item>
+    )
+}
+
+
+
+
 
 function MultiComplex() {
     const formRef = useRef<any>();

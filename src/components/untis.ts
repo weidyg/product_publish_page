@@ -58,11 +58,13 @@ export function checkDependRules(dependRules: MyFormDependRules): [
     const expressLength = dependGroup?.expresses?.length || 0;
     const groupLength = dependGroup?.groups?.length || 0;
 
+    const needMatch = !!operator && (expressLength > 0 || groupLength > 0);
     const shouldUpdate = (prev: any, next: any, info: any) => {
-        return !!operator && (expressLength > 0 || groupLength > 0);
+        return needMatch;
     }
     const getValue = (values: any) => {
-        let isMatched = dependGroup && checkDependGroup(dependGroup, values);
+        if (!needMatch) { return dependRules?.value; }
+        let isMatched = checkDependGroup(dependGroup, values);
         return isMatched === false ? undefined : dependRules?.value;
     };
 
@@ -86,7 +88,7 @@ export function getValiRules(rp?: MyFormRules, label?: string) {
         if (isNumber(rp.maxLength) || isNumber(rp.minLength)) {
             rules.push({ maxLength: rp.maxLength, minLength: rp.minLength });
         }
-        
+
         if (isNumber(rp.maxValue) || isNumber(rp.minValue)) {
             rules.push({ type: 'number', max: rp.maxValue, min: rp.minValue });
         }
