@@ -71,18 +71,15 @@ export function checkDependRules(dependRules: MyFormDependRules): [
     return [shouldUpdate, getValue];
 }
 
-export function getValiRules(rp?: MyFormRules, label?: string) {
+export function getValiRules(rp?: MyFormRules) {
     let rules: any[] = [];
     if (rp) {
-        label = label || '值';
-        const type = rp.valueType;
-
         if (rp.required) {
-            rules.push({ required: true, message: `${label}不能为空` });
+            rules.push({ required: true });
         }
 
         if (rp.regex) {
-            rules.push({ type: 'string', match: new RegExp(rp.regex), message: `${label}格式错误` });
+            rules.push({ type: 'string', match: new RegExp(rp.regex) });
         }
 
         if (isNumber(rp.maxLength) || isNumber(rp.minLength)) {

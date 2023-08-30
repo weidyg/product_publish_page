@@ -1,6 +1,6 @@
 
 import { useRef, useState } from 'react';
-import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, List } from '@arco-design/web-react';
+import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, List, Link } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconEdit, IconImageClose } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { FieldUiType, MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
@@ -126,10 +126,10 @@ function ProFormList(props: MyFormItemProps) {
         <Form.List field={field!} noStyle>
             {(fields, { add, remove, move }) => {
                 return (
-                    <Space wrap>
+                    <Space wrap size={'mini'}>
                         {fields.map(({ field }, index) => {
                             return (
-                                <Space key={index}>
+                                <Space key={index} size={'mini'}>
                                     {subItems?.map((sm, si) => {
                                         const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                                         return (
@@ -142,31 +142,23 @@ function ProFormList(props: MyFormItemProps) {
                                         )
                                     })}
                                     <Form.Item noStyle>
-                                        <Button
-                                            icon={<IconDelete />}
-                                            type='text'
-                                            status='danger'
-                                            onClick={() => {
-                                                remove(index);
-                                                if (fields.length == 1) {
-                                                    add();
-                                                }
-                                            }}
-                                        />
+                                        <Space size={'mini'}>
+                                            <Link status='error' onClick={() => {
+                                                remove(index); if (fields.length == 1) { add(); }
+                                            }}>
+                                                <IconDelete />
+                                            </Link>
+
+                                            {index == fields.length - 1 &&
+                                                <Link onClick={() => { add(); }}>
+                                                    <IconPlus />
+                                                </Link>
+                                            }
+                                        </Space>
                                     </Form.Item>
                                 </Space>
                             );
                         })}
-                        <Form.Item noStyle>
-                            <Button
-                                icon={<IconPlus />}
-                                type='text'
-                                onClick={() => {
-                                    add();
-                                }}
-                            >
-                            </Button>
-                        </Form.Item>
                     </Space>
                 );
             }}
@@ -188,11 +180,12 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
     const [disShouldUpdate, isHide] = checkDependRules(hide || {});
     const shouldUpdate = (prev: any, next: any, info: any) => {
-        return tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
+        // return tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
+        return true;
     }
 
     return (
-        <Form.Item noStyle shouldUpdate={true} >
+        <Form.Item noStyle shouldUpdate={shouldUpdate} >
             {(values) => {
                 const _hide = isHide(values) === true;
                 if (_hide) { return; }
@@ -207,15 +200,16 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                 }
                 return _uiType == 'input' ? (
                     <Form.Item {...formItemProps} >
-                        <Input
-                            allowClear
+                        <Input allowClear
+                            placeholder={`请输入${label}`}
                             style={{ maxWidth: '734px', minWidth: '220px' }}
                         />
                     </Form.Item>
                 ) : _uiType == 'inputNumber' ? (
                     <Form.Item {...formItemProps}>
                         <InputNumber
-                            style={{ maxWidth: '358px' }}
+                            placeholder={`请输入${label}`}
+                            style={{ maxWidth: '358px', minWidth: '80px' }}
                         />
                     </Form.Item>
                 ) : _uiType == 'radio' ? (
@@ -228,7 +222,8 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                             options={options}
                             allowCreate={allowCustom}
                             mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
-                            style={{ maxWidth: '358px', minWidth: '220px' }}
+                            placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
+                            style={{ maxWidth: '358px', minWidth: '180px' }}
                         />
                     </Form.Item>
                 ) : _uiType == 'imageUpload' ? (

@@ -193,6 +193,17 @@ function ProductPublish(props: {}) {
                             onValuesChange={(_, values) => {
                                 console.log(values);
                             }}
+                            validateMessages={{
+                                required: (_, { label }) => `${label}必须填写`,
+                                string: {
+                                    length: `字符数必须是 #{length}`,
+                                    match: `不匹配正则 #{pattern}`,
+                                },
+                                number: {
+                                    min: `最小值为 #{min}`,
+                                    max: `最大值为 #{max}`,
+                                },
+                            }}
                         >
                             {formSchema.map((m, i) => {
                                 return <ProFormItem key={i} {...m} formSchema={formSchema} />
