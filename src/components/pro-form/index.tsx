@@ -1,9 +1,9 @@
 
 import { useState } from 'react';
-import { Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link } from '@arco-design/web-react';
+import { Image, Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconEdit, IconImageClose } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
-import { MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
+import { MyFormItemProps } from '../../pages/product/interface';
 import { checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../untis';
 import SkuEditableTable from '../sku-editable-table';
 
@@ -14,7 +14,7 @@ function PictureUpload(props: {
     onChange?: (value: string) => {}
 }) {
     const { size = 'default', text = '图片', value, onChange } = props;
-    const [file, setFile] = useState<any>(value && { uid: new Date(), url: value });
+    const [file, setFile] = useState<any>(value && {status:'error', uid: new Date(), url: value });
     return (
         <Upload
             action='/'
@@ -30,22 +30,21 @@ function PictureUpload(props: {
             showUploadList={false}
         >
             <div className={`${styles['upload-picture']} ${size == 'mini' && styles['mini']}`}>
-                {file?.url ? (<>
-                    <img src={file.url} />
-                    <div className={styles['upload-picture-mask']}>
-                        <IconEdit />
-                    </div>
-                </>) : file?.status === 'error' ? (
-                    <div className={styles['upload-picture-error']}>
-                        <IconImageClose />
-                    </div>
-                ) :
+                {file?.url ? (
+                    <>
+                        <Image className={styles['upload-picture-img']}
+                            src={file.url} loader={true} />
+                        <div className={styles['upload-picture-mask']}>
+                            <IconEdit />
+                        </div>
+                    </>
+                ) : (
                     <div title={text}
                         className={styles['upload-picture-text']}>
                         <IconPlus />
                         <div>{text}</div>
                     </div>
-                }
+                )}
                 {file?.status === 'uploading' && file.percent < 100 && (
                     <Progress
                         size={size}
