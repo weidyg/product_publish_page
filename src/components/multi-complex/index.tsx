@@ -1,5 +1,5 @@
 
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, List, Link } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconEdit, IconImageClose } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
@@ -62,16 +62,13 @@ const getUiTypeOrDefault = (_props: MyFormItemProps): FieldUiType | undefined =>
     }
 }
 
-
-
-let uuid = 0;
 function PictureUpload(props: {
     size?: 'default' | 'mini',
     text?: string,
     value?: string,
     onChange?: (value: string) => {}
 }) {
-    const { size = 'default', text = '', value, onChange } = props;
+    const { size = 'default', text = '图片', value, onChange } = props;
     const [file, setFile] = useState<any>(value && { uid: new Date(), url: value });
     return (
         <Upload
@@ -101,7 +98,7 @@ function PictureUpload(props: {
                     <div title={text}
                         className={styles['upload-picture-text']}>
                         <IconPlus />
-                        {size != 'mini' && <div>{text}</div>}
+                        <div>{text}</div>
                     </div>
                 }
                 {file?.status === 'uploading' && file.percent < 100 && (
@@ -117,30 +114,44 @@ function PictureUpload(props: {
     );
 }
 
-
-
 function ProFormList(props: MyFormItemProps) {
-    const { name, namePath, subItems = [] } = props;
+    const { type, name, namePath, value, subItems = [], nestItems = [], ...rest } = props;
     const field = namePath?.join('.') || name;
+
+    let formItems = [...subItems];
+    if (nestItems.length > 0) {
+        formItems = [...nestItems];
+        formItems.unshift({
+            ...rest,
+            name: 'value',
+            type: type == 'multiCheck' ? 'singleCheck' : type,
+            namePath: namePath?.concat('value')
+        });
+    }
+
     return (
         <Form.List field={field!} noStyle>
             {(fields, { add, remove, move }) => {
+                if (fields.length == 0) {
+                    fields.push({ field: `${field}[0]`, key: 0 });
+                }
                 return (
                     <Space wrap size={'mini'}>
                         {fields.map(({ field }, index) => {
                             return (
                                 <Space key={index} size={'mini'}>
-                                    {subItems?.map((sm, si) => {
-                                        const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
-                                        return (
-                                            <ProFormItem key={si}
-                                                {...sm}
-                                                uiType={uiType}
-                                                noStyle
-                                                fieldName={field + '.' + sm.name}
-                                            />
-                                        )
-                                    })}
+                                    {
+                                        formItems?.map((sm, si) => {
+                                            const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
+                                            return (
+                                                <ProFormItem key={si}
+                                                    {...sm} noStyle
+                                                    uiType={uiType} picSize={'mini'}
+                                                    fieldName={field + '.' + sm.name}
+                                                />
+                                            )
+                                        })
+                                    }
                                     <Form.Item noStyle>
                                         <Space size={'mini'}>
                                             <Link status='error' onClick={() => {
@@ -148,7 +159,6 @@ function ProFormList(props: MyFormItemProps) {
                                             }}>
                                                 <IconDelete />
                                             </Link>
-
                                             {index == fields.length - 1 &&
                                                 <Link onClick={() => { add(); }}>
                                                     <IconPlus />
@@ -167,11 +177,11 @@ function ProFormList(props: MyFormItemProps) {
 }
 
 
-export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemProps[] }) {
+export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemProps[], picSize?: 'mini' }) {
     const {
-        type, label, name, namePath, value, options = [],
-        subItems = [], hide, tips, rules, readOnly, allowCustom,
-        fieldName, noStyle
+        type, label, name, namePath, value, options = [], subItems = [], nestItems = [],
+        hide, tips, rules, readOnly, allowCustom,
+        fieldName, noStyle, picSize
     } = props || {};
 
     const _fieldName = fieldName || namePath?.join('.') || name;
@@ -217,18 +227,24 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                         <Radio.Group options={options} />
                     </Form.Item>
                 ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
-                    <Form.Item {...formItemProps}>
-                        <Select allowClear showSearch
-                            options={options}
-                            allowCreate={allowCustom}
-                            mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
-                            placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
-                            style={{ maxWidth: '358px', minWidth: '180px' }}
-                        />
-                    </Form.Item>
+                    nestItems.length > 0 ? (
+                        <Form.Item {...formItemProps}>
+                            <ProFormList {...props} />
+                        </Form.Item >
+                    ) : (
+                        <Form.Item {...formItemProps}>
+                            <Select allowClear showSearch
+                                options={options}
+                                allowCreate={allowCustom}
+                                mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
+                                placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
+                                style={{ maxWidth: '358px', minWidth: '180px' }}
+                            />
+                        </Form.Item>
+                    )
                 ) : _uiType == 'imageUpload' ? (
                     <Form.Item {...formItemProps}>
-                        <PictureUpload />
+                        <PictureUpload size={picSize} />
                     </Form.Item >
                 ) : _uiType == 'skuEditTable' ? (
                     <Form.Item {...formItemProps}>
@@ -259,11 +275,9 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
 
                     </Form.Item >
                 ) : type == 'multiComplex' ? (
-                    <>
-                        <Form.Item {...formItemProps}>
-                            <ProFormList {...props} />
-                        </Form.Item >
-                    </>
+                    <Form.Item {...formItemProps}>
+                        <ProFormList {...props} />
+                    </Form.Item >
                 ) : <div>---{label}---</div>;
             }}
         </Form.Item>

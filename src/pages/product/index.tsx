@@ -1,15 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Form, Input, Radio, Select, InputNumber, Grid, Upload, Checkbox, Card, Space, Button, Spin, Table, Message } from '@arco-design/web-react';
-import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
-import publishSchema from './publishSchema.json';
-import styles from './index.module.less'
+import { Form, Card, Space, Button, Spin, Message } from '@arco-design/web-react';
 import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import { FieldUiType, MyFormDependRules, MyFormItemProps } from './interface';
-import SkuEditableTable from '../../components/SkuEditableTable';
-import { checkDependRules, getValiRules } from '../../components/untis';
 import * as _ from "lodash"
+import { MyFormItemProps } from './interface';
 import { ProFormItem } from '../../components/multi-complex';
+import styles from './index.module.less'
+import publishSchema from './publishSchema.json';
 
 const data = {
     shopId: 0,
@@ -78,10 +75,6 @@ function ProductPublish(props: {}) {
             "catProp": {
                 "p-13021751": "hh",
                 "p-20000": "3407618",
-                "p-149422948": [{
-                    "material_prop_name": "人造革",
-                    "material_prop_content": 100
-                }],
                 "p-151386995": [{
                     "material_prop_name": "三乙烯基纤维",
                     "material_prop_content": 100
@@ -119,10 +112,7 @@ function ProductPublish(props: {}) {
                 "globalStockNav": "0"
             },
             "saleProp": {
-                "p-1627207": [
-                    "28321",
-                    "28320"
-                ],
+                "p-1627207": [],
                 "p-20509": {
                     "p-20509-sizeGroup": "136553091-women_outdoor_tops",
                     "p-20509-sizeValue": {
@@ -163,6 +153,8 @@ function ProductPublish(props: {}) {
             const values = await formRef.current.validate();
             Message.info('校验通过，提交成功！' + JSON.stringify(values));
         } catch (error) {
+            const values = await formRef.current.getFieldsValue();
+            console.log('values', values);
             Message.error('校验失败，请检查字段！' + JSON.stringify(error));
         } finally {
             setSaveLoading(false);

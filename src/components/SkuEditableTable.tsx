@@ -215,9 +215,15 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                     if (_namePath.length > 0) {
                         const _values = _.get(values, _namePath);
                         for (let _i = 0; _i < _values.length; _i++) {
-                            const _value = _values[_i];
-                            const _label = _prop?.options?.find(f => f.value == _value)?.label || _value;
-                            _skuSaleData[name].push({ label: _label, value: _value })
+                            let _value = _values[_i];
+                            let _options = _prop?.options;
+                            if (typeof _value == 'object') {
+                                _value = _value?.value;
+                            }
+                            if (_value != undefined) {
+                                const _label = _options?.find(f => f.value == _value)?.label || _value;
+                                _skuSaleData[name].push({ label: _label, value: _value })
+                            }
                         }
                     }
                 } else {
@@ -248,9 +254,10 @@ function SkuEditableTable(props: SkuEditableTableProps) {
     useEffect(() => {
         const newData: any[] = [];
         const saleObjs = smoothData(skuSaleData, v => v.value);
+        console.log('skuSaleData', skuSaleData);
+        console.log('saleObjs', saleObjs);
         saleObjs.forEach(obj => {
             const key = getUniquekey(obj);
-            // const _value = propValue?.find((f: any) => (f.key || getUniquekey(f[skuPropName])) == key);
             const _value = propValue?.find((f: any) => getUniquekey(f[skuPropName]) == key);
             let dataItem: any = { key, ..._value }
             dataItem[skuPropName] = obj;
