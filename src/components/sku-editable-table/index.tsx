@@ -149,26 +149,11 @@ function EditableCell(props: any) {
 type SkuEditableTableProps = MyFormItemProps & { allFormItems: MyFormItemProps[], values: any };
 function SkuEditableTable(props: SkuEditableTableProps) {
     const { allFormItems = [], subItems = [], values,
-        name, namePath, value: propValue, 
-        onChange,
-        ...restProps
+        name, namePath, value: propValue, ...restProps
     } = props;
     const [data, setData] = useState<Array<any>>([]);
     const rootField = namePath?.join('.') || name;
     const columns = getSkuTableColumns(subItems, rootField);
-
-    function handleSave(row: any) {
-        const newData = [...data];
-        const index = newData.findIndex((item) => row.key === item.key);
-        newData.splice(index, 1, { ...newData[index], ...row });
-        setData(newData);
-    }
-
-    useEffect(() => {
-        if (JSON.stringify(data) != JSON.stringify(propValue)) {
-            onChange(data);
-        }
-    }, [JSON.stringify(data)])
 
     const skuSaleData = useMemo(() => {
         let _skuSaleData: any = {};
@@ -218,13 +203,11 @@ function SkuEditableTable(props: SkuEditableTableProps) {
             }
         }
         return _skuSaleData;
-    }, [JSON.stringify(values['saleProp'])])
+    }, [JSON.stringify(values[FieldNames.saleProp])])
 
     useEffect(() => {
         const newData: any[] = [];
         const saleObjs = smoothData(skuSaleData, v => v.value);
-        console.log('skuSaleData', skuSaleData);
-        console.log('saleObjs', saleObjs);
         saleObjs.forEach(obj => {
             const key = getUniquekey(obj);
             const _value = propValue?.find((f: any) => getUniquekey(f[FieldNames.skuProps]) == key);
@@ -245,9 +228,6 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                 },
             }}
             columns={columns.map((column) => {
-                const onCell = column.editable
-                    ? () => ({ onHandleSave: handleSave, })
-                    : undefined
                 return {
                     ...column,
                     render(value, item, index) {
@@ -261,7 +241,6 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                         }
                         return value;
                     },
-                    onCell: onCell,
                 }
             })}
             size='small'
