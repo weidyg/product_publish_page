@@ -1,10 +1,14 @@
+
+import { ConfigProvider, Modal } from '@arco-design/web-react';
 import ProductPublish from './pages/product';
-import './app.css'
 
 function App() {
-  return (<>
-    <ProductPublish/>
-  </>)
+  Modal.config({ prefixCls: 'erp', })
+  return (
+    <ConfigProvider prefixCls='erp'>
+      <ProductPublish />
+    </ConfigProvider >
+  )
 }
 
 export default App
