@@ -2,42 +2,10 @@ import React, { useState, useRef, useContext, useEffect, useMemo } from 'react';
 import { Table, Input, Select, Form, FormInstance, InputNumber, TableColumnProps, Popover } from '@arco-design/web-react';
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import { MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
-import { FieldNames, checkDependRules, getUiTypeOrDefault, getUniquekey, getValiRules, smoothData } from '../untis';
+import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getUniquekey, getValiRules, smoothData } from '../untis';
 import styles from './index.module.less'
 import * as _ from "lodash"
 const EditableRowContext = React.createContext<{ index?: number }>({});
-
-
-const getTips = (tipRules: MyFormDependRules[]): [
-    (prev: any, next: any, info: any) => boolean,
-    (values: any) => any
-] => {
-    let shouldUpdateList: Array<(prev: any, next: any, info: any) => boolean> = [];
-    let getValuefunList: Array<(values: any) => any> = [];
-    tipRules?.forEach(tipRule => {
-        const [_shouldUpdate, _getValue] = checkDependRules(tipRule || {});
-        shouldUpdateList.push(_shouldUpdate);
-        getValuefunList.push(_getValue);
-    });
-
-    const shouldUpdate = (prev: any, next: any, info: any) => {
-        for (let index = 0; index < shouldUpdateList.length; index++) {
-            const fun = shouldUpdateList[index];
-            const value = fun && fun(prev, next, info);
-            if (value == true) { return true; }
-        }
-        return false;
-    };
-
-    const getValues = (values: any) => {
-        return (getValuefunList.map((fun, index) => {
-            const value = fun && fun(values);
-            if (value) { return <div key={index} dangerouslySetInnerHTML={{ __html: value }} style={{ width: 'fit-content' }} /> }
-        }));
-    };
-    return [shouldUpdate, getValues];
-}
-
 
 type SkuColumnProps = TableColumnProps & { formProps: MyFormItemProps, rootField?: string };
 const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pName?: string): SkuColumnProps[] => {
@@ -47,6 +15,9 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
         const { label, name, type, tips = [] } = skuItem;
         let dataIndex = pName ? `${pName}.${name}` : name;
         const [_, getTipValues] = getTips(tips);
+        const tipValues = getTipValues(null) || [];
+        const extra = tipValues.map((value, index) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
+
         const uiType = getUiTypeOrDefault(skuItem);
         if (type?.includes('complex')) {
             const _columns = getSkuTableColumns(skuItem?.subItems || [], rootField, dataIndex);
@@ -61,7 +32,7 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
                     )}
                     <span> {label}</span>
                     {tips.length > 0 && (
-                        <Popover content={getTipValues({})}
+                        <Popover content={extra}
                             triggerProps={{
                                 popupStyle: {
                                     width: 'fit-content'

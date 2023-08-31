@@ -69,7 +69,7 @@ export function checkDependRules(dependRules: MyFormDependRules): [
         return needMatch;
     }
     const getValue = (values: any) => {
-        if (!needMatch) { return dependRules?.value; }
+        if (!needMatch || values == null) { return dependRules?.value; }
         let isMatched = checkDependGroup(dependGroup, values);
         return isMatched === false ? undefined : dependRules?.value;
     };
@@ -180,4 +180,34 @@ export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undef
                 return 'multiSelect'
             }
     }
+}
+
+export function getTips(tipRules: MyFormDependRules[]): [
+    (prev: any, next: any, info: any) => boolean,
+    (values: any) => string[]
+] {
+    let shouldUpdateList: Array<(prev: any, next: any, info: any) => boolean> = [];
+    let getValuefunList: Array<(values: any) => any> = [];
+    tipRules?.forEach(tipRule => {
+        const [_shouldUpdate, _getValue] = checkDependRules(tipRule || {});
+        shouldUpdateList.push(_shouldUpdate);
+        getValuefunList.push(_getValue);
+    });
+
+    const shouldUpdate = (prev: any, next: any, info: any) => {
+        for (let index = 0; index < shouldUpdateList.length; index++) {
+            const fun = shouldUpdateList[index];
+            const value = fun && fun(prev, next, info);
+            if (value == true) { return true; }
+        }
+        return false;
+    };
+
+    const getValues = (values: any): string[] => {
+        return (getValuefunList.map((fun, index) => {
+            const value = fun && fun(values);
+            if (value) { return value }
+        }));
+    };
+    return [shouldUpdate, getValues];
 }

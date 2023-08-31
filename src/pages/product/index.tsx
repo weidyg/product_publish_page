@@ -39,11 +39,12 @@ function ProductPublish(props: {}) {
         try {
             const values = await formRef.current.validate();
             await window.saveProductEditData(values);
-            Message.info('校验通过，提交成功！' + JSON.stringify(values));
+            console.log('values success', values);
+            Message.info('校验通过！');
         } catch (error) {
             const values = await formRef.current.getFieldsValue();
-            console.log('values', values);
-            Message.error('校验失败，请检查字段！' + JSON.stringify(error));
+            console.log('validate error', values, error);
+            Message.error('校验失败，请检查字段！');
         } finally {
             setSaveLoading(false);
         }

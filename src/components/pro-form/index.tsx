@@ -4,40 +4,8 @@ import { Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormI
 import { IconDelete, IconPlus, IconEdit, IconImageClose } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
-import { checkDependRules, getUiTypeOrDefault, getValiRules } from '../untis';
+import { checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../untis';
 import SkuEditableTable from '../sku-editable-table';
-
-const getTips = (tipRules: MyFormDependRules[]): [
-    (prev: any, next: any, info: any) => boolean,
-    (values: any) => any
-] => {
-    let shouldUpdateList: Array<(prev: any, next: any, info: any) => boolean> = [];
-    let getValuefunList: Array<(values: any) => any> = [];
-    tipRules?.forEach(tipRule => {
-        const [_shouldUpdate, _getValue] = checkDependRules(tipRule || {});
-        shouldUpdateList.push(_shouldUpdate);
-        getValuefunList.push(_getValue);
-    });
-
-    const shouldUpdate = (prev: any, next: any, info: any) => {
-        for (let index = 0; index < shouldUpdateList.length; index++) {
-            const fun = shouldUpdateList[index];
-            const value = fun && fun(prev, next, info);
-            if (value == true) { return true; }
-        }
-        return false;
-    };
-
-    const getValues = (values: any) => {
-        return (getValuefunList.map((fun, index) => {
-            const value = fun && fun(values);
-            if (value) { return <div key={index} dangerouslySetInnerHTML={{ __html: value }} /> }
-        }));
-    };
-    return [shouldUpdate, getValues];
-}
-
-
 
 function PictureUpload(props: {
     size?: 'default' | 'mini',
@@ -176,7 +144,9 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
             {(values) => {
                 const _hide = isHide(values) === true;
                 if (_hide) { return; }
-                const extra = getTipValues(values);
+                const tipValues = getTipValues(values) || [];
+                const extra = tipValues.map((value, index) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
+
                 const formItemProps: FormItemProps = {
                     label, extra,
                     rules: _rules,
