@@ -1,11 +1,11 @@
 
-import { useMemo, useRef, useState } from 'react';
-import { Form, Space, Input, Button, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, List, Link } from '@arco-design/web-react';
+import { useState } from 'react';
+import { Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconEdit, IconImageClose } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
-import { FieldUiType, MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
-import { checkDependRules, getValiRules } from '../untis';
-import SkuEditableTable from '../SkuEditableTable';
+import { MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
+import { checkDependRules, getUiTypeOrDefault, getValiRules } from '../untis';
+import SkuEditableTable from '../sku-editable-table';
 
 const getTips = (tipRules: MyFormDependRules[]): [
     (prev: any, next: any, info: any) => boolean,
@@ -37,30 +37,7 @@ const getTips = (tipRules: MyFormDependRules[]): [
     return [shouldUpdate, getValues];
 }
 
-const getUiTypeOrDefault = (_props: MyFormItemProps): FieldUiType | undefined => {
-    const { uiType, type, name, allowCustom, options = [], rules = {} } = _props;
-    if (uiType) { return uiType; }
-    if (name == 'sku') {
-        return 'skuEditTable';
-    }
-    switch (type) {
-        case 'input':
-            {
-                const numReg = /^[0-9]+.?[0-9]*/;
-                const isNum = numReg.test(`${rules.maxValue}`) || numReg.test(`${rules.minValue}`);
-                return rules.valueType == 'url' ? 'imageUpload' : isNum ? 'inputNumber' : 'input';
-            }
-        case 'singleCheck':
-            {
-                const length = options.length;
-                return (length > 3 || allowCustom) ? 'select' : 'radio';
-            }
-        case 'multiCheck':
-            {
-                return 'multiSelect'
-            }
-    }
-}
+
 
 function PictureUpload(props: {
     size?: 'default' | 'mini',
@@ -283,54 +260,3 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
         </Form.Item>
     )
 }
-
-
-
-
-
-function MultiComplex() {
-    const formRef = useRef<any>();
-    return (
-        <div style={{ margin: '100px' }}>
-            <Form
-                ref={formRef}
-                autoComplete='off'
-                initialValues={{}}
-                onValuesChange={(_, v) => {
-                    console.log(_, JSON.stringify(v));
-                }}
-            >
-                {/* <ProFormList field='p-1627207'/> */}
-                <Form.Item
-                    field={'value'}
-                    rules={[
-                        { required: true },
-                        { type: 'number', max: 10, min: 2.01, includes: true },
-                        // { type: 'string', maxLength: 10, minLength: 2 },
-                        // { type: 'array', minLength: 2, maxLength: 3 }
-                    ]}
-                >
-                    <Input />
-                    {/* <Select options={[
-                        { label: 'one', value: 0, },
-                        { label: 'two', value: 1, },
-                        { label: 'three', value: 2, },
-                        { label: 'three', value: 3, },
-                        { label: 'three', value: 12, },
-                    ]}
-                        mode='multiple'
-                        allowCreate
-                        style={{ width: '220px' }}
-                    /> */}
-                </Form.Item>
-
-                <Button onClick={async () => {
-                    const values = await formRef.current.validate();
-
-                }}>提交</Button>
-            </Form>
-        </div>
-    );
-}
-
-export default MultiComplex;

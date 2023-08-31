@@ -1,27 +1,13 @@
 import React, { useState, useRef, useContext, useEffect, useMemo } from 'react';
 import { Table, Input, Select, Form, FormInstance, InputNumber, TableColumnProps, Popover } from '@arco-design/web-react';
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
-import { MyFormDependRules, MyFormItemProps } from '../pages/product/interface';
-import { checkDependRules, getUniquekey, getValiRules, smoothData } from './untis';
-import styles from './SkuEditableTable.module.less'
+import { MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
+import { FieldNames, checkDependRules, getUiTypeOrDefault, getUniquekey, getValiRules, smoothData } from '../untis';
+import styles from './index.module.less'
 import * as _ from "lodash"
 const EditableRowContext = React.createContext<{ getForm?: () => FormInstance }>({});
 
 type SkuColumnProps = TableColumnProps & { formProps: MyFormItemProps };
-
-const getDefaultUiType = (props: MyFormItemProps) => {
-    const { allowCustom, type, options = [], uiType, rules = {} } = props;
-    const { valueType, maxValue, minValue, ..._rules } = rules;
-    const length = options.length;
-
-    if (uiType) { return uiType; }
-    if (type == 'singleCheck') {
-        return (length > 3 || allowCustom) ? 'select' : 'radio';
-    } else if (type == 'input') {
-        return (valueType == 'number' || maxValue || minValue) ? 'inputNumber' : 'input';
-    }
-    return uiType;
-}
 
 const getTips = (tipRules: MyFormDependRules[]): [
     (prev: any, next: any, info: any) => boolean,
@@ -61,7 +47,7 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], pName?: string): SkuCo
         const { label, name, type, tips = [] } = skuItem;
         let dataIndex = pName ? `${pName}.${name}` : name;
         const [_, getTipValues] = getTips(tips);
-        const uiType = getDefaultUiType(skuItem);
+        const uiType = getUiTypeOrDefault(skuItem);
         if (type?.includes('complex')) {
             const _columns = getSkuTableColumns(skuItem?.subItems || [], dataIndex);
             columns = columns.concat(_columns);
@@ -131,7 +117,7 @@ function EditableCell(props: any) {
     const { name, rules = {}, options = [] } = formProps || {};
     const { maxValue, minValue, ..._rules } = rules;
 
-    const uiType = getDefaultUiType(formProps);
+    const uiType = getUiTypeOrDefault(formProps);
     const formItemRules = getValiRules(rules);
 
     const cellValueChangeHandler = (value: any) => {
@@ -199,12 +185,10 @@ function SkuEditableTable(props: SkuEditableTableProps) {
         }
     }, [JSON.stringify(data)])
 
-    const skuPropName = 'props';
-    const salePropName = 'saleProp';
     const skuSaleData = useMemo(() => {
         let _skuSaleData: any = {};
-        const skuSaleProps = subItems.find(f => f.name == skuPropName)?.subItems || [];
-        const salePropForms = allFormItems.find(f => f.name == salePropName)?.subItems || [];
+        const skuSaleProps = subItems.find(f => f.name == FieldNames.skuProps)?.subItems || [];
+        const salePropForms = allFormItems.find(f => f.name == FieldNames.saleProp)?.subItems || [];
         for (let index = 0; index < skuSaleProps.length; index++) {
             const { name } = skuSaleProps[index];
             if (name) {
@@ -258,9 +242,9 @@ function SkuEditableTable(props: SkuEditableTableProps) {
         console.log('saleObjs', saleObjs);
         saleObjs.forEach(obj => {
             const key = getUniquekey(obj);
-            const _value = propValue?.find((f: any) => getUniquekey(f[skuPropName]) == key);
+            const _value = propValue?.find((f: any) => getUniquekey(f[FieldNames.skuProps]) == key);
             let dataItem: any = { key, ..._value }
-            dataItem[skuPropName] = obj;
+            dataItem[FieldNames.skuProps] = obj;
             newData.push(dataItem)
         });
         setData(newData);

@@ -1,5 +1,11 @@
 import _, { isNumber } from "lodash";
-import { MyFormDependGroup, MyFormDependRules, MyFormRules } from "../pages/product/interface";
+import { FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/interface";
+
+export const FieldNames = {
+    sku: 'sku',
+    skuProps: 'props',
+    saleProp: 'saleProp',
+};
 
 export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): boolean | undefined {
     const getDeepValue = (values: any, fieldName: string, namePath: string[]) => {
@@ -148,4 +154,30 @@ export function getUniquekey(obj: { [key: string]: any }): string {
         }
     }
     return deepValues.join('|');
+}
+
+
+export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undefined {
+    const { uiType, type, name, allowCustom, options = [], rules = {} } = _props;
+    if (uiType) { return uiType; }
+    if (name == FieldNames.sku) {
+        return 'skuEditTable';
+    }
+    switch (type) {
+        case 'input':
+            {
+                const numReg = /^[0-9]+.?[0-9]*/;
+                const isNum = numReg.test(`${rules.maxValue}`) || numReg.test(`${rules.minValue}`);
+                return rules.valueType == 'url' ? 'imageUpload' : isNum ? 'inputNumber' : 'input';
+            }
+        case 'singleCheck':
+            {
+                const length = options.length;
+                return (length > 3 || allowCustom) ? 'select' : 'radio';
+            }
+        case 'multiCheck':
+            {
+                return 'multiSelect'
+            }
+    }
 }

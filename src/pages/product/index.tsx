@@ -4,142 +4,33 @@ import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
 import * as _ from "lodash"
 import { MyFormItemProps } from './interface';
-import { ProFormItem } from '../../components/multi-complex';
+import { ProFormItem } from '../../components/pro-form';
 import styles from './index.module.less'
-import publishSchema from './publishSchema.json';
+import { FieldNames } from '../../components/untis';
 
-const data = {
-    shopId: 0,
-    spuId: 0,
-};
-
-const skuPropName = 'sku';
-
-const formSchemaJson = publishSchema as MyFormItemProps[]
+declare global {
+    interface Window {
+        loadProductEditData: any,
+        saveProductEditData: any,
+    }
+}
 
 function ProductPublish(props: {}) {
     const formRef = useRef<any>();
     const [loading, setLoading] = useState(true);
-    const [saveLoading, setSaveLoading] = useState(true);
+    const [saveLoading, setSaveLoading] = useState(false);
     const [formSchema, setFormSchema] = useState<MyFormItemProps[]>([]);
 
     useEffect(() => {
         loadingInitData();
     }, [])
 
-    const loadingInitData = () => {
-        const formValues = {
-            "title": "测试标题",
-            "sku": [
-                {
-                    "key": "p-20509_649458002|p-1627207_28321",
-                    "props": {
-                        "p-1627207": "28321",
-                        "p-20509": "649458002"
-                    },
-                    "skuQuality": "mainSku",
-                    "skuStock": 100
-                },
-                {
-                    "key": "p-20509_649458002|p-1627207_28320",
-                    "props": {
-                        "p-1627207": "28320",
-                        "p-20509": "649458002"
-                    },
-                    "skuQuality": "multipleMainSku",
-                    "skuPrice": 10,
-                    "skuStock": 1000
-                },
-                {
-                    "key": "p-20509_66579689|p-1627207_28321",
-                    "props": {
-                        "p-1627207": "28321",
-                        "p-20509": "66579689"
-                    },
-                    "skuQuality": "multipleMainSku",
-                    "skuPrice": 14,
-                    "skuStock": 1000
-                },
-                {
-                    "key": "p-20509_66579689|p-1627207_28320",
-                    "props": {
-                        "p-1627207": "28320",
-                        "p-20509": "66579689"
-                    },
-                    "skuQuality": "multipleMainSku",
-                    "skuPrice": 100,
-                    "skuStock": 1000
-                }
-            ],
-            "stuffStatus": "5",
-            "catProp": {
-                "p-13021751": "hh",
-                "p-20000": "3407618",
-                "p-151386995": [{
-                    "material_prop_name": "三乙烯基纤维",
-                    "material_prop_content": 100
-                }],
-                "p-8560225": "740132938",
-                "p-6103476": "100",
-                // "p-122216608": "3493528",
-                "p-21548": "81826195",
-                "p-25206543": "7695765855",
-                "p-122216345": [
-                    "29456",
-                    "30264400"
-                ],
-                "p-8418084": "493280569",
-                "p-122276315": "80270793",
-                "p-122216589": [
-                    "80211937",
-                    "66036976"
-                ],
-                "p-21299": "27013",
-                "p-20019": [
-                    "7850140",
-                    "3217611"
-                ],
-                "p-122216688": [
-                    "4428937",
-                    "103411"
-                ],
-                "p-20551": "39026210",
-                "p-122216562": "44597",
-                "p-115930179": "483276326",
-                "p-122216586": "4042331"
-            },
-            "globalStock": {
-                "globalStockNav": "0"
-            },
-            "saleProp": {
-                "p-1627207": [],
-                "p-20509": {
-                    "p-20509-sizeGroup": "136553091-women_outdoor_tops",
-                    "p-20509-sizeValue": {
-                        "size-136553091-women_outdoor_tops": [
-                            "649458002",
-                            "66579689"
-                        ]
-                    }
-                }
-            },
-            "deliveryTimeType": "0",
-            "quantity": 10000,
-            "images": {},
-            "subStock": "1",
-            "tbExtractWay": {},
-            "sellPromise": "1",
-            "sevenDaySupport": "true",
-            "guaranteeService": [],
-            "startTime": "0",
-            "tbDeliveryTime": "3",
-            "price": 100,
-            "warranty": "1"
-        }
+    const loadingInitData = async () => {
+        const { schema, data } = await window.loadProductEditData();
         // setTimeout(() => {
         setLoading(false);
-        setFormSchema(formSchemaJson);
-        formRef?.current?.setFieldsValue(formValues);
+        setFormSchema(schema);
+        formRef?.current?.setFieldsValue(data);
         // }, 1000);
     }
 
@@ -151,6 +42,7 @@ function ProductPublish(props: {}) {
                 try { await skuForms[n]?.validate(); } catch (error) { }
             });
             const values = await formRef.current.validate();
+            await window.saveProductEditData(values);
             Message.info('校验通过，提交成功！' + JSON.stringify(values));
         } catch (error) {
             const values = await formRef.current.getFieldsValue();
@@ -168,7 +60,7 @@ function ProductPublish(props: {}) {
                 <Card className={styles['product-content-card']}>
                     <Form.Provider
                         onFormValuesChange={(name, changedValues, info) => {
-                            if (name == 'spuForm' && changedValues?.hasOwnProperty(skuPropName)) {
+                            if (name == 'spuForm' && changedValues?.hasOwnProperty(FieldNames.sku)) {
                                 const { spuForm, ...skuforms } = info?.forms || {};
                                 setSkuForms(skuforms)
                             }
@@ -199,15 +91,13 @@ function ProductPublish(props: {}) {
                         >
                             {formSchema.map((m, i) => {
                                 return <ProFormItem key={i} {...m} formSchema={formSchema} />
-                                // return <div key={i}>{FormItem(m)}</div>
-                                //  return <div key={i}>{ProFormItem(m)}</div>
                             })}
                         </Form>
                     </Form.Provider>
                 </Card>
                 <Card>
                     <Space style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Button type='primary' size='large' loading={loading} onClick={handleSave}>保存</Button>
+                        <Button type='primary' size='large' loading={saveLoading} onClick={handleSave}>保存</Button>
                     </Space>
                 </Card>
             </div>
@@ -216,3 +106,4 @@ function ProductPublish(props: {}) {
 }
 
 export default ProductPublish;
+
