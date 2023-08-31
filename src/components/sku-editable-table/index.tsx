@@ -5,9 +5,8 @@ import { MyFormDependRules, MyFormItemProps } from '../../pages/product/interfac
 import { FieldNames, checkDependRules, getUiTypeOrDefault, getUniquekey, getValiRules, smoothData } from '../untis';
 import styles from './index.module.less'
 import * as _ from "lodash"
-const EditableRowContext = React.createContext<{ getForm?: () => FormInstance }>({});
+const EditableRowContext = React.createContext<{ index?: number }>({});
 
-type SkuColumnProps = TableColumnProps & { formProps: MyFormItemProps };
 
 const getTips = (tipRules: MyFormDependRules[]): [
     (prev: any, next: any, info: any) => boolean,
@@ -40,7 +39,8 @@ const getTips = (tipRules: MyFormDependRules[]): [
 }
 
 
-const getSkuTableColumns = (formItems: MyFormItemProps[], pName?: string): SkuColumnProps[] => {
+type SkuColumnProps = TableColumnProps & { formProps: MyFormItemProps, rootField?: string };
+const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pName?: string): SkuColumnProps[] => {
     let columns: SkuColumnProps[] = [];
     for (let index = 0; index < formItems.length; index++) {
         const skuItem = formItems[index];
@@ -49,7 +49,7 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], pName?: string): SkuCo
         const [_, getTipValues] = getTips(tips);
         const uiType = getUiTypeOrDefault(skuItem);
         if (type?.includes('complex')) {
-            const _columns = getSkuTableColumns(skuItem?.subItems || [], dataIndex);
+            const _columns = getSkuTableColumns(skuItem?.subItems || [], rootField, dataIndex);
             columns = columns.concat(_columns);
         } else {
             columns.push({
@@ -78,6 +78,7 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], pName?: string): SkuCo
                 </div>,
                 editable: true,
                 formProps: skuItem,
+                rootField: rootField,
                 dataIndex: dataIndex,
                 align: 'center',
                 width: uiType == 'input' ? 160 : 120
@@ -90,45 +91,28 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], pName?: string): SkuCo
 
 function EditableRow(props: any) {
     const { index, children, record, className, ...rest } = props;
-    const refForm = useRef(null);
-    const getForm = () => refForm.current;
-    const providerValue: any = { getForm }
+    const providerValue: any = { index }
     return (
         <EditableRowContext.Provider value={providerValue}>
-            <Form
-                id={`skuForm${index}`}
-                ref={refForm}
-                size='small'
-                style={{ display: 'table-row' }}
-                className={`${className} editable-row`}
-                children={children}
-                wrapper='tr'
-                wrapperProps={rest}
-            />
+            <tr {...rest} >
+                {children}
+            </tr>
         </EditableRowContext.Provider>
     );
 }
 
 function EditableCell(props: any) {
-    const { children, record, rowData, column, onHandleSave } = props;
-    const { getForm } = useContext(EditableRowContext);
+    const { children, rowData, column, onHandleSave } = props;
 
-    const { dataIndex, formProps, } = column;
+    const { rootField, dataIndex, formProps, } = column;
     const { name, rules = {}, options = [] } = formProps || {};
     const { maxValue, minValue, ..._rules } = rules;
 
     const uiType = getUiTypeOrDefault(formProps);
     const formItemRules = getValiRules(rules);
 
-    const cellValueChangeHandler = (value: any) => {
-        const form = getForm && getForm();
-        form?.validate([column.dataIndex], (errors: any, values: any) => {
-            if (!errors || !errors[column.dataIndex]) {
-                onHandleSave && onHandleSave({ ...rowData, ...values });
-            }
-        });
-    };
-
+    const { index } = useContext(EditableRowContext);
+    const field = `${rootField}[${index}]${dataIndex}`;
     const initialValue = _.get(rowData, dataIndex);
     const isPrice = name?.toLowerCase()?.includes('price');
     return (
@@ -137,18 +121,15 @@ function EditableCell(props: any) {
             labelCol={{ span: 0 }}
             wrapperCol={{ span: 24 }}
             initialValue={initialValue}
-            field={dataIndex}
+            field={field}
             rules={formItemRules}
         >
             {uiType == 'input' ? (
-                <Input
-                    onPressEnter={cellValueChangeHandler}
-                />
+                <Input />
             ) : uiType == 'inputNumber' ? (
                 <InputNumber min={minValue?.value}
                     precision={isPrice ? 2 : undefined}
                     step={isPrice ? 0.01 : undefined}
-                    onChange={cellValueChangeHandler}
                 />
             ) : uiType == 'select' ? (
                 <Select options={options}
@@ -157,7 +138,6 @@ function EditableCell(props: any) {
                         autoAlignPopupMinWidth: true,
                         position: 'bl',
                     }}
-                    onChange={cellValueChangeHandler}
                 />
             ) : (
                 <>{children}</>
@@ -168,9 +148,14 @@ function EditableCell(props: any) {
 
 type SkuEditableTableProps = MyFormItemProps & { allFormItems: MyFormItemProps[], values: any };
 function SkuEditableTable(props: SkuEditableTableProps) {
-    const { allFormItems = [], subItems = [], values, name, value: propValue, onChange, ...restProps } = props;
+    const { allFormItems = [], subItems = [], values,
+        name, namePath, value: propValue, 
+        onChange,
+        ...restProps
+    } = props;
     const [data, setData] = useState<Array<any>>([]);
-    const columns = getSkuTableColumns(subItems);
+    const rootField = namePath?.join('.') || name;
+    const columns = getSkuTableColumns(subItems, rootField);
 
     function handleSave(row: any) {
         const newData = [...data];

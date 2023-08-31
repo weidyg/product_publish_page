@@ -34,13 +34,9 @@ function ProductPublish(props: {}) {
         // }, 1000);
     }
 
-    const [skuForms, setSkuForms] = useState<any>({});
     const handleSave = async () => {
         setSaveLoading(true);
         try {
-            Object.keys(skuForms || {}).forEach(async (n) => {
-                try { await skuForms[n]?.validate(); } catch (error) { }
-            });
             const values = await formRef.current.validate();
             await window.saveProductEditData(values);
             Message.info('校验通过，提交成功！' + JSON.stringify(values));
@@ -58,42 +54,30 @@ function ProductPublish(props: {}) {
             className={styles['product']} >
             <div className={styles['product-content']}>
                 <Card className={styles['product-content-card']}>
-                    <Form.Provider
-                        onFormValuesChange={(name, changedValues, info) => {
-                            if (name == 'spuForm' && changedValues?.hasOwnProperty(FieldNames.sku)) {
-                                const { spuForm, ...skuforms } = info?.forms || {};
-                                setSkuForms(skuforms)
-                            }
-                            console.log('onFormValuesChange: ', name, changedValues, info);
+                    <Form id='spuForm'
+                        ref={formRef}
+                        layout='vertical'
+                        autoComplete='off'
+                        scrollToFirstError={true}
+                        onValuesChange={(_, values) => {
+                            console.log(values);
                         }}
-                        onFormSubmit={(name, values, info) => {
-                            console.log('onFormSubmit: ', name, values, info);
-                        }}>
-                        <Form id='spuForm'
-                            ref={formRef}
-                            layout='vertical'
-                            autoComplete='off'
-                            scrollToFirstError={true}
-                            onValuesChange={(_, values) => {
-                                console.log(values);
-                            }}
-                            validateMessages={{
-                                required: (_, { label }) => `${label}必须填写`,
-                                string: {
-                                    length: `字符数必须是 #{length}`,
-                                    match: `不匹配正则 #{pattern}`,
-                                },
-                                number: {
-                                    min: `最小值为 #{min}`,
-                                    max: `最大值为 #{max}`,
-                                },
-                            }}
-                        >
-                            {formSchema.map((m, i) => {
-                                return <ProFormItem key={i} {...m} formSchema={formSchema} />
-                            })}
-                        </Form>
-                    </Form.Provider>
+                        validateMessages={{
+                            required: (_, { label }) => `${label || ''}不能为空`,
+                            string: {
+                                length: `字符数必须是 #{length}`,
+                                match: `不匹配正则 #{pattern}`,
+                            },
+                            number: {
+                                min: `最小值为 #{min}`,
+                                max: `最大值为 #{max}`,
+                            },
+                        }}
+                    >
+                        {formSchema.map((m, i) => {
+                            return <ProFormItem key={i} {...m} formSchema={formSchema} />
+                        })}
+                    </Form>
                 </Card>
                 <Card>
                     <Space style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
