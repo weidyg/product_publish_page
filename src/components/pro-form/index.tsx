@@ -14,7 +14,7 @@ function PictureUpload(props: {
     onChange?: (value: string) => {}
 }) {
     const { size = 'default', text = '图片', value, onChange } = props;
-    const [file, setFile] = useState<any>(value && {status:'error', uid: new Date(), url: value });
+    const [file, setFile] = useState<any>(value && { status: 'error', uid: new Date(), url: value });
     return (
         <Upload
             action='/'
@@ -29,10 +29,10 @@ function PictureUpload(props: {
             }}
             showUploadList={false}
         >
-            <div className={`${styles['upload-picture']} ${size == 'mini' && styles['mini']}`}>
+            <div className={`${styles['upload-picture']} ${size == 'mini' ? styles['mini'] : ''}`}>
                 {file?.url ? (
                     <>
-                        <Image className={styles['upload-picture-img']}
+                        <Image className={styles['upload-picture-image']}
                             src={file.url} loader={true} />
                         <div className={styles['upload-picture-mask']}>
                             <IconEdit />
