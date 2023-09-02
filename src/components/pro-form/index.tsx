@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Image, Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link } from '@arco-design/web-react';
+import { Image, Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link, Button } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconEdit, IconImageClose } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { MyFormItemProps } from '../../pages/product/interface';
@@ -59,7 +59,7 @@ function PictureUpload(props: {
 }
 
 function ProFormList(props: MyFormItemProps) {
-    const { type, name, namePath, value, subItems = [], nestItems = [], ...rest } = props;
+    const { type, label, name, namePath, value, subItems = [], nestItems = [], ...rest } = props;
     const field = namePath?.join('.') || name;
 
     let formItems = [...subItems];
@@ -76,9 +76,6 @@ function ProFormList(props: MyFormItemProps) {
     return (
         <Form.List field={field!} noStyle>
             {(fields, { add, remove, move }) => {
-                if (fields.length == 0) {
-                    fields.push({ field: `${field}[0]`, key: 0 });
-                }
                 return (
                     <Space wrap size={'mini'}>
                         {fields.map(({ field }, index) => {
@@ -97,22 +94,22 @@ function ProFormList(props: MyFormItemProps) {
                                         })
                                     }
                                     <Form.Item noStyle>
-                                        <Space size={'mini'}>
-                                            <Link status='error' onClick={() => {
-                                                remove(index); if (fields.length == 1) { add(); }
-                                            }}>
-                                                <IconDelete />
-                                            </Link>
-                                            {index == fields.length - 1 &&
-                                                <Link onClick={() => { add(); }}>
-                                                    <IconPlus />
-                                                </Link>
-                                            }
-                                        </Space>
+                                        <Link status='error' onClick={() => { remove(index); }}>
+                                            <IconDelete />
+                                        </Link>
                                     </Form.Item>
                                 </Space>
                             );
                         })}
+                        <Space key={'add'} size={'mini'}>
+                            <Form.Item noStyle>
+                                <Button type='text'
+                                icon={<IconPlus />} 
+                                onClick={() => { add(); }}>
+                                    添加{label}
+                                </Button>
+                            </Form.Item>
+                        </Space>
                     </Space>
                 );
             }}
@@ -123,7 +120,7 @@ function ProFormList(props: MyFormItemProps) {
 
 export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemProps[], picSize?: 'mini' }) {
     const {
-        type, label, name, namePath, value, options = [], subItems = [], nestItems = [],
+        type, label='', name, namePath, value, options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
         fieldName, noStyle, picSize
     } = props || {};

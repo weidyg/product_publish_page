@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Form, Card, Space, Button, Spin, Message } from '@arco-design/web-react';
+import { Form, Card, Space, Button, Spin, Message, PageHeader } from '@arco-design/web-react';
 import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
 import * as _ from "lodash"
@@ -18,6 +18,8 @@ declare global {
 function ProductPublish(props: {}) {
     const formRef = useRef<any>();
     const [loading, setLoading] = useState(true);
+    const [platformName, setPlatformName] = useState('');
+    const [shopName, setShopName] = useState('');
     const [saveLoading, setSaveLoading] = useState(false);
     const [formSchema, setFormSchema] = useState<MyFormItemProps[]>([]);
 
@@ -26,10 +28,12 @@ function ProductPublish(props: {}) {
     }, [])
 
     const loadingInitData = async () => {
-        const { schema, data } = await window.loadProductEditData();
+        const { platformName, shopName, schema, data } = await window.loadProductEditData();
         // setTimeout(() => {
         setLoading(false);
         setFormSchema(schema);
+        setPlatformName(platformName);
+        setShopName(shopName);
         formRef?.current?.setFieldsValue(data);
         // }, 1000);
     }
@@ -40,7 +44,7 @@ function ProductPublish(props: {}) {
             const values = await formRef.current.validate();
             await window.saveProductEditData(values);
             console.log('values success', values);
-            Message.info('校验通过！');
+            Message.info('保存成功！');
         } catch (error) {
             const values = await formRef.current.getFieldsValue();
             console.log('validate error', values, error);
@@ -54,6 +58,7 @@ function ProductPublish(props: {}) {
         <Spin loading={loading} dot tip='页面加载中，请稍后...'
             className={styles['product']} >
             <div className={styles['product-content']}>
+                <PageHeader title={platformName} subTitle={shopName} />
                 <Card className={styles['product-content-card']}>
                     <Form id='spuForm'
                         ref={formRef}
