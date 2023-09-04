@@ -1,8 +1,8 @@
-import React, { useState, useRef, useContext, useEffect, useMemo } from 'react';
-import { Table, Input, Select, Form, FormInstance, InputNumber, TableColumnProps, Popover } from '@arco-design/web-react';
+import React, { useState, useContext, useEffect, useMemo } from 'react';
+import { Table, Input, Select, Form, InputNumber, TableColumnProps, Popover } from '@arco-design/web-react';
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
-import { MyFormDependRules, MyFormItemProps } from '../../pages/product/interface';
-import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getUniquekey, getValiRules, smoothData } from '../untis';
+import { MyFormItemProps } from '../../pages/product/interface';
+import { FieldNames, getTips, getUiTypeOrDefault, getUniquekey, getValiRules, smoothData } from '../untis';
 import styles from './index.module.less'
 import * as _ from "lodash"
 const EditableRowContext = React.createContext<{ index?: number }>({});
@@ -120,7 +120,7 @@ function EditableCell(props: any) {
 type SkuEditableTableProps = MyFormItemProps & { allFormItems: MyFormItemProps[], values: any };
 function SkuEditableTable(props: SkuEditableTableProps) {
     const { allFormItems = [], subItems = [], values,
-        name, namePath, value: propValue, ...restProps
+        name, namePath, value: propValue, onChange, ...restProps
     } = props;
     const [data, setData] = useState<Array<any>>([]);
     const rootField = namePath?.join('.') || name;
@@ -182,11 +182,12 @@ function SkuEditableTable(props: SkuEditableTableProps) {
         saleObjs.forEach(obj => {
             const key = getUniquekey(obj);
             const _value = propValue?.find((f: any) => getUniquekey(f[FieldNames.skuProps]) == key);
-            let dataItem: any = { key, ..._value }
+             let dataItem: any = { key, ..._value }
             dataItem[FieldNames.skuProps] = obj;
             newData.push(dataItem)
         });
         setData(newData);
+        onChange && onChange(newData);
     }, [JSON.stringify(skuSaleData)])
 
     return (<>

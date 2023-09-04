@@ -22,6 +22,7 @@ export type MyFormItemProps = {
     onChange?: any;
     noLabel?: boolean;
     noStyle?: boolean;
+    allowClear?:boolean;
 }
 export type MyFormRules = {
     valueType?: string;

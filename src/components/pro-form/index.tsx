@@ -1,12 +1,11 @@
 
 import { ReactNode, useMemo, useState } from 'react';
-import { Image, Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link, Button, Trigger, Popover } from '@arco-design/web-react';
-import { IconDelete, IconPlus, IconEdit, IconImageClose } from '@arco-design/web-react/icon';
+import { Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link, Button, Popover } from '@arco-design/web-react';
+import { IconDelete, IconPlus, IconEdit } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { MyFormItemProps } from '../../pages/product/interface';
 import { checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../untis';
 import SkuEditableTable from '../sku-editable-table';
-import { rest } from 'lodash';
 
 function PictureUpload(props: {
     size?: 'default' | 'mini',
@@ -136,7 +135,7 @@ function ProFormList(props: MyFormItemProps) {
                                             const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                                             return (
                                                 <ProFormItem key={si}
-                                                    {...sm} noStyle
+                                                    {...sm} noStyle allowClear={false}
                                                     uiType={uiType} picSize={'mini'}
                                                     fieldName={field + '.' + sm.name}
                                                 />
@@ -172,7 +171,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
     const {
         type, label = '', name, namePath, value, options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
-        fieldName, noStyle, picSize
+        fieldName, noStyle, picSize, allowClear = true
     } = props || {};
 
     const _fieldName = fieldName || namePath?.join('.') || name;
@@ -203,7 +202,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                 }
                 return _uiType == 'input' ? (
                     <Form.Item {...formItemProps} >
-                        <Input allowClear
+                        <Input allowClear={allowClear}
                             placeholder={`请输入${label}`}
                             style={{ maxWidth: '734px', minWidth: '220px' }}
                         />
@@ -226,7 +225,8 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                         </Form.Item >
                     ) : (
                         <Form.Item {...formItemProps}>
-                            <Select allowClear showSearch
+                            <Select showSearch
+                                allowClear={allowClear}
                                 options={options}
                                 allowCreate={allowCustom}
                                 mode={_uiType == 'multiSelect' ? 'multiple' : undefined}

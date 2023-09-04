@@ -12,7 +12,7 @@
   <div id="root"></div>
   <script>
     // document.body.setAttribute('arco-theme', 'dark');
-    var id = 2042;
+    var id = 1;
 
     function loadProductEditData() {
       const data = { ItemId: id };
@@ -58,9 +58,9 @@
         .catch(error => {
           console.log("error", JSON.stringify(error));
           return Promise.reject({
-            code: 0,
-            message:'请求错误!',
-            details:`${error}` ,
+            code: error?.code,
+            message: error?.message || '请求错误!',
+            details: error?.details || `${error}`,
           });
         });
     }
