@@ -1,11 +1,12 @@
 
-import { useState } from 'react';
-import { Image, Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link, Button } from '@arco-design/web-react';
+import { ReactNode, useMemo, useState } from 'react';
+import { Image, Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link, Button, Trigger, Popover } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconEdit, IconImageClose } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { MyFormItemProps } from '../../pages/product/interface';
 import { checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../untis';
 import SkuEditableTable from '../sku-editable-table';
+import { rest } from 'lodash';
 
 function PictureUpload(props: {
     size?: 'default' | 'mini',
@@ -13,48 +14,97 @@ function PictureUpload(props: {
     value?: string,
     onChange?: (value: string) => {}
 }) {
-    const { size = 'default', text = '图片', value, onChange } = props;
-    const [file, setFile] = useState<any>(value && { status: 'error', uid: new Date(), url: value });
-    return (
-        <Upload
-            action='/'
-            fileList={file ? [file] : []}
-            onChange={(_, currentFile) => {
-                const url = URL.createObjectURL(currentFile?.originFile as any);
-                setFile({ ...currentFile, url });
-                onChange && onChange(url);
-            }}
-            onProgress={(currentFile) => {
-                setFile(currentFile);
-            }}
-            showUploadList={false}
-        >
-            <div className={`${styles['upload-picture']} ${size == 'mini' ? styles['mini'] : ''}`}>
-                {file?.url ? (
-                    <>
-                        <Image className={styles['upload-picture-image']}
-                            src={file.url} loader={true} />
-                        <div className={styles['upload-picture-mask']}>
-                            <IconEdit />
-                        </div>
-                    </>
-                ) : (
-                    <div title={text}
-                        className={styles['upload-picture-text']}>
-                        <IconPlus />
-                        <div>{text}</div>
+    const { size = 'default', text = '图片', value, onChange, ...rest } = props;
+
+    const defaultFile = useMemo(() => {
+        return value && { uid: new Date(), url: value };
+    }, [value]);
+    const [file, setFile] = useState<any>(defaultFile);
+
+    const handleChange = (currentFile: any) => {
+        let newFile;
+        if (currentFile) {
+            const url = URL.createObjectURL(currentFile?.originFile as any);
+            newFile = { ...currentFile, url };
+        }
+        if (file?.url != newFile?.url) {
+            setFile(newFile);
+            onChange && onChange(newFile?.url);
+        }
+    }
+
+    function UploadImage(props: { children?: ReactNode }) {
+        const { children } = props;
+        return <>
+            <Upload
+                action='/'
+                fileList={file ? [file] : []}
+                onChange={(_, currentFile) => {
+                    handleChange(currentFile);
+                }}
+                onProgress={(currentFile) => {
+                    setFile(currentFile);
+                }}
+                showUploadList={false}
+            >
+                {children}
+            </Upload>
+        </>
+    }
+
+    function ShowImage(props: { size: 'default' | 'mini' | 'large' }) {
+        const { size = 'default' } = props;
+        return <>
+            <div className={`${styles['upload-picture']} ${styles[size]}`}>
+                <img className={styles['upload-picture-image']} src={file?.url} />
+                {size != 'mini' &&
+                    <div className={styles['upload-picture-mask']}>
+                        <Space size={'medium'}>
+                            <UploadImage>
+                                <IconEdit />
+                            </UploadImage>
+                            <a onClick={() => handleChange(null)}>
+                                <IconDelete />
+                            </a>
+                        </Space>
                     </div>
-                )}
-                {file?.status === 'uploading' && file.percent < 100 && (
-                    <Progress
-                        size={size}
-                        type='circle'
-                        percent={file.percent}
-                        className={styles['upload-picture-progress']}
-                    />
-                )}
+                }
             </div>
-        </Upload>
+        </>
+    }
+
+    return (
+        <div {...rest}>  {
+            file?.url ? (
+                size == 'mini' ? (
+                    <Popover content={<ShowImage size={'large'} />} >
+                        <div><ShowImage size={size} /></div>
+                    </Popover>
+                ) : (
+                    <ShowImage size={size} />
+                )
+            ) : (
+                <UploadImage>
+                    <div className={`${styles['upload-picture']} ${styles[size]}`}>
+                        {(file?.status === 'uploading' && file.percent < 100) ? (
+                            <Progress
+                                size={size}
+                                type='circle'
+                                percent={file.percent}
+                                className={styles['upload-picture-progress']}
+                            />
+                        ) : (
+                            <div title={text}
+                                className={styles['upload-picture-text']}>
+                                <IconPlus />
+                                <div>{text}</div>
+                            </div>
+                        )}
+                    </div>
+                </UploadImage>
+            )
+        }
+        </div>
     );
 }
 
@@ -104,8 +154,8 @@ function ProFormList(props: MyFormItemProps) {
                         <Space key={'add'} size={'mini'}>
                             <Form.Item noStyle>
                                 <Button type='text'
-                                icon={<IconPlus />} 
-                                onClick={() => { add(); }}>
+                                    icon={<IconPlus />}
+                                    onClick={() => { add(); }}>
                                     添加{label}
                                 </Button>
                             </Form.Item>
@@ -120,7 +170,7 @@ function ProFormList(props: MyFormItemProps) {
 
 export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemProps[], picSize?: 'mini' }) {
     const {
-        type, label='', name, namePath, value, options = [], subItems = [], nestItems = [],
+        type, label = '', name, namePath, value, options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
         fieldName, noStyle, picSize
     } = props || {};
