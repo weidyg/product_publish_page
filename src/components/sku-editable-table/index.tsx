@@ -75,7 +75,7 @@ function EditableRow(props: any) {
 
 function EditableCell(props: any) {
     const { children, rowData, column, onHandleSave } = props;
-    console.log('EditableCell', props);
+
     const { rootField, dataIndex, formProps, uiType } = column;
     const { name, rules = {}, options = [] } = formProps || {};
     const { maxValue, minValue, ..._rules } = rules;
@@ -119,7 +119,7 @@ function EditableCell(props: any) {
 type SkuEditableTableProps = MyFormItemProps & { allFormItems: MyFormItemProps[], values: any };
 function SkuEditableTable(props: SkuEditableTableProps) {
     const { allFormItems = [], subItems = [], values,
-        name, namePath, value: propValue, onChange
+        name, namePath, value: propValue, onChange, ...restProps
     } = props;
     const [data, setData] = useState<Array<any>>([]);
     const rootField = namePath?.join('.') || name;
@@ -187,7 +187,7 @@ function SkuEditableTable(props: SkuEditableTableProps) {
             const key = getUniquekey(obj);
             const _value = propValue?.find((f: any) => getUniquekey(f[skuSalePropName]) == key);
             let dataItem: any = { key, ..._value }
-            dataItem[salePropName] = obj;
+            dataItem[skuSalePropName] = obj;
             newData.push(dataItem)
         });
         setData(newData);
