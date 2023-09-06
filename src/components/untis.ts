@@ -5,6 +5,7 @@ export const FieldNames = {
     sku: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Sku),
     skuProps: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SkuProps),
     saleProp: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SaleProp),
+    desc: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Description),
 };
 
 export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): boolean | undefined {
@@ -133,7 +134,7 @@ export function sortObj(obj: { [key: string]: any }): any {
 }
 
 export function getUniquekey(obj: { [key: string]: any }): string {
-    const newObj = sortObj(obj);
+    const newObj = sortObj(obj) || {};
     const keys = Object.keys(newObj);
     let deepValues = [];
     for (let i = 0; i < keys.length; i++) {
@@ -162,6 +163,7 @@ export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undef
     if (uiType) { return uiType; }
 
     if (FieldNames.sku(_props)) { return 'skuEditTable'; }
+    if (FieldNames.desc(_props)) { return 'richTextEditor'; }
     switch (type) {
         case 'input':
             {

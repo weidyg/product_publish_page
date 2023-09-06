@@ -1,7 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Form, Card, Space, Button, Spin, Message, PageHeader, Result } from '@arco-design/web-react';
-import ReactQuill from 'react-quill';
-import "react-quill/dist/quill.snow.css";
 import * as _ from "lodash"
 import { MyFormItemProps } from './interface';
 import { ProFormItem } from '../../components/pro-form';
@@ -76,7 +74,9 @@ function ProductPublish(props: {}) {
                             extra={
                                 <Button type='primary'
                                     onClick={() => { location.reload(); }}
-                                >刷新</Button>
+                                >
+                                    刷新
+                                </Button>
                             }
                         />
                     </div>

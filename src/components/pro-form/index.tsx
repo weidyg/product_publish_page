@@ -4,8 +4,10 @@ import { Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormI
 import { IconDelete, IconPlus, IconEdit } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { MyFormItemProps } from '../../pages/product/interface';
-import { checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../untis';
+import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../untis';
 import SkuEditableTable from '../sku-editable-table';
+import ReactQuill, { Quill } from 'react-quill';
+import "react-quill/dist/quill.snow.css";
 
 function PictureUpload(props: {
     size?: 'default' | 'mini',
@@ -179,8 +181,9 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
     const _rules = getValiRules(rules);
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
     const [disShouldUpdate, isHide] = checkDependRules(hide || {});
+
     const shouldUpdate = (prev: any, next: any, info: any) => {
-        // return tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
+        // const _shouldUpdate = tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
         return true;
     }
     const isPrice = name?.toLocaleLowerCase()?.includes('price');
@@ -244,6 +247,13 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     <Form.Item {...formItemProps}>
                         <PictureUpload size={picSize} />
                     </Form.Item >
+                ) : _uiType == 'richTextEditor' ? (
+                    <Form.Item {...formItemProps}>
+                        <ReactQuill
+                            theme="snow"
+
+                        />
+                    </Form.Item>
                 ) : _uiType == 'skuEditTable' ? (
                     <Form.Item {...formItemProps}>
                         <SkuEditableTable {...props}

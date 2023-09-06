@@ -23,7 +23,6 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
             const _columns = getSkuTableColumns(skuItem?.subItems || [], rootField, dataIndex, skuProps);
             columns = columns.concat(_columns);
         } else {
-            console.log(label + 'uiType', uiType);
             columns.push({
                 title: <div className={styles['product-sku-table-title']}>
                     {skuItem?.rules?.required && (
@@ -76,7 +75,7 @@ function EditableRow(props: any) {
 
 function EditableCell(props: any) {
     const { children, rowData, column, onHandleSave } = props;
-
+    console.log('EditableCell', props);
     const { rootField, dataIndex, formProps, uiType } = column;
     const { name, rules = {}, options = [] } = formProps || {};
     const { maxValue, minValue, ..._rules } = rules;
@@ -120,7 +119,7 @@ function EditableCell(props: any) {
 type SkuEditableTableProps = MyFormItemProps & { allFormItems: MyFormItemProps[], values: any };
 function SkuEditableTable(props: SkuEditableTableProps) {
     const { allFormItems = [], subItems = [], values,
-        name, namePath, value: propValue, onChange, ...restProps
+        name, namePath, value: propValue, onChange
     } = props;
     const [data, setData] = useState<Array<any>>([]);
     const rootField = namePath?.join('.') || name;
@@ -181,7 +180,6 @@ function SkuEditableTable(props: SkuEditableTableProps) {
         }
         return _skuSaleData;
     }, [JSON.stringify(values[salePropName])])
-
     useEffect(() => {
         const newData: any[] = [];
         const saleObjs = smoothData(skuSaleData, v => v.value);
@@ -208,7 +206,7 @@ function SkuEditableTable(props: SkuEditableTableProps) {
             columns={columns.map((column) => {
                 return {
                     ...column,
-                    render(value, item, index) {
+                    render(value, _item, _index) {
                         if (value) {
                             const lastName1 = column.dataIndex?.split('.');
                             const lastName = lastName1 && lastName1[lastName1?.length - 1];

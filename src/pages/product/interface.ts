@@ -36,7 +36,7 @@ export type MyFormRules = {
 }
 export type FormItemType = 'input' | 'multiInput' | 'singleCheck' | 'multiCheck' | 'complex' | 'multiComplex';
 export type FieldUiType = 'input' | 'inputNumber' | 'radio' | 'select' | 'checkBox' | 'multiSelect' | 'imageUpload'
-    | 'skuEditTable';
+    | 'skuEditTable'|'richTextEditor';
 
 export type MyFormDependRules = {
     value?: any,
