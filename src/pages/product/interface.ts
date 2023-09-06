@@ -15,6 +15,7 @@ export type MyFormItemProps = {
 
     tips?: MyFormDependRules[];
     hide?: MyFormDependRules;
+    tags?: FieldTag[];
 
     // // [key: string]: any;
     fieldName?: string;
@@ -22,7 +23,7 @@ export type MyFormItemProps = {
     onChange?: any;
     noLabel?: boolean;
     noStyle?: boolean;
-    allowClear?:boolean;
+    allowClear?: boolean;
 }
 export type MyFormRules = {
     valueType?: string;
@@ -53,4 +54,13 @@ export type MyFormDependExpress = {
     symbol?: '==' | '!='
 }
 
-
+export enum FieldTag {
+    Title = "n:title",
+    Weight = "n:weight",
+    Price = "n:price",
+    ProductNo = "n:art_no",
+    Description = "n:desc",
+    Sku = "n:sku",
+    SaleProp = "n:sale_prop",
+    SkuProps = "n:sku_prop",
+}

@@ -6,7 +6,6 @@ import * as _ from "lodash"
 import { MyFormItemProps } from './interface';
 import { ProFormItem } from '../../components/pro-form';
 import styles from './index.module.less'
-import { FieldNames } from '../../components/untis';
 
 declare global {
     interface Window {

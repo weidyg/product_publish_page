@@ -1,10 +1,10 @@
 import _, { isNumber } from "lodash";
-import { FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/interface";
+import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/interface";
 
 export const FieldNames = {
-    sku: 'sku',
-    skuProps: 'props',
-    saleProp: 'saleProp',
+    sku: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Sku),
+    skuProps: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SkuProps),
+    saleProp: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SaleProp),
 };
 
 export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): boolean | undefined {
@@ -160,20 +160,19 @@ export function getUniquekey(obj: { [key: string]: any }): string {
 export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undefined {
     const { uiType, type, name, allowCustom, options = [], rules = {} } = _props;
     if (uiType) { return uiType; }
-    if (name == FieldNames.sku) {
-        return 'skuEditTable';
-    }
+
+    if (FieldNames.sku(_props)) { return 'skuEditTable'; }
     switch (type) {
         case 'input':
             {
                 const numReg = /^[0-9]+.?[0-9]*/;
-                const isNum = numReg.test(`${rules.maxValue}`) || numReg.test(`${rules.minValue}`);
+                const isNum = name?.includes('price') || numReg.test(`${rules.maxValue}`) || numReg.test(`${rules.minValue}`);
                 return rules.valueType == 'url' ? 'imageUpload' : isNum ? 'inputNumber' : 'input';
             }
         case 'singleCheck':
             {
                 const length = options.length;
-                return (length > 3 || allowCustom) ? 'select' : 'radio';
+                return (length == 0 || length > 3 || allowCustom) ? 'select' : 'radio';
             }
         case 'multiCheck':
             {

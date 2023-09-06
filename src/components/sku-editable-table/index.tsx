@@ -1,14 +1,14 @@
 import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { Table, Input, Select, Form, InputNumber, TableColumnProps, Popover } from '@arco-design/web-react';
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
-import { MyFormItemProps } from '../../pages/product/interface';
+import { FieldUiType, MyFormItemProps } from '../../pages/product/interface';
 import { FieldNames, getTips, getUiTypeOrDefault, getUniquekey, getValiRules, smoothData } from '../untis';
 import styles from './index.module.less'
 import * as _ from "lodash"
 const EditableRowContext = React.createContext<{ index?: number }>({});
 
-type SkuColumnProps = TableColumnProps & { formProps: MyFormItemProps, rootField?: string };
-const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pName?: string): SkuColumnProps[] => {
+type SkuColumnProps = TableColumnProps & { formProps: MyFormItemProps, rootField?: string, uiType?: FieldUiType };
+const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pName?: string, isSkuProps?: boolean): SkuColumnProps[] => {
     let columns: SkuColumnProps[] = [];
     for (let index = 0; index < formItems.length; index++) {
         const skuItem = formItems[index];
@@ -17,12 +17,13 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
         const [_, getTipValues] = getTips(tips);
         const tipValues = getTipValues(null) || [];
         const extra = tipValues.map((value, index) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
-
-        const uiType = getUiTypeOrDefault(skuItem);
+        const uiType = !isSkuProps ? getUiTypeOrDefault(skuItem) : undefined;
         if (type?.includes('complex')) {
-            const _columns = getSkuTableColumns(skuItem?.subItems || [], rootField, dataIndex);
+            const skuProps = FieldNames.skuProps(skuItem);
+            const _columns = getSkuTableColumns(skuItem?.subItems || [], rootField, dataIndex, skuProps);
             columns = columns.concat(_columns);
         } else {
+            console.log(label + 'uiType', uiType);
             columns.push({
                 title: <div className={styles['product-sku-table-title']}>
                     {skuItem?.rules?.required && (
@@ -48,11 +49,12 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
                     )}
                 </div>,
                 editable: true,
-                formProps: skuItem,
-                rootField: rootField,
                 dataIndex: dataIndex,
                 align: 'center',
-                width: uiType == 'input' ? 160 : 120
+                width: uiType ? 140 : 100,
+                formProps: skuItem,
+                rootField: rootField,
+                uiType: uiType,
             });
         }
     }
@@ -75,11 +77,9 @@ function EditableRow(props: any) {
 function EditableCell(props: any) {
     const { children, rowData, column, onHandleSave } = props;
 
-    const { rootField, dataIndex, formProps, } = column;
+    const { rootField, dataIndex, formProps, uiType } = column;
     const { name, rules = {}, options = [] } = formProps || {};
     const { maxValue, minValue, ..._rules } = rules;
-
-    const uiType = getUiTypeOrDefault(formProps);
     const formItemRules = getValiRules(rules);
 
     const { index } = useContext(EditableRowContext);
@@ -126,10 +126,16 @@ function SkuEditableTable(props: SkuEditableTableProps) {
     const rootField = namePath?.join('.') || name;
     const columns = getSkuTableColumns(subItems, rootField);
 
+    const skuSaleProp = subItems.find(f => FieldNames.skuProps(f));
+    const saleProp = allFormItems.find(f => FieldNames.saleProp(f));
+
+    const skuSalePropName = skuSaleProp?.name!;
+    const salePropName = saleProp?.name!;
+
     const skuSaleData = useMemo(() => {
         let _skuSaleData: any = {};
-        const skuSaleProps = subItems.find(f => f.name == FieldNames.skuProps)?.subItems || [];
-        const salePropForms = allFormItems.find(f => f.name == FieldNames.saleProp)?.subItems || [];
+        const skuSaleProps = skuSaleProp?.subItems || [];
+        const salePropForms = saleProp?.subItems || [];
         for (let index = 0; index < skuSaleProps.length; index++) {
             const { name } = skuSaleProps[index];
             if (name) {
@@ -174,16 +180,16 @@ function SkuEditableTable(props: SkuEditableTableProps) {
             }
         }
         return _skuSaleData;
-    }, [JSON.stringify(values[FieldNames.saleProp])])
+    }, [JSON.stringify(values[salePropName])])
 
     useEffect(() => {
         const newData: any[] = [];
         const saleObjs = smoothData(skuSaleData, v => v.value);
         saleObjs.forEach(obj => {
             const key = getUniquekey(obj);
-            const _value = propValue?.find((f: any) => getUniquekey(f[FieldNames.skuProps]) == key);
-             let dataItem: any = { key, ..._value }
-            dataItem[FieldNames.skuProps] = obj;
+            const _value = propValue?.find((f: any) => getUniquekey(f[skuSalePropName]) == key);
+            let dataItem: any = { key, ..._value }
+            dataItem[salePropName] = obj;
             newData.push(dataItem)
         });
         setData(newData);

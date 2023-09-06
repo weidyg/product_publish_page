@@ -183,7 +183,11 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
         // return tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
         return true;
     }
-
+    const isPrice = name?.toLocaleLowerCase()?.includes('price');
+    const inputNumberProps = {
+        precision: isPrice ? 2 : undefined,
+        step: isPrice ? 0.01 : undefined
+    }
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
             {(values) => {
@@ -212,6 +216,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                         <InputNumber
                             placeholder={`请输入${label}`}
                             style={{ maxWidth: '358px', minWidth: '80px' }}
+                            {...inputNumberProps}
                         />
                     </Form.Item>
                 ) : _uiType == 'radio' ? (
@@ -226,7 +231,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     ) : (
                         <Form.Item {...formItemProps}>
                             <Select showSearch
-                                allowClear={allowClear}
+                                allowClear={allowClear && _uiType != 'multiSelect'}
                                 options={options}
                                 allowCreate={allowCustom}
                                 mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
