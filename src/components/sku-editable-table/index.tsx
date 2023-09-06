@@ -74,7 +74,7 @@ function EditableRow(props: any) {
 }
 
 function EditableCell(props: any) {
-    const { children, rowData, column, onHandleSave } = props;
+    const { children, rowData, column } = props;
 
     const { rootField, dataIndex, formProps, uiType } = column;
     const { name, rules = {}, options = [] } = formProps || {};
@@ -85,6 +85,7 @@ function EditableCell(props: any) {
     const field = `${rootField}[${index}]${dataIndex}`;
     const initialValue = _.get(rowData, dataIndex);
     const isPrice = name?.toLowerCase()?.includes('price');
+
     return (
         <Form.Item
             style={{ margin: 0 }}
@@ -191,8 +192,33 @@ function SkuEditableTable(props: SkuEditableTableProps) {
             newData.push(dataItem)
         });
         setData(newData);
-        onChange && onChange(newData);
-    }, [JSON.stringify(skuSaleData)])
+        // onChange && onChange(newData);
+    }, [JSON.stringify(skuSaleData)]);
+
+
+    const newColumns = useMemo(() => {
+        return columns.map((column) => {
+            return {
+                ...column,
+                render(value: any, _item: any, _index: any) {
+                    if (value) {
+                        return useMemo(() => {
+                            const lastNameArr = column.dataIndex?.split('.');
+                            if (lastNameArr?.includes(skuSalePropName)) {
+                                const lastName = lastNameArr && lastNameArr[lastNameArr?.length - 1];
+                                if (!lastName) { return value; }
+                                const skuProp: any[] = skuSaleData[lastName] || [];
+                                const label = skuProp?.find(f => f.value == value)?.label;
+                                return label || value;
+                            }
+                        }, [column.dataIndex, value])
+                    }
+                    return value;
+                },
+            }
+        })
+    }, [columns])
+
 
     return (<>
         <Table
@@ -203,22 +229,7 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                     cell: EditableCell,
                 },
             }}
-            columns={columns.map((column) => {
-                return {
-                    ...column,
-                    render(value, _item, _index) {
-                        if (value) {
-                            const lastName1 = column.dataIndex?.split('.');
-                            const lastName = lastName1 && lastName1[lastName1?.length - 1];
-                            if (!lastName) { return value; }
-                            const skuProp: any[] = skuSaleData[lastName] || [];
-                            const label = skuProp?.find(f => f.value == value)?.label;
-                            return label || value;
-                        }
-                        return value;
-                    },
-                }
-            })}
+            columns={newColumns}
             size='small'
             border={{ wrapper: true, cell: true }}
             scroll={{ y: 320, x: true }}

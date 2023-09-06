@@ -183,8 +183,9 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
     const [disShouldUpdate, isHide] = checkDependRules(hide || {});
 
     const shouldUpdate = (prev: any, next: any, info: any) => {
-        // const _shouldUpdate = tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info);
-        return true;
+        let _shouldUpdate = tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info)
+            || FieldNames.sku(props);
+        return _shouldUpdate!;
     }
     const isPrice = name?.toLocaleLowerCase()?.includes('price');
     const inputNumberProps = {
