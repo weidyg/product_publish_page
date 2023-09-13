@@ -2,10 +2,11 @@ import _, { isNumber } from "lodash";
 import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/interface";
 
 export const FieldNames = {
+    desc: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Description),
+    cateProp: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.cateProp),
+    saleProp: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SaleProp),
     sku: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Sku),
     skuProps: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SkuProps),
-    saleProp: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SaleProp),
-    desc: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Description),
 };
 
 export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): boolean | undefined {

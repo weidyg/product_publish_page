@@ -4769,7 +4769,7 @@
 					{
 						"type": "singleCheck",
 						"label": "尺码分组",
-						"name": "p-20509-sizeGroup",
+						"name": "group",
 						"namePath": [
 							"saleProp",
 							"p-20509",

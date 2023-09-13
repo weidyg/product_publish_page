@@ -1,6 +1,6 @@
 
-import { ReactNode, useMemo, useState } from 'react';
-import { Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link, Button, Popover } from '@arco-design/web-react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link, Button, Popover, Message, Popconfirm } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconEdit } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { MyFormItemProps } from '../../pages/product/interface';
@@ -8,30 +8,41 @@ import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules
 import SkuEditableTable from '../sku-editable-table';
 import ReactQuill, { Quill } from 'react-quill';
 import "react-quill/dist/quill.snow.css";
+import { UploadItem } from '@arco-design/web-react/es/Upload';
 
 function PictureUpload(props: {
     size?: 'default' | 'mini',
     text?: string,
     value?: string,
-    onChange?: (value: string) => {}
+    onChange?: (value?: string) => {}
 }) {
     const { size = 'default', text = '图片', value, onChange, ...rest } = props;
 
-    const defaultFile = useMemo(() => {
-        return value && { uid: new Date(), url: value };
+    const defaultFile: UploadItem | undefined = useMemo(() => {
+        return value ? { uid: `${new Date().getTime()}`, url: value } : undefined;
     }, [value]);
-    const [file, setFile] = useState<any>(defaultFile);
 
-    const handleChange = (currentFile: any) => {
-        let newFile;
-        if (currentFile) {
-            const url = URL.createObjectURL(currentFile?.originFile as any);
-            newFile = { ...currentFile, url };
+    const [imgFile, setImgFile] = useState<UploadItem | undefined>(defaultFile);
+
+    useEffect(() => {
+        onChange && onChange(imgFile?.url);
+    }, [imgFile?.url])
+
+    const handleChange = (_fileList: UploadItem[], file: UploadItem) => {
+        let newFile = { ...file };
+        if (file.originFile && file.percent == 100) {
+            Message.warning('暂不支持图片上传！'); return;
+            // newFile.url = URL.createObjectURL(file?.originFile as any);
         }
         if (file?.url != newFile?.url) {
-            setFile(newFile);
-            onChange && onChange(newFile?.url);
+            setImgFile(newFile);
         }
+    }
+    const handleProgress = (file: UploadItem) => {
+        // setImgFile(file);
+    }
+    const handleDelete = () => {
+        setImgFile(undefined);
     }
 
     function UploadImage(props: { children?: ReactNode }) {
@@ -39,13 +50,9 @@ function PictureUpload(props: {
         return <>
             <Upload
                 action='/'
-                fileList={file ? [file] : []}
-                onChange={(_, currentFile) => {
-                    handleChange(currentFile);
-                }}
-                onProgress={(currentFile) => {
-                    setFile(currentFile);
-                }}
+                fileList={imgFile ? [imgFile] : []}
+                onChange={handleChange}
+                onProgress={handleProgress}
                 showUploadList={false}
             >
                 {children}
@@ -57,16 +64,21 @@ function PictureUpload(props: {
         const { size = 'default' } = props;
         return <>
             <div className={`${styles['upload-picture']} ${styles[size]}`}>
-                <img className={styles['upload-picture-image']} src={file?.url} />
+                <img className={styles['upload-picture-image']} src={imgFile?.url} />
                 {size != 'mini' &&
                     <div className={styles['upload-picture-mask']}>
                         <Space size={'medium'}>
                             <UploadImage>
                                 <IconEdit />
                             </UploadImage>
-                            <a onClick={() => handleChange(null)}>
+                            <Popconfirm
+                                focusLock
+                                title='警告'
+                                content='目前暂不支持图片上传，删除后无法再次添加图片，是否继续删除?'
+                                onOk={handleDelete}
+                            >
                                 <IconDelete />
-                            </a>
+                            </Popconfirm>
                         </Space>
                     </div>
                 }
@@ -76,7 +88,7 @@ function PictureUpload(props: {
 
     return (
         <div {...rest}>  {
-            file?.url ? (
+            imgFile?.url ? (
                 size == 'mini' ? (
                     <Popover content={<ShowImage size={'large'} />} >
                         <div><ShowImage size={size} /></div>
@@ -87,11 +99,11 @@ function PictureUpload(props: {
             ) : (
                 <UploadImage>
                     <div className={`${styles['upload-picture']} ${styles[size]}`}>
-                        {(file?.status === 'uploading' && file.percent < 100) ? (
+                        {(imgFile?.status === 'uploading' && (imgFile.percent || 100) < 100) ? (
                             <Progress
                                 size={size}
                                 type='circle'
-                                percent={file.percent}
+                                percent={imgFile?.percent || 100}
                                 className={styles['upload-picture-progress']}
                             />
                         ) : (
@@ -112,7 +124,6 @@ function PictureUpload(props: {
 function ProFormList(props: MyFormItemProps) {
     const { type, label, name, namePath, value, subItems = [], nestItems = [], ...rest } = props;
     const field = namePath?.join('.') || name;
-
     let formItems = [...subItems];
     if (nestItems.length > 0) {
         formItems = [...nestItems];
@@ -250,10 +261,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     </Form.Item >
                 ) : _uiType == 'richTextEditor' ? (
                     <Form.Item {...formItemProps}>
-                        <ReactQuill
-                            theme="snow"
-
-                        />
+                        <ReactQuill theme="snow" />
                     </Form.Item>
                 ) : _uiType == 'skuEditTable' ? (
                     <Form.Item {...formItemProps}>
@@ -263,7 +271,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     </Form.Item >
                 ) : type == 'complex' ? (
                     <Form.Item {...formItemProps}>
-                        {name == 'catProp' ? (
+                        {FieldNames.cateProp(props) ? (
                             <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
                                 {subItems?.map((sm, si) => {
                                     const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
@@ -274,8 +282,14 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                                     )
                                 })}
                             </Grid>
+                        ) : FieldNames.saleProp(props) ? (
+                            <>
+                                {subItems?.map((sm, si) => {
+                                    return (<ProFormItem key={si} {...sm} />)
+                                })}
+                            </>
                         ) : (
-                            <Space wrap>
+                            <Space wrap={false}>
                                 {subItems?.map((sm, si) => {
                                     return (<ProFormItem key={si} {...sm} />)
                                 })}

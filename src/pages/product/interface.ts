@@ -56,11 +56,12 @@ export type MyFormDependExpress = {
 
 export enum FieldTag {
     Title = "n:title",
-    Weight = "n:weight",
-    Price = "n:price",
     ProductNo = "n:art_no",
     Description = "n:desc",
-    Sku = "n:sku",
+    Weight = "n:weight",
+    Price = "n:price",
+    cateProp = "n:cate_prop",
     SaleProp = "n:sale_prop",
+    Sku = "n:sku",
     SkuProps = "n:sku_prop",
 }
