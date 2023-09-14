@@ -59,7 +59,7 @@ export function getUniquekey(obj: ObjVal, getValue?: (val: any) => any): string 
 }
 export type ObjVal = { [key: string]: any }
 export type SkuItem = { key?: string; props?: { [x: string]: any };[x: string]: any; }
-export function getSkuItems(salePropNames: string[], saleProp: { [x: string]: any; }, skuItems?: SkuItem[]): SkuItem[] {
+export function getSkuItems(skuSalePropName: string, salePropNames: string[], saleProp: { [x: string]: any; }, skuItems?: SkuItem[]): SkuItem[] {
     let next = true;
     let obj: any = {};
     const newData: any[] = [];
@@ -75,9 +75,13 @@ export function getSkuItems(salePropNames: string[], saleProp: { [x: string]: an
         if (!next) { obj = {}; }
     });
     const saleObjs = smoothData(obj);
+    const tempSkuItems = skuItems?.map(obj => {
+        obj.key = obj.key || getUniquekey(obj[skuSalePropName], v => v?.value || v?.text);
+        return obj;
+    });
     saleObjs.forEach(obj => {
         const key = getUniquekey(obj, v => v?.value || v?.text);
-        const skuItem = skuItems?.find(f => f.key == key) || {};
+        const skuItem = tempSkuItems?.find(f => f.key == key) || {};
         let dataItem: any = { key, props: obj, ...skuItem }
         newData.push(dataItem)
     });
