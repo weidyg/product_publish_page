@@ -77,7 +77,7 @@ export function getSkuItems(salePropNames: string[], saleProp: { [x: string]: an
     const saleObjs = smoothData(obj);
     saleObjs.forEach(obj => {
         const key = getUniquekey(obj, v => v?.value || v?.text);
-        const skuItem = skuItems?.find(f => f.key || getUniquekey(f, v => v?.value || v?.text) == key) || {};
+        const skuItem = skuItems?.find(f => f.key == key) || {};
         let dataItem: any = { key, props: obj, ...skuItem }
         newData.push(dataItem)
     });

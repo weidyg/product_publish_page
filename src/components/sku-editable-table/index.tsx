@@ -6,6 +6,7 @@ import * as _ from "lodash"
 import styles from './index.module.less'
 import { FieldNames, getSkuItems, getTips, getUiTypeOrDefault, getValiRules } from '../until';
 import { FieldUiType, MyFormItemProps } from '../../pages/product/edit/interface';
+import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 
 const EditableRowContext = React.createContext<{ index?: number }>({});
 
@@ -124,25 +125,26 @@ function EditableCell(props: any) {
 
 type SkuEditableTableProps = MyFormItemProps & { allFormItems: MyFormItemProps[], values: any };
 function SkuEditableTable(props: SkuEditableTableProps) {
-    const { allFormItems = [], subItems = [], values,
-        name, namePath, value: propValue,
-    } = props;
-    const [data, setData] = useState<Array<any>>([]);
+    const { allFormItems = [], subItems = [], values, name, namePath, } = props;
+
+    const [value, setValue] = useMergeValue<any[]>([], {
+        defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
+        value: 'value' in props ? props.value : undefined,
+    });
     const rootField = namePath?.join('.') || name;
     const columns = getSkuTableColumns(subItems, rootField);
 
     const skuSaleProp = subItems.find((f: any) => FieldNames.skuProps(f));
     const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
-    const skuSalePropName = skuSaleProp?.name!;
 
     const saleProp = allFormItems.find((f: any) => FieldNames.saleProp(f));
     const salePropName = saleProp?.name!;
     const salePropValues = values[salePropName] || {};
     useEffect(() => {
-        const newData = getSkuItems(salePropNames, salePropValues, propValue);
-        setData(newData);
+        const newData = getSkuItems(salePropNames, salePropValues, value);
+        if (!('value' in props)) { setValue(newData); }
+        props.onChange && props.onChange(newData);
     }, [JSON.stringify(salePropValues)]);
-
 
     const newColumns = useMemo(() => {
         return columns.map((column) => {
@@ -162,7 +164,7 @@ function SkuEditableTable(props: SkuEditableTableProps) {
         })
     }, [columns])
 
-
+    const data = value.filter(f => f.key);
     return (<>
         <Table
             data={data}
