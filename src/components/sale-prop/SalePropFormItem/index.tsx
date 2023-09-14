@@ -189,7 +189,6 @@ function SalePropFormItem(props: MyFormItemProps) {
                         {fields.map(({ key, field }, index) => {
                             return (
                                 <Space key={key} wrap size={4}>
-
                                     <SalePropInputFormItem
                                         fieldKey={key}
                                         fieldName={field}
@@ -198,7 +197,6 @@ function SalePropFormItem(props: MyFormItemProps) {
                                         nestItems={nestItems}
                                         options={options as any}
                                     />
-
                                     <Form.Item >
                                         <Button type='text'
                                             icon={<IconDelete />}
@@ -227,6 +225,7 @@ function SalePropFormItem(props: MyFormItemProps) {
             </Form.List>
         </Form.Item>
     );
+    return <></>
 }
 
 export default SalePropFormItem

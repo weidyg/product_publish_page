@@ -18,10 +18,15 @@
       const data = { ItemId: id };
       return post("https://localhost:44331/api/services/app/ProductPublish/GetProductEditData", data)
         .then((data) => {
-          var { PlatformName, ShopName, FormSchemaJson = '[]', FormDataJson = '{}' } = data;
+          var {
+            PlatformName, ShopName,
+            FullCategoryName,
+            FormSchemaJson = '[]', FormDataJson = '{}'
+          } = data;
           return {
             platformName: PlatformName,
             shopName: ShopName,
+            fullCategoryName: FullCategoryName,
             schema: JSON.parse(FormSchemaJson),
             data: JSON.parse(FormDataJson),
           }

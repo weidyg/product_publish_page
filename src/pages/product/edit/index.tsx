@@ -29,11 +29,15 @@ function ProductEdit() {
     const loadingInitData = async () => {
         setLoading(true);
         try {
-            const { platformName, shopName, schema, data } = await window.loadProductEditData();
+            const {
+                platformName, shopName,
+                fullCategoryName,
+                schema, data
+            } = await window.loadProductEditData();
             setFormSchema(schema);
             setPlatformName(platformName);
             setShopName(shopName);
-            setCategoryPath('');
+            setCategoryPath(fullCategoryName);
             form?.setFieldsValue(data);
         } catch (error: any) {
             setLoadErrMsg(error?.message);
@@ -87,14 +91,24 @@ function ProductEdit() {
                         {categoryPath && <Card className={styles['product-card']}>
                             {`当前类目：${categoryPath}`}
                         </Card>}
-                        <Skeleton loading={loading} animation text={{ rows: 1 }}></Skeleton>
                         <Form id='spuForm'
                             form={form}
                             layout='vertical'
                             autoComplete='off'
                             scrollToFirstError={true}
-                            onValuesChange={(_, values) => {
-                                console.log(values);
+                            // onValuesChange={(_, values) => {
+                            //     console.log(values);
+                            // }}
+                            validateMessages={{
+                                required: (_, { label }) => `${label || ''}不能为空`,
+                                string: {
+                                    length: `字符数必须是 #{length}`,
+                                    match: `不匹配正则 #{pattern}`,
+                                },
+                                number: {
+                                    min: `最小值为 #{min}`,
+                                    max: `最大值为 #{max}`,
+                                },
                             }}
                         >
                             <Card className={styles['product-card']}>
@@ -112,8 +126,9 @@ function ProductEdit() {
                                         type='primary'
                                         size='large'
                                         loading={saveLoading}
+                                        disabled={saveLoading}
                                         onClick={handleSave}>
-                                            保 存
+                                        保 存
                                     </Button>
                                 </Space>
                             </Skeleton>

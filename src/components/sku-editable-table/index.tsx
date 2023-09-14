@@ -2,10 +2,10 @@ import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { Table, Input, Select, Form, InputNumber, TableColumnProps, Popover } from '@arco-design/web-react';
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import { isObject } from '@arco-design/web-react/es/_util/is';
-import styles from './index.module.less'
-import { FieldUiType, MyFormItemProps } from '../../pages/product/interface';
-import { FieldNames, getSkuItems, getTips, getUiTypeOrDefault, getValiRules } from '../until';
 import * as _ from "lodash"
+import styles from './index.module.less'
+import { FieldNames, getSkuItems, getTips, getUiTypeOrDefault, getValiRules } from '../until';
+import { FieldUiType, MyFormItemProps } from '../../pages/product/edit/interface';
 
 const EditableRowContext = React.createContext<{ index?: number }>({});
 
@@ -97,14 +97,18 @@ function EditableCell(props: any) {
             rules={formItemRules}
         >
             {uiType == 'input' ? (
-                <Input />
+                <Input placeholder={'请输入'} />
             ) : uiType == 'inputNumber' ? (
-                <InputNumber min={minValue?.value}
+                <InputNumber
+                    placeholder={'请输入'}
+                    min={minValue?.value || isPrice ? 0.01 : 1}
                     precision={isPrice ? 2 : undefined}
                     step={isPrice ? 0.01 : undefined}
                 />
             ) : uiType == 'select' ? (
-                <Select options={options}
+                <Select
+                    placeholder={'请选择'}
+                    options={options}
                     triggerProps={{
                         autoAlignPopupWidth: false,
                         autoAlignPopupMinWidth: true,
