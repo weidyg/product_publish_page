@@ -1,10 +1,12 @@
 import React, { useState, useContext, useEffect, useMemo } from 'react';
 import { Table, Input, Select, Form, InputNumber, TableColumnProps, Popover } from '@arco-design/web-react';
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
-import { FieldUiType, MyFormItemProps } from '../../pages/product/interface';
-import { FieldNames, getTips, getUiTypeOrDefault, getUniquekey, getValiRules, smoothData } from '../untis';
+import { isObject } from '@arco-design/web-react/es/_util/is';
 import styles from './index.module.less'
+import { FieldUiType, MyFormItemProps } from '../../pages/product/interface';
+import { FieldNames, getSkuItems, getTips, getUiTypeOrDefault, getValiRules } from '../until';
 import * as _ from "lodash"
+
 const EditableRowContext = React.createContext<{ index?: number }>({});
 
 type SkuColumnProps = TableColumnProps & { formProps: MyFormItemProps, rootField?: string, uiType?: FieldUiType };
@@ -16,7 +18,7 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
         let dataIndex = pName ? `${pName}.${name}` : name;
         const [_, getTipValues] = getTips(tips);
         const tipValues = getTipValues(null) || [];
-        const extra = tipValues.map((value, index) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
+        const extra = tipValues.map((value: any, index: any) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
         const uiType = !isSkuProps ? getUiTypeOrDefault(skuItem) : undefined;
         if (type?.includes('complex')) {
             const skuProps = FieldNames.skuProps(skuItem);
@@ -50,7 +52,7 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
                 editable: true,
                 dataIndex: dataIndex,
                 align: 'center',
-                width: uiType ? 140 : 100,
+                width: uiType ? 140 : 120,
                 formProps: skuItem,
                 rootField: rootField,
                 uiType: uiType,
@@ -72,7 +74,6 @@ function EditableRow(props: any) {
         </EditableRowContext.Provider>
     );
 }
-
 function EditableCell(props: any) {
     const { children, rowData, column } = props;
 
@@ -120,80 +121,23 @@ function EditableCell(props: any) {
 type SkuEditableTableProps = MyFormItemProps & { allFormItems: MyFormItemProps[], values: any };
 function SkuEditableTable(props: SkuEditableTableProps) {
     const { allFormItems = [], subItems = [], values,
-        name, namePath, value: propValue, onChange, ...restProps
+        name, namePath, value: propValue,
     } = props;
     const [data, setData] = useState<Array<any>>([]);
     const rootField = namePath?.join('.') || name;
     const columns = getSkuTableColumns(subItems, rootField);
 
-    const skuSaleProp = subItems.find(f => FieldNames.skuProps(f));
-    const saleProp = allFormItems.find(f => FieldNames.saleProp(f));
-
+    const skuSaleProp = subItems.find((f: any) => FieldNames.skuProps(f));
+    const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
     const skuSalePropName = skuSaleProp?.name!;
-    const salePropName = saleProp?.name!;
 
-    const skuSaleData = useMemo(() => {
-        let _skuSaleData: any = {};
-        const skuSaleProps = skuSaleProp?.subItems || [];
-        const salePropForms = saleProp?.subItems || [];
-        for (let index = 0; index < skuSaleProps.length; index++) {
-            const { name } = skuSaleProps[index];
-            if (name) {
-                _skuSaleData[name] = [];
-                var _prop = salePropForms.find(f => f.name == name);
-                const { type: _type, namePath: _namePath = [] } = _prop || {};
-                if (!(_type?.includes('complex'))) {
-                    if (_namePath.length > 0) {
-                        const _values = _.get(values, _namePath);
-                        for (let _i = 0; _i < _values.length; _i++) {
-                            let _value = _values[_i];
-                            let _options = _prop?.options;
-                            if (typeof _value == 'object') {
-                                _value = _value?.value;
-                            }
-                            if (_value != undefined) {
-                                const _label = _options?.find(f => f.value == _value)?.label || _value;
-                                _skuSaleData[name].push({ label: _label, value: _value })
-                            }
-                        }
-                    }
-                } else {
-                    const dd = _prop?.subItems || [];
-                    const dds = dd.find(f => f.name?.includes('sizeGroup'))?.namePath;
-                    if (dds) {
-                        const vvvv = _.get(values, dds);
-                        if (vvvv) {
-                            const svfis = dd.find(f => f.name?.includes('sizeValue'))?.subItems || [];
-                            const svfi = svfis.find(f => f.name == `size-${vvvv}`)
-                            const svfinp = svfi?.namePath || [];
-                            if (svfinp?.length > 0) {
-                                const _values = _.get(values, svfinp) || [];
-                                for (let _i = 0; _i < _values.length; _i++) {
-                                    const _value = _values[_i];
-                                    const _label = svfi?.options?.find(f => f.value == _value)?.label || _value;
-                                    _skuSaleData[name].push({ label: _label, value: _value })
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return _skuSaleData;
-    }, [JSON.stringify(values[salePropName])])
+    const saleProp = allFormItems.find((f: any) => FieldNames.saleProp(f));
+    const salePropName = saleProp?.name!;
+    const salePropValues = values[salePropName] || {};
     useEffect(() => {
-        const newData: any[] = [];
-        const saleObjs = smoothData(skuSaleData, v => v.value);
-        saleObjs.forEach(obj => {
-            const key = getUniquekey(obj);
-            const _value = propValue?.find((f: any) => getUniquekey(f[skuSalePropName]) == key);
-            let dataItem: any = { key, ..._value }
-            dataItem[skuSalePropName] = obj;
-            newData.push(dataItem)
-        });
+        const newData = getSkuItems(salePropNames, salePropValues, propValue);
         setData(newData);
-        // onChange && onChange(newData);
-    }, [JSON.stringify(skuSaleData)]);
+    }, [JSON.stringify(salePropValues)]);
 
 
     const newColumns = useMemo(() => {
@@ -202,16 +146,11 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                 ...column,
                 render(value: any, _item: any, _index: any) {
                     if (value) {
-                        return useMemo(() => {
-                            const lastNameArr = column.dataIndex?.split('.');
-                            if (lastNameArr?.includes(skuSalePropName)) {
-                                const lastName = lastNameArr && lastNameArr[lastNameArr?.length - 1];
-                                if (!lastName) { return value; }
-                                const skuProp: any[] = skuSaleData[lastName] || [];
-                                const label = skuProp?.find(f => f.value == value)?.label;
-                                return label || value;
-                            }
-                        }, [column.dataIndex, value])
+                        if (isObject(value)) {
+                            const { text, remark } = value;
+                            return remark ? `${text}(${remark})` : text;
+                        }
+                        return value;
                     }
                     return value;
                 },

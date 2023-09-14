@@ -1,125 +1,16 @@
 
-import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { Form, Space, Input, Select, Upload, Progress, InputNumber, Radio, FormItemProps, Grid, Link, Button, Popover, Message, Popconfirm } from '@arco-design/web-react';
-import { IconDelete, IconPlus, IconEdit } from '@arco-design/web-react/icon';
+import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button } from '@arco-design/web-react';
+import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
-import { MyFormItemProps } from '../../pages/product/interface';
-import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../untis';
 import SkuEditableTable from '../sku-editable-table';
-import ReactQuill, { Quill } from 'react-quill';
+import ReactQuill from 'react-quill';
 import "react-quill/dist/quill.snow.css";
-import { UploadItem } from '@arco-design/web-react/es/Upload';
+import ImageUpload from '../ImageUpload';
+import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../until';
+import SalePropFormItem from '../sale-prop/SalePropFormItem';
+import { Key } from 'react';
+import { MyFormItemProps } from '../../pages/product/edit/interface';
 
-function PictureUpload(props: {
-    size?: 'default' | 'mini',
-    text?: string,
-    value?: string,
-    onChange?: (value?: string) => {}
-}) {
-    const { size = 'default', text = '图片', value, onChange, ...rest } = props;
-
-    const defaultFile: UploadItem | undefined = useMemo(() => {
-        return value ? { uid: `${new Date().getTime()}`, url: value } : undefined;
-    }, [value]);
-
-    const [imgFile, setImgFile] = useState<UploadItem | undefined>(defaultFile);
-
-    useEffect(() => {
-        onChange && onChange(imgFile?.url);
-    }, [imgFile?.url])
-
-    const handleChange = (_fileList: UploadItem[], file: UploadItem) => {
-        let newFile = { ...file };
-        if (file.originFile && file.percent == 100) {
-            Message.warning('暂不支持图片上传！'); return;
-            // newFile.url = URL.createObjectURL(file?.originFile as any);
-        }
-        if (file?.url != newFile?.url) {
-            setImgFile(newFile);
-        }
-    }
-    const handleProgress = (file: UploadItem) => {
-        // setImgFile(file);
-    }
-    const handleDelete = () => {
-        setImgFile(undefined);
-    }
-
-    function UploadImage(props: { children?: ReactNode }) {
-        const { children } = props;
-        return <>
-            <Upload
-                action='/'
-                fileList={imgFile ? [imgFile] : []}
-                onChange={handleChange}
-                onProgress={handleProgress}
-                showUploadList={false}
-            >
-                {children}
-            </Upload>
-        </>
-    }
-
-    function ShowImage(props: { size: 'default' | 'mini' | 'large' }) {
-        const { size = 'default' } = props;
-        return <>
-            <div className={`${styles['upload-picture']} ${styles[size]}`}>
-                <img className={styles['upload-picture-image']} src={imgFile?.url} />
-                {size != 'mini' &&
-                    <div className={styles['upload-picture-mask']}>
-                        <Space size={'medium'}>
-                            <UploadImage>
-                                <IconEdit />
-                            </UploadImage>
-                            <Popconfirm
-                                focusLock
-                                title='警告'
-                                content='目前暂不支持图片上传，删除后无法再次添加图片，是否继续删除?'
-                                onOk={handleDelete}
-                            >
-                                <IconDelete />
-                            </Popconfirm>
-                        </Space>
-                    </div>
-                }
-            </div>
-        </>
-    }
-
-    return (
-        <div {...rest}>  {
-            imgFile?.url ? (
-                size == 'mini' ? (
-                    <Popover content={<ShowImage size={'large'} />} >
-                        <div><ShowImage size={size} /></div>
-                    </Popover>
-                ) : (
-                    <ShowImage size={size} />
-                )
-            ) : (
-                <UploadImage>
-                    <div className={`${styles['upload-picture']} ${styles[size]}`}>
-                        {(imgFile?.status === 'uploading' && (imgFile.percent || 100) < 100) ? (
-                            <Progress
-                                size={size}
-                                type='circle'
-                                percent={imgFile?.percent || 100}
-                                className={styles['upload-picture-progress']}
-                            />
-                        ) : (
-                            <div title={text}
-                                className={styles['upload-picture-text']}>
-                                <IconPlus />
-                                <div>{text}</div>
-                            </div>
-                        )}
-                    </div>
-                </UploadImage>
-            )
-        }
-        </div>
-    );
-}
 
 function ProFormList(props: MyFormItemProps) {
     const { type, label, name, namePath, value, subItems = [], nestItems = [], ...rest } = props;
@@ -209,7 +100,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                 const _hide = isHide(values) === true;
                 if (_hide) { return; }
                 const tipValues = getTipValues(values) || [];
-                const extra = tipValues.map((value, index) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
+                const extra = tipValues.map((value: any, index: any) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
 
                 const formItemProps: FormItemProps = {
                     label, extra,
@@ -219,6 +110,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     field: _fieldName,
                     noStyle: noStyle,
                 }
+
                 return _uiType == 'input' ? (
                     <Form.Item {...formItemProps} >
                         <Input allowClear={allowClear}
@@ -257,21 +149,15 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     )
                 ) : _uiType == 'imageUpload' ? (
                     <Form.Item {...formItemProps}>
-                        <PictureUpload size={picSize} />
+                        <ImageUpload size={picSize} />
                     </Form.Item >
                 ) : _uiType == 'richTextEditor' ? (
                     <Form.Item {...formItemProps}>
-                        <ReactQuill theme="snow" />
+                        <ReactQuill theme="snow" className={styles['desc']} />
                     </Form.Item>
-                ) : _uiType == 'skuEditTable' ? (
-                    <Form.Item {...formItemProps}>
-                        <SkuEditableTable {...props}
-                            allFormItems={props.formSchema || []}
-                            values={values} />
-                    </Form.Item >
                 ) : type == 'complex' ? (
-                    <Form.Item {...formItemProps}>
-                        {FieldNames.cateProp(props) ? (
+                    FieldNames.cateProp(props) ? (
+                        <Form.Item {...formItemProps}>
                             <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
                                 {subItems?.map((sm, si) => {
                                     const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
@@ -282,25 +168,36 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                                     )
                                 })}
                             </Grid>
-                        ) : FieldNames.saleProp(props) ? (
-                            <>
-                                {subItems?.map((sm, si) => {
-                                    return (<ProFormItem key={si} {...sm} />)
-                                })}
-                            </>
-                        ) : (
-                            <Space wrap={false}>
-                                {subItems?.map((sm, si) => {
+                        </Form.Item >
+                    ) : FieldNames.saleProp(props) ? (
+                        <Form.Item {...formItemProps}>
+                            {subItems?.map((m, i) => {
+                                return (m.type == 'multiCheck' || m.type == 'complex')
+                                    ? <SalePropFormItem key={i} {...m} />
+                                    : <div key={i}></div>
+                            })}
+                        </Form.Item >
+                    ) : (
+                        <Form.Item {...formItemProps}>
+                            <Space wrap={true}>
+                                {subItems?.map((sm: any, si: any) => {
                                     return (<ProFormItem key={si} {...sm} />)
                                 })}
                             </Space>
-                        )}
-
-                    </Form.Item >
+                        </Form.Item >
+                    )
                 ) : type == 'multiComplex' ? (
-                    <Form.Item {...formItemProps}>
-                        <ProFormList {...props} />
-                    </Form.Item >
+                    FieldNames.sku(props) ? (
+                        <Form.Item {...formItemProps}>
+                            <SkuEditableTable {...props}
+                                allFormItems={props.formSchema || []}
+                                values={values} />
+                        </Form.Item >
+                    ) : (
+                        <Form.Item {...formItemProps}>
+                            <ProFormList {...props} />
+                        </Form.Item >
+                    )
                 ) : <div>---{label}---</div>;
             }}
         </Form.Item>

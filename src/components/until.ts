@@ -1,5 +1,89 @@
-import _, { isNumber } from "lodash";
-import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/interface";
+import _ from "lodash";
+import { isArray, isNumber } from "@arco-design/web-react/es/_util/is";
+import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/edit/interface";
+
+export function smoothData(obj: ObjVal, getValue?: (val: any) => any) {
+    let newObjs: any[] = [];
+    const keys = Object.keys(obj);
+    for (let index = keys.length - 1; index >= 0; index--) {
+        let tempObjs: any[] = [];
+        const key = keys[index];
+        const vals = obj[key] || [];
+        vals.forEach((val: any) => {
+            const value = getValue ? getValue(val) : val;
+            if (index == keys.length - 1) {
+                const newObj = { [key]: value }
+                tempObjs.push(newObj);
+            } else {
+                newObjs.forEach((obj: any) => {
+                    const newObj = { [key]: value, ...obj }
+                    tempObjs.push(newObj);
+                });
+            }
+        });
+        newObjs = [...tempObjs];
+    }
+    return newObjs;
+}
+export function sortObj(obj: ObjVal): any {
+    if (!obj) { return obj; }
+    let newObj: { [key: string]: any } = {};
+    let keysSorted = Object.keys(obj).sort((a, b) => { return obj[b] - obj[a] });
+    for (let i = 0; i < keysSorted.length; i++) {
+        newObj[keysSorted[i]] = obj[keysSorted[i]];
+    }
+    return newObj;
+}
+export function getUniquekey(obj: ObjVal, getValue?: (val: any) => any): string {
+    const newObj = sortObj(obj) || {};
+    const keys = Object.keys(newObj);
+    let deepValues = [];
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const value = getValue ? getValue(obj[key]) : obj[key];
+        if (typeof value == 'object') {
+            const uniquekey = getUniquekey(value);
+            deepValues.push(uniquekey);
+        } else if (Array.isArray(value)) {
+            for (let index = 0; index < value.length; index++) {
+                const _obj = value[index];
+                const uniquekey = getUniquekey(_obj);
+                deepValues.push(uniquekey);
+            }
+        }
+        else {
+            deepValues.push(`${key}_${value}`);
+        }
+    }
+    return deepValues.join('|');
+}
+export type ObjVal = { [key: string]: any }
+export type SkuItem = { key?: string; props?: { [x: string]: any };[x: string]: any; }
+export function getSkuItems(salePropNames: string[], saleProp: { [x: string]: any; }, skuItems?: SkuItem[]): SkuItem[] {
+    let next = true;
+    let obj: any = {};
+    const newData: any[] = [];
+    salePropNames.forEach(key => {
+        if (!next) { return; }
+        const salePropItem = saleProp[key];
+        if (isArray(salePropItem)) {
+            obj[key] = [...salePropItem];
+        } else if (isArray(salePropItem?.value)) {
+            obj[key] = [...salePropItem?.value];
+        }
+        next = obj[key]?.filter((f: any) => !!(f?.text)).length > 0;
+        if (!next) { obj = {}; }
+    });
+    const saleObjs = smoothData(obj);
+    saleObjs.forEach(obj => {
+        const key = getUniquekey(obj, v => v?.value || v?.text);
+        const skuItem = skuItems?.find(f => f.key || getUniquekey(f, v => v?.value || v?.text) == key) || {};
+        let dataItem: any = { key, props: obj, ...skuItem }
+        newData.push(dataItem)
+    });
+    return newData;
+}
+
 
 export const FieldNames = {
     desc: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Description),
@@ -8,7 +92,6 @@ export const FieldNames = {
     sku: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Sku),
     skuProps: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SkuProps),
 };
-
 export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): boolean | undefined {
     const getDeepValue = (values: any, fieldName: string, namePath: string[]) => {
         let value = values[fieldName];
@@ -100,64 +183,6 @@ export function getValiRules(rp?: MyFormRules) {
     }
     return rules;
 }
-export function smoothData(skuSaleData: { [key: string]: any[] }, getValue?: (val: any) => any) {
-    let newObjs: any[] = [];
-    const keys = Object.keys(skuSaleData);
-    for (let index = keys.length - 1; index >= 0; index--) {
-        let tempObjs: any[] = [];
-        const key = keys[index];
-        const vals = skuSaleData[key] || [];
-        vals.forEach((val: any) => {
-            const value = getValue ? getValue(val) : val;
-            if (index == keys.length - 1) {
-                const newObj = { [key]: value }
-                tempObjs.push(newObj);
-            } else {
-                newObjs.forEach((obj: any) => {
-                    const newObj = { [key]: value, ...obj }
-                    tempObjs.push(newObj);
-                });
-            }
-        });
-        newObjs = [...tempObjs];
-    }
-    return newObjs;
-}
-
-export function sortObj(obj: { [key: string]: any }): any {
-    if (!obj) { return obj; }
-    let newObj: { [key: string]: any } = {};
-    let keysSorted = Object.keys(obj).sort((a, b) => { return obj[b] - obj[a] });
-    for (let i = 0; i < keysSorted.length; i++) {
-        newObj[keysSorted[i]] = obj[keysSorted[i]];
-    }
-    return newObj;
-}
-
-export function getUniquekey(obj: { [key: string]: any }): string {
-    const newObj = sortObj(obj) || {};
-    const keys = Object.keys(newObj);
-    let deepValues = [];
-    for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        const value = obj[key];
-        if (typeof value == 'object') {
-            const uniquekey = getUniquekey(value);
-            deepValues.push(uniquekey);
-        } else if (Array.isArray(value)) {
-            for (let index = 0; index < value.length; index++) {
-                const _obj = value[index];
-                const uniquekey = getUniquekey(_obj);
-                deepValues.push(uniquekey);
-            }
-        }
-        else {
-            deepValues.push(`${key}_${value}`);
-        }
-    }
-    return deepValues.join('|');
-}
-
 
 export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undefined {
     const { uiType, type, name, allowCustom, options = [], rules = {} } = _props;

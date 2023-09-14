@@ -1,12 +1,12 @@
 
 import { ConfigProvider, Modal } from '@arco-design/web-react';
-import ProductPublish from './pages/product';
+import ProductEdit from './pages/product/edit';
 
 function App() {
   Modal.config({ prefixCls: 'erp', })
   return (
     <ConfigProvider prefixCls='erp'>
-      <ProductPublish />
+      <ProductEdit />
     </ConfigProvider >
   )
 }

@@ -1,0 +1,50 @@
+:global {
+    .arco-table-size-small .arco-table-td {
+        padding: 5px !important;
+    }
+}
+
+.product {
+    width: 100vw;
+    margin: 0 auto;
+    &-card {
+        // border-radius: 12px;
+        margin-bottom: 16px;
+    }
+    &-content {
+        // margin-left: 258px;
+        // padding-right: 18px;
+        z-index: 2;
+        width: 998px;
+        margin: 0 auto;
+        // background: #f7f8fa;
+        padding-bottom: 55px;
+        min-height: 320px;
+
+        &-loadError {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        &-card {
+            margin: 16px auto;
+            border-radius: 12px;
+            min-height: 320px;
+            padding: 24px;
+        }
+
+
+        @media screen and (min-width: 1756px) {
+            width: 1240px;
+            margin: 0 auto;
+            padding-right: 0;
+        }
+
+        @media screen and (min-width: 1280px) and (max-width: 1440px) {
+            flex: 1;
+        }
+
+    }
+}

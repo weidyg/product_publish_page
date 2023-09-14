@@ -1,3 +1,4 @@
+export type MyFormItemOption = { label: string; value: string; }
 export type MyFormItemProps = {
     type?: FormItemType;
     label?: string;
@@ -5,7 +6,7 @@ export type MyFormItemProps = {
     namePath?: string[];
     value?: any;
     rules?: MyFormRules;
-    options?: { label: string; value: string; }[];
+    options?: Array<MyFormItemOption & { options?: MyFormItemOption[] }>;
     subItems?: MyFormItemProps[];
     nestItems?: MyFormItemProps[];
 
@@ -36,7 +37,7 @@ export type MyFormRules = {
 }
 export type FormItemType = 'input' | 'multiInput' | 'singleCheck' | 'multiCheck' | 'complex' | 'multiComplex';
 export type FieldUiType = 'input' | 'inputNumber' | 'radio' | 'select' | 'checkBox' | 'multiSelect' | 'imageUpload'
-    | 'skuEditTable'|'richTextEditor';
+    | 'skuEditTable' | 'richTextEditor';
 
 export type MyFormDependRules = {
     value?: any,
