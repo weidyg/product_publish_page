@@ -13,6 +13,7 @@ export type MyFormItemProps = {
     uiType?: FieldUiType;
     readOnly?: boolean;
     allowCustom?: boolean;
+    valueType?: FieldValueType;
 
     tips?: MyFormDependRules[];
     hide?: MyFormDependRules;
@@ -27,7 +28,6 @@ export type MyFormItemProps = {
     allowClear?: boolean;
 }
 export type MyFormRules = {
-    valueType?: string;
     required?: boolean;
     regex?: string;
     maxValue?: number;
@@ -36,8 +36,9 @@ export type MyFormRules = {
     minLength?: number;
 }
 export type FormItemType = 'input' | 'multiInput' | 'singleCheck' | 'multiCheck' | 'complex' | 'multiComplex';
-export type FieldUiType = 'input' | 'inputNumber' | 'radio' | 'select' | 'checkBox' | 'multiSelect' | 'imageUpload'
+export type FieldUiType = 'input' | 'inputNumber' | 'radioGroup' | 'select' | 'checkBoxGroup' | 'multiSelect' | 'imageUpload'
     | 'skuEditTable' | 'richTextEditor';
+export type FieldValueType = 'string' | 'object' | 'array_object' | 'bool';
 
 export type MyFormDependRules = {
     value?: any,

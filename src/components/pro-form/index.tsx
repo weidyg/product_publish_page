@@ -73,9 +73,11 @@ function ProFormList(props: MyFormItemProps) {
 
 export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemProps[], picSize?: 'mini' }) {
     const {
-        type, label = '', name, namePath, value, options = [], subItems = [], nestItems = [],
+        type, label = '', name, namePath, value,
+        options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
-        fieldName, noStyle, picSize, allowClear = true
+        fieldName, noStyle, picSize, allowClear = true,
+        valueType,
     } = props || {};
 
     const _fieldName = fieldName || namePath?.join('.') || name;
@@ -110,7 +112,6 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     field: _fieldName,
                     noStyle: noStyle,
                 }
-
                 return _uiType == 'input' ? (
                     <Form.Item {...formItemProps} >
                         <Input allowClear={allowClear}
@@ -126,13 +127,24 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                             {...inputNumberProps}
                         />
                     </Form.Item>
-                ) : _uiType == 'radio' ? (
+                ) : _uiType == 'radioGroup' ? (
                     <Form.Item {...formItemProps}>
                         <Radio.Group options={options} />
                     </Form.Item>
-                ) : _uiType == 'checkBox' ? (
+                ) : _uiType == 'checkBoxGroup' ? (
                     <Form.Item {...formItemProps}>
-                        <Checkbox.Group options={options} />
+                        {valueType == 'object' ? (
+                            <Space>
+                                {options.map((m, i) => {
+                                    return <Form.Item key={i} noStyle
+                                        field={`${_fieldName}.${m.value}`}>
+                                        <Checkbox>{m.label}</Checkbox>
+                                    </Form.Item>
+                                })}
+                            </Space>
+                        ) : (
+                            <Checkbox.Group options={options} />
+                        )}
                     </Form.Item>
                 ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
                     nestItems.length > 0 ? (

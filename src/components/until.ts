@@ -199,17 +199,17 @@ export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undef
 
     if (FieldNames.sku(_props)) { return 'skuEditTable'; }
     if (FieldNames.desc(_props)) { return 'richTextEditor'; }
-    switch (type) {
+    switch (type) { 
         case 'input':
             {
                 const numReg = /^[0-9]+.?[0-9]*/;
                 const isNum = name?.includes('price') || numReg.test(`${rules.maxValue}`) || numReg.test(`${rules.minValue}`);
-                return rules.valueType == 'url' ? 'imageUpload' : isNum ? 'inputNumber' : 'input';
+                return isNum ? 'inputNumber' : 'input';
             }
         case 'singleCheck':
             {
                 const length = options.length;
-                return (length == 0 || length > 3 || allowCustom) ? 'select' : 'radio';
+                return (length == 0 || length > 3 || allowCustom) ? 'select' : 'radioGroup';
             }
         case 'multiCheck':
             {

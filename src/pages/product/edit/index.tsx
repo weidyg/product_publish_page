@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Card, Form, Message, PageHeader, Result, Skeleton, Space, Spin } from "@arco-design/web-react";
+import { Button, Card, Checkbox, Form, Message, PageHeader, Result, Skeleton, Space, Spin } from "@arco-design/web-react";
 import styles from './style/index.module.less'
 import { MyFormItemProps } from "./interface";
 import { ProFormItem } from "../../../components/pro-form";
@@ -96,9 +96,9 @@ function ProductEdit() {
                             layout='vertical'
                             autoComplete='off'
                             scrollToFirstError={true}
-                            // onValuesChange={(_, values) => {
-                            //     console.log(values);
-                            // }}
+                            onValuesChange={(_, values) => {
+                                console.log(values);
+                            }}
                             validateMessages={{
                                 required: (_, { label }) => `${label || ''}不能为空`,
                                 string: {
