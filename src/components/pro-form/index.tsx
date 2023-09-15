@@ -1,5 +1,5 @@
 
-import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button } from '@arco-design/web-react';
+import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import SkuEditableTable from '../sku-editable-table';
@@ -129,6 +129,10 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                 ) : _uiType == 'radio' ? (
                     <Form.Item {...formItemProps}>
                         <Radio.Group options={options} />
+                    </Form.Item>
+                ) : _uiType == 'checkBox' ? (
+                    <Form.Item {...formItemProps}>
+                        <Checkbox.Group options={options} />
                     </Form.Item>
                 ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
                     nestItems.length > 0 ? (
