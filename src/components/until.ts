@@ -2,7 +2,7 @@ import _ from "lodash";
 import { isArray, isNumber } from "@arco-design/web-react/es/_util/is";
 import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/edit/interface";
 
-export function smoothData(obj: ObjVal, getValue?: (val: any) => any) {
+export function calcDescartes(obj: ObjVal, getValue?: (val: any) => any) {
     let newObjs: any[] = [];
     const keys = Object.keys(obj);
     for (let index = keys.length - 1; index >= 0; index--) {
@@ -25,6 +25,8 @@ export function smoothData(obj: ObjVal, getValue?: (val: any) => any) {
     }
     return newObjs;
 }
+
+
 export function sortObj(obj: ObjVal): any {
     if (!obj) { return obj; }
     let newObj: { [key: string]: any } = {};
@@ -74,7 +76,10 @@ export function getSkuItems(skuSalePropName: string, salePropNames: string[], sa
         next = obj[key]?.filter((f: any) => !!(f?.text)).length > 0;
         if (!next) { obj = {}; }
     });
-    const saleObjs = smoothData(obj);
+
+
+    const saleObjs = calcDescartes(obj);
+    console.log('saleObjs', obj, "=>", saleObjs);
     const tempSkuItems = skuItems?.map(obj => {
         obj.key = obj.key || getUniquekey(obj[skuSalePropName], v => v?.value || v?.text);
         return obj;
