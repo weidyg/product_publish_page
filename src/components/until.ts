@@ -1,6 +1,7 @@
 import _ from "lodash";
-import { isArray, isNumber } from "@arco-design/web-react/es/_util/is";
+import { isArray, isNumber, isString, isUndefined } from "@arco-design/web-react/es/_util/is";
 import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/edit/interface";
+import { ReactNode } from "react";
 
 export function calcDescartes(obj: ObjVal, getValue?: (val: any) => any) {
     let newObjs: any[] = [];
@@ -177,16 +178,62 @@ export function getValiRules(rp?: MyFormRules) {
         if (rp.required) {
             rules.push({ required: true });
         }
-
         if (rp.regex) {
             rules.push({ type: 'string', match: new RegExp(rp.regex) });
         }
 
-        if (isNumber(rp.maxLength) || isNumber(rp.minLength)) {
-            rules.push({ maxLength: rp.maxLength, minLength: rp.minLength });
+        const { maxLength, minLength } = rp;
+        const hasMaxLength = isNumber(maxLength);
+        const hasMinLength = isNumber(minLength);
+        if (hasMaxLength || hasMinLength) {
+            rules.push({
+                validator: (value: any, callback: (error?: ReactNode) => void) => {
+                    const isArrVal = isArray(value);
+                    let length = isArrVal
+                        ? value.length : isString(value)
+                            ? value.replace(/[^\u0000-\u00ff]/g, "xx").length
+                            : undefined;
+
+                    if (hasMaxLength && isNumber(length)) {
+                        if (length > maxLength) {
+                            callback(`不能超过 ${maxLength} ${isArrVal ? '条' : '个字符'}!`);
+                        }
+                    }
+                    if (hasMinLength && isNumber(length)) {
+                        if (length < minLength) {
+                            callback(`至少需要 ${maxLength} ${isArrVal ? '条' : '个字符'}!`);
+                        }
+                    }
+                },
+            });
         }
 
-        if (isNumber(rp.maxValue) || isNumber(rp.minValue)) {
+        const { maxValue, minValue } = rp;
+        const hasMaxValue = isNumber(maxValue);
+        const hasMinValue = isNumber(minValue);
+        if (hasMaxValue || hasMinValue) {
+            rules.push({
+                validator: (value: any, callback: (error?: ReactNode) => void) => {
+                    if (isNumber(value)) {
+                        if (hasMaxValue && hasMinValue) {
+                            if (value > maxValue || value < minValue) {
+                                callback(`值范围应为 ${minValue} ~ ${maxValue} 之间!`);
+                            }
+                        }
+                        else if (hasMaxValue) {
+                            if (value > maxValue) {
+                                callback(`最大值为 ${maxValue} !`);
+                            }
+                        }
+                        else if (hasMinValue) {
+                            if (value < minValue) {
+                                callback(`最小值为 ${minValue} !`);
+                            }
+                        }
+                    }
+                }
+            });
+
             rules.push({ type: 'number', max: rp.maxValue, min: rp.minValue });
         }
     }
@@ -199,7 +246,7 @@ export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undef
 
     if (FieldNames.sku(_props)) { return 'skuEditTable'; }
     if (FieldNames.desc(_props)) { return 'richTextEditor'; }
-    switch (type) { 
+    switch (type) {
         case 'input':
             {
                 const numReg = /^[0-9]+.?[0-9]*/;

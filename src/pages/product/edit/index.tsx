@@ -108,10 +108,6 @@ function ProductEdit() {
                                     length: `字符数必须是 #{length}`,
                                     match: `不匹配正则 #{pattern}`,
                                 },
-                                number: {
-                                    min: `最小值为 #{min}`,
-                                    max: `最大值为 #{max}`,
-                                },
                             }}
                         >
                             <Card className={styles['product-card']}>
