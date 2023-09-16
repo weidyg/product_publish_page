@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
 import { Button, Card, ConfigProvider, Form, Message, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
-import styles from './style/index.module.less'
+import { ConfigContext } from "@arco-design/web-react/es/ConfigProvider";
+import styles from '../edit/style/index.module.less'
+import { MyFormItemProps } from "../edit/interface";
+import { ProFormItem } from "../../../components/pro-form";
 
 import publishSchema from './publishSchema.json'
-import { ConfigContext } from "@arco-design/web-react/es/ConfigProvider";
-import { MyFormItemProps } from "./interface";
-import { ProFormItem } from "../../../components/pro-form";
 
 function ProductEdit() {
     const [form] = Form.useForm();
@@ -75,7 +75,7 @@ function ProductEdit() {
                             >
                                 <Card className={styles['product-card']}>
                                     {formSchema.map((m: MyFormItemProps, i: any) => {
-                                        return <ProFormItem key={i} {...m} formSchema={formSchema} />
+                                        return <ProFormItem key={i} {...m} />
                                     })}
                                 </Card>
                             </Form>

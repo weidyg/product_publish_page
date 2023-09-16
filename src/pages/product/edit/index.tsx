@@ -3,6 +3,7 @@ import { Button, Card, Checkbox, Form, Message, PageHeader, Result, Skeleton, Sp
 import styles from './style/index.module.less'
 import { MyFormItemProps } from "./interface";
 import { ProFormItem } from "../../../components/pro-form";
+import { FieldNames } from "../../../components/until";
 
 declare global {
     interface Window {
@@ -67,6 +68,8 @@ function ProductEdit() {
         }
     }
 
+    const saleProp = formSchema.find((f: any) => FieldNames.saleProp(f));
+    const salePropFieldName = saleProp?.namePath?.join('.') || saleProp?.name;
     return (
         <Spin loading={loading} dot tip='页面加载中，请稍后...'
             className={styles['product']} >
@@ -114,7 +117,7 @@ function ProductEdit() {
                             <Card className={styles['product-card']}>
                                 <Skeleton loading={loading} animation text={{ rows: 10 }}>
                                     {formSchema.map((m: MyFormItemProps, i: any) => {
-                                        return <ProFormItem key={i} {...m} formSchema={formSchema} />
+                                        return <ProFormItem key={i} {...m}  salePropFieldName={salePropFieldName}/>
                                     })}
                                 </Skeleton>
                             </Card>

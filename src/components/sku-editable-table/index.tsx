@@ -77,12 +77,10 @@ function EditableRow(props: any) {
 }
 function EditableCell(props: any) {
     const { children, rowData, column } = props;
-
     const { rootField, dataIndex, formProps, uiType } = column;
     const { name, rules = {}, options = [] } = formProps || {};
     const { maxValue, minValue, ..._rules } = rules;
     const formItemRules = getValiRules(rules);
-
     const { index } = useContext(EditableRowContext);
     const field = `${rootField}[${index}]${dataIndex}`;
     const initialValue = _.get(rowData, dataIndex);
@@ -123,32 +121,29 @@ function EditableCell(props: any) {
     );
 }
 
-type SkuEditableTableProps = MyFormItemProps & { allFormItems: MyFormItemProps[], values: any };
-function SkuEditableTable(props: SkuEditableTableProps) {
-    const { allFormItems = [], subItems = [], values, name, namePath, } = props;
+function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
+    const { subItems = [], salePropValues = [], name, namePath, } = props;
 
     const [value, setValue] = useMergeValue<any[]>([], {
         defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
         value: 'value' in props ? props.value : undefined,
     });
-    const rootField = namePath?.join('.') || name;
-    const columns = getSkuTableColumns(subItems, rootField);
 
-    const skuSaleProp = subItems.find((f: any) => FieldNames.skuProps(f));
-    const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
-    const skuSalePropName = skuSaleProp?.name!;
-
-    const saleProp = allFormItems.find((f: any) => FieldNames.saleProp(f));
-    const salePropName = saleProp?.name!;
-    const salePropValues = values[salePropName] || {};
     useEffect(() => {
+        const skuSaleProp = subItems.find((f: any) => FieldNames.skuProps(f));
+        const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
+        const skuSalePropName = skuSaleProp?.name!;
         const newData = getSkuItems(skuSalePropName, salePropNames, salePropValues, value);
-        if (!('value' in props)) { setValue(newData); }
-        props.onChange && props.onChange(newData);
+        if (JSON.stringify(value) != JSON.stringify(newData)) {
+            if (!('value' in props)) { setValue(newData); }
+            props.onChange && props.onChange(newData);
+        }
     }, [JSON.stringify(salePropValues)]);
 
-    const newColumns = useMemo(() => {
-        return columns.map((column) => {
+    const columns = useMemo(() => {
+        const rootField = namePath?.join('.') || name;
+        const _columns = getSkuTableColumns(subItems, rootField);
+        return _columns.map((column) => {
             return {
                 ...column,
                 render(value: any, _item: any, _index: any) {
@@ -163,9 +158,10 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                 },
             }
         })
-    }, [columns])
+    }, []);
 
     const data = value.filter(f => f.key);
+
     return (<>
         <Table
             data={data}
@@ -175,7 +171,7 @@ function SkuEditableTable(props: SkuEditableTableProps) {
                     cell: EditableCell,
                 },
             }}
-            columns={newColumns}
+            columns={columns}
             size='small'
             border={{ wrapper: true, cell: true }}
             scroll={{ y: 320, x: true }}

@@ -10,6 +10,7 @@ import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules
 import SalePropFormItem from '../sale-prop/SalePropFormItem';
 import { Key } from 'react';
 import { MyFormItemProps } from '../../pages/product/edit/interface';
+import _ from 'lodash';
 
 
 function ProFormList(props: MyFormItemProps) {
@@ -71,13 +72,13 @@ function ProFormList(props: MyFormItemProps) {
 }
 
 
-export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemProps[], picSize?: 'mini' }) {
+export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { salePropFieldName?: string }) {
     const {
         type, label = '', name, namePath, value,
         options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
         fieldName, noStyle, picSize, allowClear = true,
-        valueType,
+        valueType, salePropFieldName
     } = props || {};
 
     const _fieldName = fieldName || namePath?.join('.') || name;
@@ -88,7 +89,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
 
     const shouldUpdate = (prev: any, next: any, info: any) => {
         let _shouldUpdate = tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info)
-            || FieldNames.sku(props);
+            || FieldNames.sku(props) || FieldNames.saleProp(props);
         return _shouldUpdate!;
     }
     const isPrice = name?.toLocaleLowerCase()?.includes('price');
@@ -103,7 +104,6 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                 if (_hide) { return; }
                 const tipValues = getTipValues(values) || [];
                 const extra = tipValues.map((value: any, index: any) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
-
                 const formItemProps: FormItemProps = {
                     label, extra,
                     rules: _rules,
@@ -112,6 +112,7 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     field: _fieldName,
                     noStyle: noStyle,
                 }
+
                 return _uiType == 'input' ? (
                     <Form.Item {...formItemProps} >
                         <Input allowClear={allowClear}
@@ -206,8 +207,8 @@ export function ProFormItem(props: MyFormItemProps & { formSchema?: MyFormItemPr
                     FieldNames.sku(props) ? (
                         <Form.Item {...formItemProps}>
                             <SkuEditableTable {...props}
-                                allFormItems={props.formSchema || []}
-                                values={values} />
+                                salePropValues={_.get(values, salePropFieldName!)}
+                            />
                         </Form.Item >
                     ) : (
                         <Form.Item {...formItemProps}>

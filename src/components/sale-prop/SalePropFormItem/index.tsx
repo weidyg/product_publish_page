@@ -18,10 +18,12 @@ export interface SalePropInputProps {
     defaultValue?: string,
     value?: string,
     onChange?: (value: string) => void,
+    allowCustom?: boolean;
 }
 
 function SalePropInput(props: SalePropInputProps) {
-    const { fieldKey, valueFieldName, topValuesFieldName, topGropFieldName, onChange, options } = props;
+    const { fieldKey, topValuesFieldName, topGropFieldName,
+        valueFieldName, onChange, options, allowCustom } = props;
     const { form } = Form.useFormContext();
     const [visible, setVisible] = useState(false);
     const [value, setValue] = useMergeValue<string>('', {
@@ -77,9 +79,21 @@ function SalePropInput(props: SalePropInputProps) {
         onChange && onChange(newValue);
         valueFieldName && form.setFieldValue(valueFieldName, undefined);
     };
-
-    return <>
-        <Trigger
+    function childrenDom() {
+        return <Input allowClear
+            placeholder="请选择输入"
+            style={{ width: '200px' }}
+            value={value}
+            readOnly={!allowCustom}
+            onChange={(val) => {
+                handleChange(val);
+                if (!val && !visible) { setVisible(true); }
+                if (val && visible) { setVisible(false); }
+            }}
+        />
+    }
+    return options.length > 0
+        ? <Trigger
             popup={popup}
             trigger='focus'
             position='bl'
@@ -95,20 +109,10 @@ function SalePropInput(props: SalePropInputProps) {
                 }
             }}
         >
-            <Input allowClear
-                placeholder="请选择输入"
-                style={{ width: '200px' }}
-                value={value}
-                onChange={(val) => {
-                    handleChange(val);
-                    if (!val && !visible) { setVisible(true); }
-                    if (val && visible) { setVisible(false); }
-                }}
-            />
-        </Trigger>
-    </>
+            {childrenDom()}
+        </Trigger >
+        : childrenDom()
 }
-
 
 export interface SalePropInputFormItemProps {
     fieldKey: number,
@@ -133,7 +137,6 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps) {
         }
 
         <Space size={1}>
-
             <Form.Item
                 field={`${fieldName}.text`}
                 rules={[{ required: true }]}
