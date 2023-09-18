@@ -106,10 +106,13 @@ function ImageUpload(baseProps: ImageUploadProps) {
                 className={styles['upload-picture-progress']}
               />
             ) : (
-              <div title={text}
-                className={styles['upload-picture-text']}>
+              <div className={styles['upload-picture-add']}
+                title={text}
+              >
                 <IconPlus />
-                <div>{text}</div>
+                <div className={styles['upload-picture-text']}> 
+                  {text}
+                </div>
               </div>
             )}
           </div>
