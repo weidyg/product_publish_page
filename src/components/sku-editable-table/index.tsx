@@ -138,6 +138,8 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
             if (!('value' in props)) { setValue(newData); }
             props.onChange && props.onChange(newData);
         }
+        console.log('newData',newData);
+        console.log('salePropValues',salePropValues);
     }, [JSON.stringify(salePropValues)]);
 
     const columns = useMemo(() => {
@@ -173,7 +175,6 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
             }}
             columns={columns}
             size='small'
-            border={{ wrapper: true, cell: true }}
             scroll={{ y: 320, x: true }}
             pagination={false}
         />

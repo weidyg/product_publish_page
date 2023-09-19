@@ -77,10 +77,7 @@ export function getSkuItems(skuSalePropName: string, salePropNames: string[], sa
         next = obj[key]?.filter((f: any) => !!(f?.text)).length > 0;
         if (!next) { obj = {}; }
     });
-
-
     const saleObjs = calcDescartes(obj);
-    console.log('saleObjs', obj, "=>", saleObjs);
     const tempSkuItems = skuItems?.map(obj => {
         obj.key = obj.key || getUniquekey(obj[skuSalePropName], v => v?.value || v?.text);
         return obj;
@@ -88,9 +85,11 @@ export function getSkuItems(skuSalePropName: string, salePropNames: string[], sa
     saleObjs.forEach(obj => {
         const key = getUniquekey(obj, v => v?.value || v?.text);
         const skuItem = tempSkuItems?.find(f => f.key == key) || {};
-        let dataItem: any = { key, props: obj, ...skuItem }
+        let dataItem: any = { ...skuItem, key, props: obj };
         newData.push(dataItem)
     });
+
+    console.log('newData', newData);
     return newData;
 }
 
