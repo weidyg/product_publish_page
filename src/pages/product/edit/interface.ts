@@ -36,7 +36,8 @@ export type MyFormRules = {
     minLength?: number;
 }
 export type FormItemType = 'input' | 'multiInput' | 'singleCheck' | 'multiCheck' | 'complex' | 'multiComplex';
-export type FieldUiType = 'input' | 'inputNumber' | 'radioGroup' | 'select' | 'checkBoxGroup' | 'multiSelect' | 'imageUpload'
+export type FieldUiType = 'input' | 'inputNumber' | 'inputTextArea'
+    | 'radioGroup' | 'select' | 'checkBoxGroup' | 'multiSelect' | 'imageUpload'
     | 'skuEditTable' | 'richTextEditor';
 export type FieldValueType = 'string' | 'object' | 'array_object' | 'bool';
 

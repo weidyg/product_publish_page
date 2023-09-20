@@ -97,7 +97,7 @@ function ImageUpload(baseProps: ImageUploadProps) {
         )
       ) : (
         <UploadImage>
-          <div className={`${styles['upload-picture']} ${styles[size!]}`}>
+          <div className={`${styles['upload-picture']} ${styles['upload-picture-add']} ${styles[size!]}`}>
             {(imgFile?.status === 'uploading' && (imgFile.percent || 100) < 100) ? (
               <Progress
                 size={size}
@@ -106,13 +106,10 @@ function ImageUpload(baseProps: ImageUploadProps) {
                 className={styles['upload-picture-progress']}
               />
             ) : (
-              <div className={styles['upload-picture-add']}
-                title={text}
-              >
+              <div title={text}
+                className={styles['upload-picture-text']}>
                 <IconPlus />
-                <div className={styles['upload-picture-text']}> 
-                  {text}
-                </div>
+                <div>{text}</div>
               </div>
             )}
           </div>

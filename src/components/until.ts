@@ -188,19 +188,22 @@ export function getValiRules(rp?: MyFormRules) {
             rules.push({
                 validator: (value: any, callback: (error?: ReactNode) => void) => {
                     const isArrVal = isArray(value);
-                    let length = isArrVal
-                        ? value.length : isString(value)
-                            ? value.replace(/[^\u0000-\u00ff]/g, "xx").length
+                    let length = isArrVal ? value.length
+                        : isString(value) ? value.replace(/[^\u0000-\u00ff]/g, "**").length
                             : undefined;
-
-                    if (hasMaxLength && isNumber(length)) {
+                    if (hasMaxLength && hasMinLength && isNumber(length)) {
+                        if (length > maxLength || length < minLength) {
+                            callback(`范围应为 ${minLength} ~ ${maxLength} ${isArrVal ? '条' : '个字符'}之间!`);
+                        }
+                    }
+                    else if (hasMaxLength && isNumber(length)) {
                         if (length > maxLength) {
                             callback(`不能超过 ${maxLength} ${isArrVal ? '条' : '个字符'}!`);
                         }
                     }
-                    if (hasMinLength && isNumber(length)) {
+                    else if (hasMinLength && isNumber(length)) {
                         if (length < minLength) {
-                            callback(`至少需要 ${maxLength} ${isArrVal ? '条' : '个字符'}!`);
+                            callback(`至少需要 ${minLength} ${isArrVal ? '条' : '个字符'}!`);
                         }
                     }
                 },

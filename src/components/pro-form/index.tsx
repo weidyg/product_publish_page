@@ -8,9 +8,9 @@ import "react-quill/dist/quill.snow.css";
 import ImageUpload from '../ImageUpload';
 import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../until';
 import SalePropFormItem from '../sale-prop/SalePropFormItem';
-import { Key } from 'react';
 import { MyFormItemProps } from '../../pages/product/edit/interface';
 import _ from 'lodash';
+import { isNumber } from '@arco-design/web-react/es/_util/is';
 
 
 function ProFormList(props: MyFormItemProps) {
@@ -82,28 +82,36 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
     } = props || {};
 
     const _fieldName = fieldName || namePath?.join('.') || name;
-    const _uiType = getUiTypeOrDefault(props);
-    const _rules = getValiRules(rules);
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
     const [disShouldUpdate, isHide] = checkDependRules(hide || {});
 
     const shouldUpdate = (prev: any, next: any, info: any) => {
+        if (JSON.stringify(prev) == JSON.stringify(next)) { return false; }
         let _shouldUpdate = tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info)
             || FieldNames.sku(props) || FieldNames.saleProp(props);
         return _shouldUpdate!;
     }
-    const isPrice = name?.toLocaleLowerCase()?.includes('price');
-    const inputNumberProps = {
-        precision: isPrice ? 2 : undefined,
-        step: isPrice ? 0.01 : undefined
-    }
+    const { form } = Form.useFormContext();
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
             {(values) => {
                 const _hide = isHide(values) === true;
-                if (_hide) { return; }
+                if (_hide) {
+                    form.setFieldValue(_fieldName!, undefined);
+                    return;
+                }
                 const tipValues = getTipValues(values) || [];
                 const extra = tipValues.map((value: any, index: any) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
+
+                const _uiType = getUiTypeOrDefault(props);
+                const _rules = getValiRules(rules);
+
+                const isPrice = name?.toLocaleLowerCase()?.includes('price');
+                const inputNumberProps = {
+                    precision: isPrice ? 2 : undefined,
+                    step: isPrice ? 0.01 : undefined
+                }
+
                 const formItemProps: FormItemProps = {
                     label, extra,
                     rules: _rules,
@@ -112,13 +120,29 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                     field: _fieldName,
                     noStyle: noStyle,
                 }
-
                 return _uiType == 'input' ? (
                     <Form.Item {...formItemProps} >
                         <Input allowClear={allowClear}
                             placeholder={`请输入${label}`}
                             style={{ maxWidth: '734px', minWidth: '220px' }}
-                        />
+                            showWordLimit={isNumber(rules?.maxLength)}
+                            maxLength={
+                                isNumber(rules?.maxLength)
+                                    ? { length: rules!.maxLength, errorOnly: true }
+                                    : undefined
+                            } />
+                    </Form.Item>
+                ) : _uiType == 'inputTextArea' ? (
+                    <Form.Item {...formItemProps} >
+                        <Input.TextArea allowClear={allowClear}
+                            placeholder={`请输入${label}`}
+                            // style={{ maxWidth: '734px', minWidth: '220px' }}
+                            showWordLimit={isNumber(rules?.maxLength)}
+                            maxLength={
+                                isNumber(rules?.maxLength)
+                                    ? { length: rules!.maxLength, errorOnly: true }
+                                    : undefined
+                            } />
                     </Form.Item>
                 ) : _uiType == 'inputNumber' ? (
                     <Form.Item {...formItemProps}>
