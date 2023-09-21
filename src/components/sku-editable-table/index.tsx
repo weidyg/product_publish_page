@@ -80,14 +80,13 @@ function EditableCell(props: any) {
     const { rootField, dataIndex, formProps, uiType } = column;
     const { name, rules = {}, options = [] } = formProps || {};
     const { maxValue, minValue, ..._rules } = rules;
-    const formItemRules = getValiRules(rules);
+    const isPrice = name?.toLowerCase()?.includes('price');
+    const formItemRules = getValiRules(rules, isPrice);
     const { index } = useContext(EditableRowContext);
     const field = `${rootField}[${index}]${dataIndex}`;
     const initialValue = _.get(rowData, dataIndex);
-    const isPrice = name?.toLowerCase()?.includes('price');
-
-    return (
-        <Form.Item
+    return (<>
+        <Form.Item noStyle
             style={{ margin: 0 }}
             labelCol={{ span: 0 }}
             wrapperCol={{ span: 24 }}
@@ -118,6 +117,7 @@ function EditableCell(props: any) {
                 <>{children}</>
             )}
         </Form.Item>
+    </>
     );
 }
 
@@ -138,8 +138,6 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
             if (!('value' in props)) { setValue(newData); }
             props.onChange && props.onChange(newData);
         }
-        console.log('newData',newData);
-        console.log('salePropValues',salePropValues);
     }, [JSON.stringify(salePropValues)]);
 
     const columns = useMemo(() => {

@@ -171,75 +171,78 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                             <Checkbox.Group options={options} />
                         )}
                     </Form.Item>
-                ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
-                    nestItems.length > 0 ? (
+                )
+                    : _uiType == 'select' || _uiType == 'multiSelect' ? (
+                        nestItems.length > 0 ? (
+                            <Form.Item {...formItemProps}>
+                                <ProFormList {...props} />
+                            </Form.Item >
+                        ) : (
+                            <Form.Item {...formItemProps}>
+                                <Select showSearch
+                                    allowClear={allowClear && _uiType != 'multiSelect'}
+                                    options={options}
+                                    allowCreate={allowCustom}
+                                    mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
+                                    placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
+                                    style={{ maxWidth: '358px', minWidth: '180px' }}
+                                />
+                            </Form.Item>
+                        )
+                    ) : _uiType == 'imageUpload' ? (
                         <Form.Item {...formItemProps}>
-                            <ProFormList {...props} />
+                            <ImageUpload size={picSize} />
                         </Form.Item >
-                    ) : (
+                    ) : _uiType == 'richTextEditor' ? (
                         <Form.Item {...formItemProps}>
-                            <Select showSearch
-                                allowClear={allowClear && _uiType != 'multiSelect'}
-                                options={options}
-                                allowCreate={allowCustom}
-                                mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
-                                placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
-                                style={{ maxWidth: '358px', minWidth: '180px' }}
-                            />
+                            <ReactQuill theme="snow" className={styles['desc']} />
                         </Form.Item>
-                    )
-                ) : _uiType == 'imageUpload' ? (
-                    <Form.Item {...formItemProps}>
-                        <ImageUpload size={picSize} />
-                    </Form.Item >
-                ) : _uiType == 'richTextEditor' ? (
-                    <Form.Item {...formItemProps}>
-                        <ReactQuill theme="snow" className={styles['desc']} />
-                    </Form.Item>
-                ) : type == 'complex' ? (
-                    FieldNames.cateProp(props) ? (
-                        <Form.Item {...formItemProps}>
-                            <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
-                                {subItems?.map((sm, si) => {
-                                    const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
-                                    return (
-                                        <Grid.GridItem key={'complex' + si} style={{ maxWidth: '358px' }}>
-                                            <ProFormItem key={si} {...sm} uiType={uiType} />
-                                        </Grid.GridItem>
-                                    )
-                                })}
-                            </Grid>
-                        </Form.Item >
-                    ) : FieldNames.saleProp(props) ? (
-                        <Form.Item {...formItemProps}>
-                            {subItems?.map((m, i) => {
-                                return (m.type == 'multiCheck' || m.type == 'complex')
-                                    ? <SalePropFormItem key={i} {...m} />
-                                    : <div key={i}></div>
-                            })}
-                        </Form.Item >
-                    ) : (
-                        <Form.Item {...formItemProps}>
-                            <Space wrap={true}>
-                                {subItems?.map((sm: any, si: any) => {
-                                    return (<ProFormItem key={si} {...sm} />)
-                                })}
-                            </Space>
-                        </Form.Item >
-                    )
-                ) : type == 'multiComplex' ? (
-                    FieldNames.sku(props) ? (
-                        <Form.Item {...formItemProps}>
-                            <SkuEditableTable {...props}
-                                salePropValues={_.get(values, salePropFieldName!)}
-                            />
-                        </Form.Item >
-                    ) : (
-                        <Form.Item {...formItemProps}>
-                            <ProFormList {...props} />
-                        </Form.Item >
-                    )
-                ) : <div>---{label}---</div>;
+                    ) : type == 'complex' ? (
+                        FieldNames.cateProp(props) ? (
+                            <Form.Item {...formItemProps}>
+                                <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
+                                    {subItems?.map((sm, si) => {
+                                        const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
+                                        return (
+                                            <Grid.GridItem key={'complex' + si} style={{ maxWidth: '358px' }}>
+                                                <ProFormItem key={si} {...sm} uiType={uiType} />
+                                            </Grid.GridItem>
+                                        )
+                                    })}
+                                </Grid>
+                            </Form.Item >
+                        )
+                            : FieldNames.saleProp(props) ? (
+                                <Form.Item {...formItemProps}>
+                                    {subItems?.map((m, i) => {
+                                        return (m.type == 'multiCheck' || m.type == 'complex')
+                                            ? <SalePropFormItem key={i} {...m} />
+                                            : <div key={i}></div>
+                                    })}
+                                </Form.Item >
+                            )
+                                : (
+                                    <Form.Item {...formItemProps}>
+                                        <Space wrap={true}>
+                                            {subItems?.map((sm: any, si: any) => {
+                                                return (<ProFormItem key={si} {...sm} />)
+                                            })}
+                                        </Space>
+                                    </Form.Item >
+                                )
+                    ) : type == 'multiComplex' ? (
+                        FieldNames.sku(props) ? (
+                            <Form.Item {...formItemProps}>
+                                <SkuEditableTable {...props}
+                                    salePropValues={_.get(values, salePropFieldName!)}
+                                />
+                            </Form.Item >
+                        ) : (
+                            <Form.Item {...formItemProps}>
+                                <ProFormList {...props} />
+                            </Form.Item >
+                        )
+                    ) : <div>---{label}---</div>;
             }}
         </Form.Item>
     )

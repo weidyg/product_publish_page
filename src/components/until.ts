@@ -74,7 +74,8 @@ export function getSkuItems(skuSalePropName: string, salePropNames: string[], sa
         } else if (isArray(salePropItem?.value)) {
             obj[key] = [...salePropItem?.value];
         }
-        next = obj[key]?.filter((f: any) => !!(f?.text)).length > 0;
+        obj[key] = obj[key]?.filter((f: any) => !!(f?.text));
+        next = obj[key]?.length > 0;
         if (!next) { obj = {}; }
     });
     const saleObjs = calcDescartes(obj);
@@ -85,7 +86,7 @@ export function getSkuItems(skuSalePropName: string, salePropNames: string[], sa
     saleObjs.forEach(obj => {
         const key = getUniquekey(obj, v => v?.value || v?.text);
         const skuItem = tempSkuItems?.find(f => f.key == key) || {};
-        let dataItem: any = { ...skuItem, key, props: obj };
+        let dataItem: any = { ...skuItem, key, [skuSalePropName]: obj };
         newData.push(dataItem)
     });
 
@@ -171,17 +172,16 @@ export function checkDependRules(dependRules: MyFormDependRules): [
     return [shouldUpdate, getValue];
 }
 
-export function getValiRules(rp?: MyFormRules) {
+export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
     let rules: any[] = [];
     if (rp) {
-        if (rp.required) {
+        let { required, regex, maxLength, minLength, maxValue, minValue } = rp;
+        if (required) {
             rules.push({ required: true });
+            if (isPrice && !isNumber(minValue)) { minValue = 0.01; }
         }
-        if (rp.regex) {
-            rules.push({ type: 'string', match: new RegExp(rp.regex) });
-        }
+        if (regex) { rules.push({ type: 'string', match: new RegExp(regex) }); }
 
-        const { maxLength, minLength } = rp;
         const hasMaxLength = isNumber(maxLength);
         const hasMinLength = isNumber(minLength);
         if (hasMaxLength || hasMinLength) {
@@ -191,52 +191,49 @@ export function getValiRules(rp?: MyFormRules) {
                     let length = isArrVal ? value.length
                         : isString(value) ? value.replace(/[^\u0000-\u00ff]/g, "**").length
                             : undefined;
-                    if (hasMaxLength && hasMinLength && isNumber(length)) {
-                        if (length > maxLength || length < minLength) {
-                            callback(`范围应为 ${minLength} ~ ${maxLength} ${isArrVal ? '条' : '个字符'}之间!`);
+                    if (isNumber(length)) {
+                        if (hasMaxLength && hasMinLength) {
+                            if (length > maxLength! || length < minLength!) {
+                                callback(`范围应为 ${minLength} ~ ${maxLength} ${isArrVal ? '条' : '个字符'}之间!`);
+                            }
                         }
-                    }
-                    else if (hasMaxLength && isNumber(length)) {
-                        if (length > maxLength) {
-                            callback(`不能超过 ${maxLength} ${isArrVal ? '条' : '个字符'}!`);
+                        else if (hasMaxLength) {
+                            if (length > maxLength!) {
+                                callback(`不能超过 ${maxLength} ${isArrVal ? '条' : '个字符'}!`);
+                            }
                         }
-                    }
-                    else if (hasMinLength && isNumber(length)) {
-                        if (length < minLength) {
-                            callback(`至少需要 ${minLength} ${isArrVal ? '条' : '个字符'}!`);
+                        else if (hasMinLength) {
+                            if (length < minLength!) {
+                                callback(`至少需要 ${minLength} ${isArrVal ? '条' : '个字符'}!`);
+                            }
                         }
                     }
                 },
             });
         }
 
-        const { maxValue, minValue } = rp;
         const hasMaxValue = isNumber(maxValue);
         const hasMinValue = isNumber(minValue);
         if (hasMaxValue || hasMinValue) {
             rules.push({
                 validator: (value: any, callback: (error?: ReactNode) => void) => {
-                    if (isNumber(value)) {
-                        if (hasMaxValue && hasMinValue) {
-                            if (value > maxValue || value < minValue) {
-                                callback(`值范围应为 ${minValue} ~ ${maxValue} 之间!`);
-                            }
+                    if (hasMaxValue && hasMinValue && maxValue != minValue) {
+                        if (value > maxValue! || value < minValue!) {
+                            callback(`值范围应为 ${minValue} ~ ${maxValue} 之间!`);
                         }
-                        else if (hasMaxValue) {
-                            if (value > maxValue) {
-                                callback(`最大值为 ${maxValue} !`);
-                            }
+                    }
+                    else if (hasMaxValue) {
+                        if (value > maxValue!) {
+                            callback(`最大值为 ${maxValue} !`);
                         }
-                        else if (hasMinValue) {
-                            if (value < minValue) {
-                                callback(`最小值为 ${minValue} !`);
-                            }
+                    }
+                    else if (hasMinValue) {
+                        if (value < minValue!) {
+                            callback(`最小值为 ${minValue} !`);
                         }
                     }
                 }
             });
-
-            rules.push({ type: 'number', max: rp.maxValue, min: rp.minValue });
         }
     }
     return rules;

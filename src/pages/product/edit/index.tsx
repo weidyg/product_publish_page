@@ -4,6 +4,7 @@ import styles from './style/index.module.less'
 import { MyFormItemProps } from "./interface";
 import { ProFormItem } from "../../../components/pro-form";
 import { FieldNames } from "../../../components/until";
+import { FieldError } from "@arco-design/web-react/es/Form/interface";
 
 declare global {
     interface Window {
@@ -60,9 +61,8 @@ function ProductEdit() {
                 Message.error(error?.message);
             }
         } catch (error) {
-            const values = form.getFieldsValue();
-            console.log('validate error', values, error);
-            Message.error('校验失败，请检查字段！');
+            console.log('validate error', JSON.stringify(error));
+            Message.error('保存失败！');
         } finally {
             setSaveLoading(false);
         }
@@ -99,6 +99,12 @@ function ProductEdit() {
                             layout='vertical'
                             autoComplete='off'
                             scrollToFirstError={true}
+                            // onSubmit={(values: FormData) => {
+                            //     console.log('onSubmit', values);
+                            // }}
+                            // onSubmitFailed={(errors: { [key: string]: FieldError; }) => {
+                            //     console.log('onSubmitFailed', errors);
+                            // }}
                             onValuesChange={(_, values) => {
                                 console.log(values);
                             }}
@@ -113,25 +119,25 @@ function ProductEdit() {
                             <Card className={styles['product-card']}>
                                 <Skeleton loading={loading} animation text={{ rows: 10 }}>
                                     {formSchema.map((m: MyFormItemProps, i: any) => {
-                                        return <ProFormItem key={i} {...m}  salePropFieldName={salePropFieldName}/>
+                                        return <ProFormItem key={i} {...m} salePropFieldName={salePropFieldName} />
                                     })}
                                 </Skeleton>
                             </Card>
+                            <Card className={styles['product-card']}>
+                                <Skeleton loading={loading} animation text={{ rows: 1 }}>
+                                    <Space style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Button
+                                            type='primary'
+                                            size='large'
+                                            loading={saveLoading}
+                                            disabled={saveLoading}
+                                            onClick={handleSave}>
+                                            保 存
+                                        </Button>
+                                    </Space>
+                                </Skeleton>
+                            </Card>
                         </Form>
-                        <Card className={styles['product-card']}>
-                            <Skeleton loading={loading} animation text={{ rows: 1 }}>
-                                <Space style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    <Button
-                                        type='primary'
-                                        size='large'
-                                        loading={saveLoading}
-                                        disabled={saveLoading}
-                                        onClick={handleSave}>
-                                        保 存
-                                    </Button>
-                                </Space>
-                            </Skeleton>
-                        </Card>
                     </>
                 }
             </div>

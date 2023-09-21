@@ -11,7 +11,7 @@
   <div id="root"></div>
   <script>
     // document.body.setAttribute('arco-theme', 'dark');
-    var id = 2;
+    var id = 1;
 
     function loadProductEditData() {
       const data = { ItemId: id };
@@ -22,6 +22,7 @@
             FullCategoryName,
             FormSchemaJson = '[]', FormDataJson = '{}'
           } = data;
+          console.log('FormSchemaJson',FormSchemaJson);
           return {
             platformName: PlatformName,
             shopName: ShopName,
