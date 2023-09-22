@@ -78,13 +78,12 @@ function EditableRow(props: any) {
 function EditableCell(props: any) {
     const { children, rowData, column } = props;
     const { rootField, dataIndex, formProps, uiType } = column;
-    const { name, rules = {}, options = [] } = formProps || {};
-    const { maxValue, minValue, ..._rules } = rules;
+    const { name, rules = {}, options = [], value } = formProps || {};
     const isPrice = name?.toLowerCase()?.includes('price');
     const formItemRules = getValiRules(rules, isPrice);
     const { index } = useContext(EditableRowContext);
     const field = `${rootField}[${index}]${dataIndex}`;
-    const initialValue = _.get(rowData, dataIndex);
+    const initialValue = _.get(rowData, dataIndex) || value;
     return (<>
         <Form.Item noStyle
             style={{ margin: 0 }}
@@ -99,7 +98,8 @@ function EditableCell(props: any) {
             ) : uiType == 'inputNumber' ? (
                 <InputNumber
                     placeholder={'请输入'}
-                    min={minValue?.value || isPrice ? 0.01 : 1}
+                    max={rules?.maxValue?.value}
+                    min={rules?.minValue?.value || isPrice ? 0.01 : 1}
                     precision={isPrice ? 2 : undefined}
                     step={isPrice ? 0.01 : undefined}
                 />

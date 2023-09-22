@@ -1,8 +1,11 @@
 import _ from "lodash";
-import { isArray, isNumber, isString, isUndefined } from "@arco-design/web-react/es/_util/is";
+import { isArray, isNumber, isString } from "@arco-design/web-react/es/_util/is";
 import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/edit/interface";
 import { ReactNode } from "react";
 
+export function isNumberOrStrNumber(obj: any) {
+    return isNumber(obj) || !isNaN(Number(obj))
+}
 export function calcDescartes(obj: ObjVal, getValue?: (val: any) => any) {
     let newObjs: any[] = [];
     const keys = Object.keys(obj);
@@ -178,12 +181,12 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
         let { required, regex, maxLength, minLength, maxValue, minValue } = rp;
         if (required) {
             rules.push({ required: true });
-            if (isPrice && !isNumber(minValue)) { minValue = 0.01; }
+            if (isPrice && !isNumberOrStrNumber(minValue)) { minValue = 0.01; }
         }
         if (regex) { rules.push({ type: 'string', match: new RegExp(regex) }); }
 
-        const hasMaxLength = isNumber(maxLength);
-        const hasMinLength = isNumber(minLength);
+        const hasMaxLength = isNumberOrStrNumber(maxLength);
+        const hasMinLength = isNumberOrStrNumber(minLength);
         if (hasMaxLength || hasMinLength) {
             rules.push({
                 validator: (value: any, callback: (error?: ReactNode) => void) => {
@@ -212,8 +215,8 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
             });
         }
 
-        const hasMaxValue = isNumber(maxValue);
-        const hasMinValue = isNumber(minValue);
+        const hasMaxValue = isNumberOrStrNumber(maxValue);
+        const hasMinValue = isNumberOrStrNumber(minValue);
         if (hasMaxValue || hasMinValue) {
             rules.push({
                 validator: (value: any, callback: (error?: ReactNode) => void) => {
