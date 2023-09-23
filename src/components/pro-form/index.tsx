@@ -1,6 +1,6 @@
 
-import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox } from '@arco-design/web-react';
-import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
+import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox, Message, Spin, Empty, Alert } from '@arco-design/web-react';
+import { IconDelete, IconPlus, IconRefresh } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import SkuEditableTable from '../sku-editable-table';
 import ReactQuill from 'react-quill';
@@ -9,8 +9,12 @@ import ImageUpload from '../ImageUpload';
 import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../until';
 import SalePropFormItem from '../sale-prop/SalePropFormItem';
 import { MyFormItemProps } from '../../pages/product/edit/interface';
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 import { isNumber } from '@arco-design/web-react/es/_util/is';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { getRemoteOptions } from '../api';
+import { ProductEditContext } from '../../pages/product/edit';
+import { ErrorBoundary } from 'react-error-boundary';
 
 
 function ProFormList(props: MyFormItemProps) {
@@ -71,11 +75,78 @@ function ProFormList(props: MyFormItemProps) {
     );
 }
 
+function RemoteSelect(props: any) {
+    const { optionAction, options: propOptions = [], value, onChange, ...rest } = props
+    const [options, setOptions] = useState(propOptions);
+    const [fetching, setFetching] = useState(false);
+    const { getShopId } = useContext(ProductEditContext);
+    useEffect(() => {
+        if (optionAction && options.length == 0) {
+            debouncedFetchOptions(optionAction);
+        }
+    }, []);
+    const debouncedFetchOptions = useCallback(
+        debounce(async (optionAction: string, forceUpdate?: boolean) => {
+            if (fetching) { return; }
+            setFetching(true);
+            try {
+                const shopId = getShopId && getShopId();
+                if (shopId! > 0) {
+                    setOptions([]);
+                    const options = await getRemoteOptions(shopId, optionAction, forceUpdate);
+                    setOptions(options);
+                } else {
+                    console.log('getShopId error', getShopId);
+                }
+            } catch (error: any) {
+                Message.error(error?.message || error);
+            } finally {
+                setFetching(false);
+            }
+        }, 500), []);
+
+    return <div>
+        <Select
+            value={value}
+            onChange={onChange}
+            options={options}
+            notFoundContent={
+                fetching ? (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
+                        <Spin style={{ margin: 12 }} />
+                    </div>
+                ) : <Empty />
+            }
+            {...rest}
+        />
+        {optionAction &&
+            <Button type='text' icon={<IconRefresh />}
+                loading={fetching}
+                onClick={() => {
+                    debouncedFetchOptions(optionAction, true);
+                }}
+            >
+                {`同步`}
+            </Button>
+        }
+    </div>
+}
+
+function FormItem(props: any) {
+    const { children, label, ...formItemProps } = props;
+    return <ErrorBoundary fallback={
+        <Form.Item label={label}>
+            <Alert type='error' content={`组件渲染出错`} />
+        </Form.Item>
+    }>
+        <Form.Item label={label} {...formItemProps} >{children}</Form.Item>
+    </ErrorBoundary>
+}
 
 export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { salePropFieldName?: string }) {
     const {
         type, label = '', name, namePath, value,
-        options = [], subItems = [], nestItems = [],
+        optionAction, options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
         fieldName, noStyle, picSize, allowClear = true,
         valueType, salePropFieldName
@@ -84,13 +155,13 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
     const _fieldName = fieldName || namePath?.join('.') || name;
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
     const [disShouldUpdate, isHide] = checkDependRules(hide || {});
-
     const shouldUpdate = (prev: any, next: any, info: any) => {
         if (JSON.stringify(prev) == JSON.stringify(next)) { return false; }
         let _shouldUpdate = tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info)
             || FieldNames.sku(props) || FieldNames.saleProp(props);
         return _shouldUpdate!;
     }
+
     const { form } = Form.useFormContext();
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
@@ -119,49 +190,53 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                     initialValue: value,
                     field: _fieldName,
                     noStyle: noStyle,
+                    style: subItems.length > 0 ? { marginBottom: '0px' } : {}
                 }
+
                 return _uiType == 'input' ? (
-                    <Form.Item {...formItemProps} >
+                    <FormItem {...formItemProps} >
                         <Input allowClear={allowClear}
                             placeholder={`请输入${label}`}
                             style={{ maxWidth: '734px', minWidth: '220px' }}
-                            showWordLimit={isNumber(rules?.maxLength)}
-                            maxLength={
-                                isNumber(rules?.maxLength)
-                                    ? { length: rules!.maxLength, errorOnly: true }
-                                    : undefined
-                            } />
-                    </Form.Item>
+                        // showWordLimit={isNumber(rules?.maxLength)}
+                        // maxLength={
+                        //     isNumber(rules?.maxLength)
+                        //         ? { length: rules!.maxLength, errorOnly: true }
+                        //         : undefined
+                        // } 
+                        />
+                    </FormItem>
                 ) : _uiType == 'inputTextArea' ? (
-                    <Form.Item {...formItemProps} >
+                    <FormItem {...formItemProps} >
                         <Input.TextArea allowClear={allowClear}
                             placeholder={`请输入${label}`}
-                            // style={{ maxWidth: '734px', minWidth: '220px' }}
-                            showWordLimit={isNumber(rules?.maxLength)}
-                            maxLength={
-                                isNumber(rules?.maxLength)
-                                    ? { length: rules!.maxLength, errorOnly: true }
-                                    : undefined
-                            } />
-                    </Form.Item>
+                        // style={{ maxWidth: '734px', minWidth: '220px' }}
+                        // showWordLimit={isNumber(rules?.maxLength)}
+                        // maxLength={
+                        //     isNumber(rules?.maxLength)
+                        //         ? { length: rules!.maxLength, errorOnly: true }
+                        //         : undefined
+                        // } 
+                        />
+                    </FormItem>
                 ) : _uiType == 'inputNumber' ? (
-                    <Form.Item {...formItemProps}>
+                    <FormItem {...formItemProps}>
                         <InputNumber
                             placeholder={`请输入${label}`}
                             style={{ maxWidth: '358px', minWidth: '80px' }}
                             {...inputNumberProps}
                         />
-                    </Form.Item>
+                    </FormItem>
                 ) : _uiType == 'radioGroup' ? (
-                    <Form.Item {...formItemProps}>
+                    <FormItem {...formItemProps}>
                         <Radio.Group options={options} />
-                    </Form.Item>
+                    </FormItem>
                 ) : _uiType == 'checkBoxGroup' ? (
-                    <Form.Item {...formItemProps}>
+                    <FormItem {...formItemProps}>
                         {valueType == 'object' ? (
                             <Space>
                                 {options.map((m, i) => {
-                                    return <Form.Item key={i} noStyle
+                                    return <Form.Item key={i}
                                         field={`${_fieldName}.${m.value}`}>
                                         <Checkbox>{m.label}</Checkbox>
                                     </Form.Item>
@@ -170,15 +245,25 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                         ) : (
                             <Checkbox.Group options={options} />
                         )}
-                    </Form.Item>
-                )
-                    : _uiType == 'select' || _uiType == 'multiSelect' ? (
-                        nestItems.length > 0 ? (
-                            <Form.Item {...formItemProps}>
-                                <ProFormList {...props} />
-                            </Form.Item >
-                        ) : (
-                            <Form.Item {...formItemProps}>
+                    </FormItem>
+                ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
+                    nestItems.length > 0 ? (
+                        <FormItem {...formItemProps}>
+                            <ProFormList {...props} />
+                        </FormItem >
+                    ) : (
+                        <FormItem {...formItemProps}>
+                            {optionAction ? (
+                                <RemoteSelect showSearch
+                                    allowClear={allowClear && _uiType != 'multiSelect'}
+                                    optionAction={optionAction}
+                                    options={options}
+                                    allowCreate={allowCustom}
+                                    mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
+                                    placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
+                                    style={{ maxWidth: '274px', minWidth: '96px' }}
+                                />
+                            ) : (
                                 <Select showSearch
                                     allowClear={allowClear && _uiType != 'multiSelect'}
                                     options={options}
@@ -187,62 +272,63 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                                     placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
                                     style={{ maxWidth: '358px', minWidth: '180px' }}
                                 />
-                            </Form.Item>
+                            )}
+                        </FormItem>
+                    )
+                ) : _uiType == 'imageUpload' ? (
+                    <FormItem {...formItemProps}>
+                        <ImageUpload size={picSize} />
+                    </FormItem >
+                ) : _uiType == 'richTextEditor' ? (
+                    <FormItem {...formItemProps}>
+                        <ReactQuill theme="snow" className={styles['desc']} />
+                    </FormItem>
+                ) : type == 'complex' ? (
+                    FieldNames.cateProp(props) ? (
+                        <FormItem {...formItemProps}>
+                            <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
+                                {subItems?.map((sm, si) => {
+                                    const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
+                                    return (
+                                        <Grid.GridItem key={'complex' + si} style={{ maxWidth: '358px' }}>
+                                            <ProFormItem key={si} {...sm} uiType={uiType} />
+                                        </Grid.GridItem>
+                                    )
+                                })}
+                            </Grid>
+                        </FormItem >
+                    )
+                        : FieldNames.saleProp(props) ? (
+                            <FormItem {...formItemProps}>
+                                {subItems?.map((m, i) => {
+                                    return (m.type == 'multiCheck' || m.type == 'complex')
+                                        ? <SalePropFormItem key={i} {...m} />
+                                        : <div key={i}></div>
+                                })}
+                            </FormItem >
                         )
-                    ) : _uiType == 'imageUpload' ? (
-                        <Form.Item {...formItemProps}>
-                            <ImageUpload size={picSize} />
-                        </Form.Item >
-                    ) : _uiType == 'richTextEditor' ? (
-                        <Form.Item {...formItemProps}>
-                            <ReactQuill theme="snow" className={styles['desc']} />
-                        </Form.Item>
-                    ) : type == 'complex' ? (
-                        FieldNames.cateProp(props) ? (
-                            <Form.Item {...formItemProps}>
-                                <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
-                                    {subItems?.map((sm, si) => {
-                                        const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
-                                        return (
-                                            <Grid.GridItem key={'complex' + si} style={{ maxWidth: '358px' }}>
-                                                <ProFormItem key={si} {...sm} uiType={uiType} />
-                                            </Grid.GridItem>
-                                        )
-                                    })}
-                                </Grid>
-                            </Form.Item >
-                        )
-                            : FieldNames.saleProp(props) ? (
-                                <Form.Item {...formItemProps}>
-                                    {subItems?.map((m, i) => {
-                                        return (m.type == 'multiCheck' || m.type == 'complex')
-                                            ? <SalePropFormItem key={i} {...m} />
-                                            : <div key={i}></div>
-                                    })}
-                                </Form.Item >
+                            : (
+                                <FormItem {...formItemProps}>
+                                    <Space wrap={true}>
+                                        {subItems?.map((sm: any, si: any) => {
+                                            return (<ProFormItem key={si} {...sm} />)
+                                        })}
+                                    </Space>
+                                </FormItem >
                             )
-                                : (
-                                    <Form.Item {...formItemProps}>
-                                        <Space wrap={true}>
-                                            {subItems?.map((sm: any, si: any) => {
-                                                return (<ProFormItem key={si} {...sm} />)
-                                            })}
-                                        </Space>
-                                    </Form.Item >
-                                )
-                    ) : type == 'multiComplex' ? (
-                        FieldNames.sku(props) ? (
-                            <Form.Item {...formItemProps}>
-                                <SkuEditableTable {...props}
-                                    salePropValues={_.get(values, salePropFieldName!)}
-                                />
-                            </Form.Item >
-                        ) : (
-                            <Form.Item {...formItemProps}>
-                                <ProFormList {...props} />
-                            </Form.Item >
-                        )
-                    ) : <div>---{label}---</div>;
+                ) : type == 'multiComplex' ? (
+                    FieldNames.sku(props) ? (
+                        <FormItem {...formItemProps}>
+                            <SkuEditableTable {...props}
+                                salePropValues={_.get(values, salePropFieldName!)}
+                            />
+                        </FormItem >
+                    ) : (
+                        <FormItem {...formItemProps}>
+                            <ProFormList {...props} />
+                        </FormItem >
+                    )
+                ) : <div>---{label}---</div>;
             }}
         </Form.Item>
     )

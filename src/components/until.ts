@@ -92,8 +92,6 @@ export function getSkuItems(skuSalePropName: string, salePropNames: string[], sa
         let dataItem: any = { ...skuItem, key, [skuSalePropName]: obj };
         newData.push(dataItem)
     });
-
-    console.log('newData', newData);
     return newData;
 }
 
@@ -200,15 +198,11 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
                                 callback(`范围应为 ${minLength} ~ ${maxLength} ${isArrVal ? '条' : '个字符'}之间!`);
                             }
                         }
-                        else if (hasMaxLength) {
-                            if (length > maxLength!) {
-                                callback(`不能超过 ${maxLength} ${isArrVal ? '条' : '个字符'}!`);
-                            }
+                        else if (hasMaxLength && length > maxLength!) {
+                            callback(`不能超过 ${maxLength} ${isArrVal ? '条' : '个字符'}!`);
                         }
-                        else if (hasMinLength) {
-                            if (length < minLength!) {
-                                callback(`至少需要 ${minLength} ${isArrVal ? '条' : '个字符'}!`);
-                            }
+                        else if (hasMinLength && length < minLength!) {
+                            callback(`至少需要 ${minLength} ${isArrVal ? '条' : '个字符'}!`);
                         }
                     }
                 },
@@ -225,15 +219,11 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
                             callback(`值范围应为 ${minValue} ~ ${maxValue} 之间!`);
                         }
                     }
-                    else if (hasMaxValue) {
-                        if (value > maxValue!) {
-                            callback(`最大值为 ${maxValue} !`);
-                        }
+                    else if (hasMaxValue && value > maxValue!) {
+                        callback(`最大值为 ${maxValue} !`);
                     }
-                    else if (hasMinValue) {
-                        if (value < minValue!) {
-                            callback(`最小值为 ${minValue} !`);
-                        }
+                    else if (hasMinValue && value < minValue!) {
+                        callback(`最小值为 ${minValue} !`);
                     }
                 }
             });

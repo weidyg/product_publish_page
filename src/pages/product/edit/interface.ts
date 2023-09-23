@@ -6,6 +6,7 @@ export type MyFormItemProps = {
     namePath?: string[];
     value?: any;
     rules?: MyFormRules;
+    optionAction?: string,
     options?: Array<MyFormItemOption & { options?: MyFormItemOption[] }>;
     subItems?: MyFormItemProps[];
     nestItems?: MyFormItemProps[];

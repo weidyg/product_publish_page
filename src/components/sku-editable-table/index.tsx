@@ -4,7 +4,7 @@ import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import { isObject } from '@arco-design/web-react/es/_util/is';
 import * as _ from "lodash"
 import styles from './index.module.less'
-import { FieldNames, getSkuItems, getTips, getUiTypeOrDefault, getValiRules } from '../until';
+import { FieldNames, getSkuItems, getTips, getUiTypeOrDefault, getValiRules, isNumberOrStrNumber } from '../until';
 import { FieldUiType, MyFormItemProps } from '../../pages/product/edit/interface';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 
@@ -98,8 +98,8 @@ function EditableCell(props: any) {
             ) : uiType == 'inputNumber' ? (
                 <InputNumber
                     placeholder={'请输入'}
-                    max={rules?.maxValue?.value}
-                    min={rules?.minValue?.value || isPrice ? 0.01 : 1}
+                    max={isNumberOrStrNumber(rules?.maxValue) ? rules.maxValue : undefined}
+                    min={isNumberOrStrNumber(rules?.minValue) ? rules.minValue : isPrice ? 0.01 : 1}
                     precision={isPrice ? 2 : undefined}
                     step={isPrice ? 0.01 : undefined}
                 />

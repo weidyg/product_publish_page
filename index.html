@@ -18,12 +18,15 @@
       return post("https://localhost:44331/api/services/app/ProductPublish/GetProductEditData", data)
         .then((data) => {
           var {
+            PlatformId, ShopId,
             PlatformName, ShopName,
             FullCategoryName,
-            FormSchemaJson = '[]', FormDataJson = '{}'
+            FormSchemaJson = '[]',
+            FormDataJson = '{}'
           } = data;
-          console.log('FormSchemaJson',FormSchemaJson);
           return {
+            platformId: PlatformId,
+            shopId: ShopId,
             platformName: PlatformName,
             shopName: ShopName,
             fullCategoryName: FullCategoryName,
@@ -37,6 +40,12 @@
       const data = { ItemId: id, DataJson: JSON.stringify(dataJson) };
       return post("https://localhost:44331/api/services/app/ProductPublish/SaveProductEditData", data);
     }
+
+    function getRemoteOptions(shopId, optionAction, forceUpdate) {
+      const data = { ShopId: shopId, Action: optionAction, ForceUpdate: forceUpdate };
+      return post("https://localhost:44331/api/services/app/ProductPublish/GetOptions", data);
+    }
+
 
     function post(url, data) {
       return fetch(url, {
