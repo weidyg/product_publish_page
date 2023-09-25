@@ -2,10 +2,8 @@ import { useMemo, useState } from "react";
 import { Alert, Button, Card, Checkbox, Grid, Menu, Modal, Space } from "@arco-design/web-react";
 import { IconCheck } from "@arco-design/web-react/icon";
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
-import omit from '@arco-design/web-react/es/_util/omit';
 import { SalePropCardProps, SalePropGroupOption } from "./interface";
 import styles from './style/index.module.less';
-import { filter, forEach } from "lodash";
 
 const defaultProps: SalePropCardProps = {};
 function SalePropCard(baseProps: SalePropCardProps) {
@@ -62,6 +60,7 @@ function SalePropCard(baseProps: SalePropCardProps) {
     };
 
     const handleChange = () => {
+        console.log('handleChange',values || [], groupValue);
         onOk && onOk(values || [], groupValue);
     };
 

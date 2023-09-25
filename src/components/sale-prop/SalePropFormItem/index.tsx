@@ -32,11 +32,11 @@ function SalePropInput(props: SalePropInputProps) {
         defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
         value: 'value' in props ? props.value : undefined,
     });
-
+    console.log('fieldKey', fieldKey);
     function popup() {
-        const fieldValue = form.getFieldValue(topValuesFieldName);
         const fieldGroup = topGropFieldName && form.getFieldValue(topGropFieldName);
         const currGroupId = fieldGroup?.value;
+        const fieldValue = form.getFieldValue(topValuesFieldName);
         const currValIds = fieldValue && fieldValue.map((m: any) => m?.value);
         return <SalePropCard
             group={currGroupId}
@@ -53,7 +53,6 @@ function SalePropInput(props: SalePropInputProps) {
                     for (let index = 0; index < newAddValIds.length; index++) {
                         const v = newAddValIds[index];
                         const text = opts?.find((f: any) => f.value == v)?.label;
-
                         const currFieldValue = newFieldValue[fieldKey] || {};
                         if (index == 0  /**  && !currFieldValue.text */) {
                             newFieldValue[fieldKey] = { ...currFieldValue, value: v, text: text }
@@ -221,11 +220,11 @@ function SalePropFormItem(props: MyFormItemProps) {
                         fields.push({ key: 0, field: `${fieldName}[${0}]` });
                     }
                     return (<Space wrap>
-                        {fields.map(({ key, field }, index) => {
+                        {fields.map(({ field }, index) => {
                             return (
-                                <Space key={key} wrap size={4}>
+                                <Space key={index} wrap size={4}>
                                     <SalePropInputFormItem
-                                        fieldKey={key}
+                                        fieldKey={index}
                                         fieldName={field}
                                         topValuesFieldName={valueFieldName}
                                         topGropFieldName={groupFieldName}
