@@ -214,8 +214,9 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
         if (hasMaxValue || hasMinValue) {
             rules.push({
                 validator: (value: any, callback: (error?: ReactNode) => void) => {
+                    const _value = parseFloat(value);
                     if (hasMaxValue && hasMinValue && maxValue != minValue) {
-                        if (value > maxValue! || value < minValue!) {
+                        if (_value > maxValue! || _value < minValue!) {
                             callback(`值范围应为 ${minValue} ~ ${maxValue} 之间!`);
                         }
                     }

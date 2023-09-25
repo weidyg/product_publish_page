@@ -9,6 +9,7 @@ import _ from "lodash";
 import { MyFormItemProps } from "../../../pages/product/edit/interface";
 
 export interface SalePropInputProps {
+    isGroup?: boolean,
     options: SalePropOption[],
     fieldKey: number,
     valueFieldName?: string,
@@ -22,8 +23,8 @@ export interface SalePropInputProps {
 }
 
 function SalePropInput(props: SalePropInputProps) {
-    const { fieldKey, topValuesFieldName, topGropFieldName,
-        valueFieldName, onChange, options, allowCustom } = props;
+    const { fieldKey, topValuesFieldName, topGropFieldName, valueFieldName,
+        onChange, options, isGroup, allowCustom } = props;
     const { form } = Form.useFormContext();
     const [visible, setVisible] = useState(false);
     const [isSelVal, setIsSelVal] = useState(false);
@@ -37,19 +38,17 @@ function SalePropInput(props: SalePropInputProps) {
         const fieldGroup = topGropFieldName && form.getFieldValue(topGropFieldName);
         const currGroupId = fieldGroup?.value;
         const currValIds = fieldValue && fieldValue.map((m: any) => m?.value);
-        const isGroup = options?.some(s => (s?.options?.length || 0) > 0);
         return <SalePropCard
             group={currGroupId}
             values={currValIds}
+            isGroup={isGroup}
             options={options}
             onOk={(vals?: string[], gVal?: string) => {
                 const changeGroup = currGroupId !== gVal;
                 const newFieldValue = changeGroup ? [] : [...(fieldValue || [])];
                 const newAddValIds = vals?.filter(f => !newFieldValue.some(s => `${f}` == `${s?.value}`));
-
-                const newGroup: SalePropOption | undefined = isGroup ? options?.find(f => f.value == gVal) : undefined;
-                const { options: newGroupOptions, ...newGroupRest } = newGroup || {};
-                const opts: SalePropOption[] = (isGroup ? newGroupOptions : options) || [];
+                const newGroup = options.find(f => f.group?.value == gVal);
+                const opts: SalePropOption[] = (isGroup ? options.filter(f => f.group?.value == gVal) : options) || [];
                 if (newAddValIds && newAddValIds.length > 0) {
                     for (let index = 0; index < newAddValIds.length; index++) {
                         const v = newAddValIds[index];
@@ -65,7 +64,7 @@ function SalePropInput(props: SalePropInputProps) {
                     form.setFieldValue(topValuesFieldName, newFieldValue);
                 }
                 if (changeGroup && topGropFieldName) {
-                    form.setFieldValue(topGropFieldName, newGroupRest);
+                    form.setFieldValue(topGropFieldName, newGroup);
                 }
                 setVisible(false);
             }}
@@ -150,11 +149,12 @@ export interface SalePropInputFormItemProps {
     fieldName: string,
     topValuesFieldName?: string,
     topGropFieldName?: string,
+    isGroup?: boolean,
     options: SalePropOption[],
     nestItems?: MyFormItemProps[]
 }
 function SalePropInputFormItem(props: SalePropInputFormItemProps) {
-    const { fieldKey, fieldName, nestItems, options, topValuesFieldName, topGropFieldName } = props;
+    const { fieldKey, fieldName, nestItems, options, topValuesFieldName, topGropFieldName, isGroup } = props;
     const imgForm = nestItems?.find(f => f.name == 'img');
     const remarkForm = nestItems?.find(f => f.name == 'remark');
 
@@ -173,6 +173,7 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps) {
                 rules={[{ required: true }]}
             >
                 <SalePropInput
+                    isGroup={isGroup}
                     options={options as any}
                     fieldKey={fieldKey}
                     textFieldName={`${fieldName}.text`}
@@ -202,9 +203,9 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps) {
 }
 
 function SalePropFormItem(props: MyFormItemProps) {
-    const { label, nestItems, namePath, name, options } = props;
+    const { label, nestItems, namePath, name, options
+        , optionGroupUnique: isGroup } = props;
     const fieldName = namePath?.join('.') || name;
-    const isGroup = options?.some(s => (s?.options?.length || 0) > 0);
     const groupFieldName = isGroup ? `${fieldName}.group` : undefined;
     const valueFieldName = isGroup ? `${fieldName}.value` : fieldName;
     return (
@@ -229,6 +230,7 @@ function SalePropFormItem(props: MyFormItemProps) {
                                         topValuesFieldName={valueFieldName}
                                         topGropFieldName={groupFieldName}
                                         nestItems={nestItems}
+                                        isGroup={isGroup}
                                         options={options as any}
                                     />
                                     <Form.Item >

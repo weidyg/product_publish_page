@@ -1,4 +1,11 @@
-export type MyFormItemOption = { label: string; value: string; }
+export type MyFormItemOption = {
+    label: string;
+    value: string;
+    group?: {
+        label?: string;
+        value?: string;
+    }
+}
 export type MyFormItemProps = {
     type?: FormItemType;
     label?: string;
@@ -7,7 +14,8 @@ export type MyFormItemProps = {
     value?: any;
     rules?: MyFormRules;
     optionAction?: string,
-    options?: Array<MyFormItemOption & { options?: MyFormItemOption[] }>;
+    optionGroupUnique?: boolean,
+    options?: Array<MyFormItemOption>;
     subItems?: MyFormItemProps[];
     nestItems?: MyFormItemProps[];
 

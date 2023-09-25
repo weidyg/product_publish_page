@@ -3,23 +3,35 @@ import { Alert, Button, Card, Checkbox, Grid, Menu, Modal, Space } from "@arco-d
 import { IconCheck } from "@arco-design/web-react/icon";
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import omit from '@arco-design/web-react/es/_util/omit';
-import { SalePropCardProps } from "./interface";
+import { SalePropCardProps, SalePropGroupOption } from "./interface";
 import styles from './style/index.module.less';
+import { filter, forEach } from "lodash";
 
 const defaultProps: SalePropCardProps = {};
 function SalePropCard(baseProps: SalePropCardProps) {
     const props = useMergeProps<SalePropCardProps>(baseProps, defaultProps, {});
-    const { options, values: propValues, group: propGroup, onOk, onCancel } = props;
-    const isGroup = options?.some(s => (s?.options?.length || 0) > 0);
+    const { isGroup, options, values: propValues, group: propGroup, onOk, onCancel } = props;
 
-    const defalutGroup = isGroup ? (propGroup || options?.find(() => true)?.value) : undefined;
-    const groupOptions = isGroup ? options?.map(m => omit(m, ['options'])) : [];
+    const groupOptions = useMemo(() => {
+        if (!isGroup) { return []; }
+        let gOpts: SalePropGroupOption[] = [];
+        options?.forEach(f => {
+            if (f.group) {
+                if (gOpts.every(s => s.value != f.group?.value)) {
+                    gOpts.push(f.group);
+                }
+            }
+        });
+        return gOpts;
+    }, [isGroup]);
+
+    const defalutGroup = isGroup ? (propGroup || groupOptions?.find(() => true)?.value) : undefined;
 
     const [values, setValues] = useState(propValues);
     const [groupValue, setGroupValue] = useState(defalutGroup);
     const checkOptions = useMemo(() => {
         return isGroup
-            ? options?.find(f => f.value == groupValue)?.options?.sort()
+            ? options?.filter(f => f.group?.value == groupValue)?.sort()
             : options?.map(m => m)?.sort();
     }, [isGroup, groupValue]);
 

@@ -10,8 +10,7 @@ import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules
 import SalePropFormItem from '../sale-prop/SalePropFormItem';
 import { MyFormItemProps } from '../../pages/product/edit/interface';
 import _, { debounce } from 'lodash';
-import { isNumber } from '@arco-design/web-react/es/_util/is';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { getRemoteOptions } from '../api';
 import { ProductEditContext } from '../../pages/product/edit';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -76,7 +75,7 @@ function ProFormList(props: MyFormItemProps) {
 }
 
 function RemoteSelect(props: any) {
-    const { optionAction, options: propOptions = [], value, onChange, ...rest } = props
+    const { label, optionAction, options: propOptions = [], value, onChange, ...rest } = props
     const [options, setOptions] = useState(propOptions);
     const [fetching, setFetching] = useState(false);
     const { getShopId } = useContext(ProductEditContext);
@@ -95,6 +94,7 @@ function RemoteSelect(props: any) {
                     setOptions([]);
                     const options = await getRemoteOptions(shopId, optionAction, forceUpdate);
                     setOptions(options);
+                    forceUpdate && Message.success(`${label}同步成功！`);
                 } else {
                     console.log('getShopId error', getShopId);
                 }
@@ -256,6 +256,7 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                             {optionAction ? (
                                 <RemoteSelect showSearch
                                     allowClear={allowClear && _uiType != 'multiSelect'}
+                                    label={label}
                                     optionAction={optionAction}
                                     options={options}
                                     allowCreate={allowCustom}
