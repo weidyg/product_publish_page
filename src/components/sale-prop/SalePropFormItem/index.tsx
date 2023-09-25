@@ -32,7 +32,6 @@ function SalePropInput(props: SalePropInputProps) {
         defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
         value: 'value' in props ? props.value : undefined,
     });
-    console.log('fieldKey', fieldKey);
     function popup() {
         const fieldGroup = topGropFieldName && form.getFieldValue(topGropFieldName);
         const currGroupId = fieldGroup?.value;
@@ -47,7 +46,7 @@ function SalePropInput(props: SalePropInputProps) {
                 const changeGroup = currGroupId !== gVal;
                 const newFieldValue = changeGroup ? [] : [...(fieldValue || [])];
                 const newAddValIds = vals?.filter(f => !newFieldValue.some(s => `${f}` == `${s?.value}`));
-                const newGroup = options.find(f => f.group?.value == gVal);
+                const newGroup = options.find(f => f.group?.value == gVal)?.group;
                 const opts: SalePropOption[] = (isGroup ? options.filter(f => f.group?.value == gVal) : options) || [];
                 if (newAddValIds && newAddValIds.length > 0) {
                     for (let index = 0; index < newAddValIds.length; index++) {

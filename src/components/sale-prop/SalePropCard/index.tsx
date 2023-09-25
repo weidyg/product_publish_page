@@ -60,7 +60,6 @@ function SalePropCard(baseProps: SalePropCardProps) {
     };
 
     const handleChange = () => {
-        console.log('handleChange',values || [], groupValue);
         onOk && onOk(values || [], groupValue);
     };
 
