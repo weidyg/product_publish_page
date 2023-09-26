@@ -163,6 +163,34 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
     const data = value.filter(f => f.key);
 
     return (<>
+        {/* <Form layout='inline'>
+            {subItems.map(m => {
+                const uiType = getUiTypeOrDefault(m)
+                return <Form.Item
+                    field={m.name}
+                >
+                    {uiType == 'input' ? (
+                        <Input placeholder={'请输入'} />
+                    ) : uiType == 'inputNumber' ? (
+                        <InputNumber
+                            placeholder={'请输入'}
+                        />
+                    ) : uiType == 'select' ? (
+                        <Select
+                            placeholder={'请选择'}
+                            options={m.options}
+                            triggerProps={{
+                                autoAlignPopupWidth: false,
+                                autoAlignPopupMinWidth: true,
+                                position: 'bl',
+                            }}
+                        />
+                    ) : (
+                        <>_</>
+                    )}
+                </Form.Item>
+            })}
+        </Form> */}
         <Table
             data={data}
             components={{

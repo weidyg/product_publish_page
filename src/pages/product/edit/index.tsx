@@ -84,7 +84,7 @@ function ProductEdit() {
                     </div>
                     : <>
                         <PageHeader title={platform?.name} subTitle={shop?.name} />
-                        {categoryPath && <Card className={styles['product-card']}>
+                        {categoryPath && <Card hoverable className={styles['product-card']}>
                             {`当前类目：${categoryPath}`}
                         </Card>}
                         <ProductEditContext.Provider value={{
@@ -112,14 +112,14 @@ function ProductEdit() {
                                     },
                                 }}
                             >
-                                <Card className={styles['product-card']}>
+                                <Card hoverable className={styles['product-card']}>
                                     <Skeleton loading={loading} animation text={{ rows: 10 }}>
                                         {formSchema.map((m: MyFormItemProps, i: any) => {
                                             return <ProFormItem key={i} {...m} salePropFieldName={salePropFieldName} />
                                         })}
                                     </Skeleton>
                                 </Card>
-                                <Card className={styles['product-card']}>
+                                <Card hoverable className={styles['product-card']}>
                                     <Skeleton loading={loading} animation text={{ rows: 1 }}>
                                         <Space style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             <Button
