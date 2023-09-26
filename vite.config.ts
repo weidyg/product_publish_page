@@ -7,6 +7,9 @@ export default defineConfig({
   build: {
     target: 'es2015'
   },
+   server: {
+    host: '192.168.110.25',
+  },
   plugins: [
     react(),
     vitePluginForArco({
