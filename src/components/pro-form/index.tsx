@@ -161,7 +161,6 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
             || FieldNames.sku(props) || FieldNames.saleProp(props);
         return _shouldUpdate!;
     }
-
     const { form } = Form.useFormContext();
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >

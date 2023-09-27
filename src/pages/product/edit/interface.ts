@@ -72,8 +72,10 @@ export enum FieldTag {
     Description = "n:desc",
     Weight = "n:weight",
     Price = "n:price",
+    Quantity = "n:quantity",
     cateProp = "n:cate_prop",
     SaleProp = "n:sale_prop",
     Sku = "n:sku",
     SkuProps = "n:sku_prop",
+    SkuStock = "n:sku_stock",
 }

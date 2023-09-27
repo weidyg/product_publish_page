@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useMemo, useState } from "react";
 import { Button, Card, Form, Message, PageHeader, Result, Skeleton, Space, Spin } from "@arco-design/web-react";
 import styles from './style/index.module.less'
 import { MyFormItemProps } from "./interface";
@@ -62,8 +62,20 @@ function ProductEdit() {
         }
     }
 
-    const saleProp = formSchema.find((f: any) => FieldNames.saleProp(f));
-    const salePropFieldName = saleProp?.namePath?.join('.') || saleProp?.name;
+    useEffect(() => {
+        loadingInitData();
+    }, [])
+
+    const salePropFieldName = useMemo(() => {
+        const saleProp = formSchema.find((f: any) => FieldNames.saleProp(f));
+        return saleProp?.namePath?.join('.') || saleProp?.name;
+    }, []);
+
+    const salePropFieldName = useMemo(() => {
+        const saleProp = formSchema.find((f: any) => FieldNames.saleProp(f));
+        return saleProp?.namePath?.join('.') || saleProp?.name;
+    }, []);
+    
     return (
         <Spin loading={loading} dot tip='页面加载中，请稍后...'
             className={styles['product']} >

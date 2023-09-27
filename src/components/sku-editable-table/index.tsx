@@ -131,8 +131,8 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
 
     useEffect(() => {
         const skuSaleProp = subItems.find((f: any) => FieldNames.skuProps(f));
-        const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
         const skuSalePropName = skuSaleProp?.name!;
+        const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
         const newData = getSkuItems(skuSalePropName, salePropNames, salePropValues, value);
         if (JSON.stringify(value) != JSON.stringify(newData)) {
             if (!('value' in props)) { setValue(newData); }
