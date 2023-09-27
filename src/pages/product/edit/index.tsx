@@ -62,20 +62,24 @@ function ProductEdit() {
         }
     }
 
-    useEffect(() => {
-        loadingInitData();
-    }, [])
+    const [skuFullName, skuStockName, quantityFullName] = useMemo(() => {
+        const skuProp = formSchema.find((f: any) => FieldNames.sku(f));
+        const skuStockProp = skuProp?.subItems?.find((f: any) => FieldNames.skuStock(f));
+        const quantityProp = formSchema.find((f: any) => FieldNames.quantity(f));
+        if (skuProp && skuStockProp && quantityProp) {
+            const skuName = skuProp.namePath?.join('.') || skuProp.name;
+            const skuStockName = skuStockProp.name;
+            const quantityName = quantityProp.namePath?.join('.') || skuStockProp.name;
+            return [skuName, skuStockName, quantityName,];
+        }
+        return [undefined, undefined, undefined,];
+    }, [JSON.stringify(formSchema)]);
 
     const salePropFieldName = useMemo(() => {
         const saleProp = formSchema.find((f: any) => FieldNames.saleProp(f));
         return saleProp?.namePath?.join('.') || saleProp?.name;
-    }, []);
+    }, [JSON.stringify(formSchema)]);
 
-    const salePropFieldName = useMemo(() => {
-        const saleProp = formSchema.find((f: any) => FieldNames.saleProp(f));
-        return saleProp?.namePath?.join('.') || saleProp?.name;
-    }, []);
-    
     return (
         <Spin loading={loading} dot tip='页面加载中，请稍后...'
             className={styles['product']} >
@@ -113,8 +117,16 @@ function ProductEdit() {
                                 // onSubmitFailed={(errors: { [key: string]: FieldError; }) => {
                                 //     console.log('onSubmitFailed', errors);
                                 // }}
-                                onValuesChange={(_, values) => {
-                                    console.log(values);
+                                onValuesChange={(value, values) => {
+                                    if (form && skuFullName && skuStockName && quantityFullName) {
+                                        const skuStockChanged = Object.keys(value).some(s => s.endsWith(skuStockName!));
+                                        if (skuStockChanged) {
+                                            let quantity = 0;
+                                            const skus: any[] = form.getFieldValue(skuFullName!) || [];
+                                            skus.forEach(f => { quantity += parseInt(f[skuStockName!]) || 0; });
+                                            form.setFieldValue(quantityFullName!, quantity);
+                                        }
+                                    }
                                 }}
                                 validateMessages={{
                                     required: (_, { label }) => `${label || ''}不能为空`,
