@@ -3,8 +3,7 @@ import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Li
 import { IconDelete, IconPlus, IconRefresh } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import SkuEditableTable from '../sku-editable-table';
-import ReactQuill from 'react-quill';
-import "react-quill/dist/quill.snow.css";
+
 import ImageUpload from '../ImageUpload';
 import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../until';
 import SalePropFormItem from '../sale-prop/SalePropFormItem';
@@ -14,6 +13,11 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { getRemoteOptions } from '../api';
 import { ProductEditContext } from '../../pages/product/edit';
 import { ErrorBoundary } from 'react-error-boundary';
+import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
+
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import '@ckeditor/ckeditor5-build-classic/build/translations/zh-cn';
 
 
 function ProFormList(props: MyFormItemProps) {
@@ -32,10 +36,10 @@ function ProFormList(props: MyFormItemProps) {
 
     return (
         <Form.List field={field!} noStyle>
-            {(fields, { add, remove, move }) => {
+            {(fields: any, { add, remove, move }: any) => {
                 return (
                     <Space wrap size={'mini'}>
-                        {fields.map(({ field }, index) => {
+                        {fields.map(({ field }: any, index: any) => {
                             return (
                                 <Space key={index} size={'mini'}>
                                     {
@@ -131,6 +135,55 @@ function RemoteSelect(props: any) {
         }
     </div>
 }
+function RichTextEditor(props: any) {
+    const [value, setValue] = useMergeValue<string>('', {
+        defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
+        value: 'value' in props ? props.value : undefined,
+    });
+
+    return <div className={styles['desc']} >
+        <CKEditor
+            config={{
+                language: 'zh-cn',
+                toolbar: {
+                    items: [
+                        'heading',
+                        '|',
+                        'bold',
+                        'italic',
+                        'bulletedList',
+                        'numberedList',
+                        '|',
+                        'outdent',
+                        'indent',
+                        '|',
+                        'blockQuote',
+                        'insertTable',
+                        'sourceEditing',
+                        'redo',
+                        'undo'
+                    ]
+                },
+            }}
+            editor={ClassicEditor}
+            data={value} // 原始数据
+            // onInit={(editor:any) => {
+            //     this.editor = editor // 缓存实例
+            // }}
+            onChange={(_event: any, editor: any) => {
+                const data = editor.getData();
+                if (!('value' in props)) { setValue(data); }
+                props.onChange && props.onChange(data);
+            }}
+        // onBlur={editor => {
+        //   console.log('Blur.', editor)
+        // }}
+        // onFocus={editor => {
+        //   console.log('Focus.', editor)
+        // }}
+        />
+    </div>
+}
 
 function FormItem(props: any) {
     const { children, label, ...formItemProps } = props;
@@ -164,7 +217,7 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
     const { form } = Form.useFormContext();
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
-            {(values) => {
+            {(values: any) => {
                 const _hide = isHide(values) === true;
                 if (_hide) {
                     form.setFieldValue(_fieldName!, undefined);
@@ -281,7 +334,7 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                     </FormItem >
                 ) : _uiType == 'richTextEditor' ? (
                     <FormItem {...formItemProps}>
-                        <ReactQuill theme="snow" className={styles['desc']} />
+                        <RichTextEditor />
                     </FormItem>
                 ) : type == 'complex' ? (
                     FieldNames.cateProp(props) ? (
