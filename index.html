@@ -36,8 +36,8 @@
         });
     }
 
-    function saveProductEditData(dataJson) {
-      const data = { ItemId: id, DataJson: JSON.stringify(dataJson) };
+    function saveProductEditData(dataJson, publish) {
+      const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
       return post("https://localhost:44331/api/services/app/ProductPublish/SaveProductEditData", data);
     }
 

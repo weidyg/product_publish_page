@@ -13,6 +13,7 @@ function ProductEdit() {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
+    const [publishLoading, setPublishLoading] = useState(false);
     const [formSchema, setFormSchema] = useState<MyFormItemProps[]>([]);
     const [shop, setShop] = useState<OptVal>();
     const [platform, setPlatform] = useState<OptVal>();
@@ -44,11 +45,11 @@ function ProductEdit() {
         }
     }
 
-    const handleSave = async () => {
+    const handleSave = async (publish?: boolean) => {
         try {
             const values = await form.validate();
             try {
-                await saveProductEditData(values);
+                await saveProductEditData(values, publish);
                 console.log('values success', values);
                 Message.info('保存成功！');
             } catch (error: any) {
@@ -59,6 +60,7 @@ function ProductEdit() {
             Message.error('保存失败！');
         } finally {
             setSaveLoading(false);
+            setPublishLoading(false);
         }
     }
 
@@ -145,16 +147,28 @@ function ProductEdit() {
                                 </Card>
                                 <Card hoverable className={styles['product-card']}>
                                     <Skeleton loading={loading} animation text={{ rows: 1 }}>
-                                        <Space style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Space size={'large'}
+                                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                             <Button
                                                 type='primary'
                                                 size='large'
+                                                loading={publishLoading}
+                                                disabled={saveLoading}
+                                                onClick={() => {
+                                                    setPublishLoading(true);
+                                                    setTimeout(() => { handleSave(true); }, 100)
+                                                }}>
+                                                {publishLoading ? ' 保存并发布中...' : ' 保存并发布'}
+                                            </Button>
+                                            <Button
+                                                size='large'
                                                 loading={saveLoading}
+                                                disabled={publishLoading}
                                                 onClick={() => {
                                                     setSaveLoading(true);
-                                                    setTimeout(() => { handleSave(); }, 1)
+                                                    setTimeout(() => { handleSave(); }, 10)
                                                 }}>
-                                                {saveLoading ? ' 保存中...' : ' 保 存'}
+                                                {saveLoading ? '保存中...' : '保 存'}
                                             </Button>
                                         </Space>
                                     </Skeleton>

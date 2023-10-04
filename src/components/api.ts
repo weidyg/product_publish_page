@@ -20,8 +20,8 @@ export async function loadProductEditData(): Promise<{
     return await window.loadProductEditData();
 }
 
-export async function saveProductEditData(values: any) {
-    return await window.saveProductEditData(values);
+export async function saveProductEditData(values: any, publish?: boolean) {
+    return await window.saveProductEditData(values, publish);
 }
 
 export async function getRemoteOptions(shopId?: number, optionAction?: string, forceUpdate?: boolean): Promise<MyFormItemOption[]> {
