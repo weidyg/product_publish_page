@@ -83,13 +83,14 @@ export function getSkuItems(skuSalePropName: string, salePropNames: string[], sa
     });
     const saleObjs = calcDescartes(obj);
     const tempSkuItems = skuItems?.map(obj => {
-        obj.key = obj.key || getUniquekey(obj[skuSalePropName], v => v?.value || v?.text);
-        return obj;
+        const tempObj = { ...obj };
+        tempObj.key = tempObj.key || getUniquekey(tempObj[skuSalePropName], v => v?.value || v?.text);
+        return tempObj;
     });
     saleObjs.forEach(obj => {
         const key = getUniquekey(obj, v => v?.value || v?.text);
         const skuItem = tempSkuItems?.find(f => f.key == key) || {};
-        let dataItem: any = { ...skuItem, key, [skuSalePropName]: obj };
+        const dataItem: any = { ...skuItem, key, [skuSalePropName]: obj };
         newData.push(dataItem)
     });
     return newData;

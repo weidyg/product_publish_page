@@ -14,11 +14,7 @@ import { getRemoteOptions } from '../api';
 import { ProductEditContext } from '../../pages/product/edit';
 import { ErrorBoundary } from 'react-error-boundary';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
-
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import '@ckeditor/ckeditor5-build-classic/build/translations/zh-cn';
-
+import RichTextEditor from './RichTextEditor';
 
 function ProFormList(props: MyFormItemProps) {
     const { type, label, name, namePath, value, subItems = [], nestItems = [], ...rest } = props;
@@ -133,55 +129,6 @@ function RemoteSelect(props: any) {
                 {`同步`}
             </Button>
         }
-    </div>
-}
-function RichTextEditor(props: any) {
-    const [value, setValue] = useMergeValue<string>('', {
-        defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
-        value: 'value' in props ? props.value : undefined,
-    });
-
-    return <div className={styles['desc']} >
-        <CKEditor
-            config={{
-                language: 'zh-cn',
-                toolbar: {
-                    items: [
-                        'heading',
-                        '|',
-                        'bold',
-                        'italic',
-                        'bulletedList',
-                        'numberedList',
-                        '|',
-                        'outdent',
-                        'indent',
-                        '|',
-                        'blockQuote',
-                        'insertTable',
-                        'sourceEditing',
-                        'redo',
-                        'undo'
-                    ]
-                },
-            }}
-            editor={ClassicEditor}
-            data={value} // 原始数据
-            // onInit={(editor:any) => {
-            //     this.editor = editor // 缓存实例
-            // }}
-            onChange={(_event: any, editor: any) => {
-                const data = editor.getData();
-                if (!('value' in props)) { setValue(data); }
-                props.onChange && props.onChange(data);
-            }}
-        // onBlur={editor => {
-        //   console.log('Blur.', editor)
-        // }}
-        // onFocus={editor => {
-        //   console.log('Focus.', editor)
-        // }}
-        />
     </div>
 }
 

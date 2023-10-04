@@ -136,7 +136,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
         const newData = getSkuItems(skuSalePropName, salePropNames, salePropValues, value);
         if (JSON.stringify(value) != JSON.stringify(newData)) {
             if (!('value' in props)) { setValue(newData); }
-            props.onChange && props.onChange(newData);
+            if (props.onChange) { props.onChange(newData); }
         }
     }, [JSON.stringify(salePropValues)]);
 
@@ -161,7 +161,6 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
     }, []);
 
     const data = value.filter(f => f.key);
-
     return (<>
         {/* <Form layout='inline'>
             {subItems.map(m => {
