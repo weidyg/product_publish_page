@@ -11,8 +11,14 @@
   <div id="root"></div>
   <script>
     //  document.body.setAttribute('arco-theme', 'dark');
-    var id = 2074;
+    const getQueryString = (name) => {
+      const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+      const search = window.location.search.split('?')[1] || '';
+      const r = search.match(reg) || [];
+      return r[2];
+    }
 
+    const id = getQueryString('id');
     function loadProductEditData() {
       const data = { ItemId: id };
       return post("https://localhost:44331/api/services/app/ProductPublish/GetProductEditData", data)

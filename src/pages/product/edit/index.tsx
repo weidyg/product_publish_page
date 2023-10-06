@@ -83,7 +83,7 @@ function ProductEdit() {
     }, [JSON.stringify(formSchema)]);
 
     return (
-        <Spin loading={loading} dot tip='页面加载中，请稍后...'
+        <Spin loading={loading} tip='页面加载中，请稍后...'
             className={styles['product']} >
             <div className={styles['product-content']}>
                 {loadErrMsg ?
@@ -102,9 +102,11 @@ function ProductEdit() {
                     </div>
                     : <>
                         <PageHeader title={platform?.name} subTitle={shop?.name} />
-                        {categoryPath && <Card hoverable className={styles['product-card']}>
-                            {`当前类目：${categoryPath}`}
-                        </Card>}
+                        <Card hoverable className={styles['product-card']}>
+                            <Skeleton loading={loading} animation text={{ rows: 1 }}>
+                                {`当前类目：${categoryPath}`}
+                            </Skeleton>
+                        </Card>
                         <ProductEditContext.Provider value={{
                             getShopId: function () { return shop?.id }
                         }}>

@@ -90,34 +90,16 @@ function SalePropInput(props: SalePropInputProps) {
 
     function childrenDom() {
         return <Input allowClear
-            placeholder="请选择输入"
+            placeholder={"请选择输入"}
             style={{ width: '200px' }}
             suffix={isSelVal ? <StandardIcon /> : ''}
             value={value}
-            // readOnly={!allowCustom}
+            readOnly={allowCustom == false}
             onChange={(val) => {
                 handleChange(val);
                 if (!val && !visible) { setVisible(true); }
                 if (val && visible) { setVisible(false); }
             }}
-
-        // triggerProps={{
-        //     popup: popup,
-        //     trigger: 'focus',
-        //     position: 'bl',
-        //     classNames: 'zoomInTop',
-        //     popupAlign: { bottom: 8, },
-        //     blurToHide: false,
-        //     autoFitPosition: false,
-        //     popupVisible: visible,
-        //     clickOutsideToClose: true,
-        //     // autoAlignPopupMinWidth: false,
-        //     onVisibleChange: (visible) => {
-        //         if (!value) {
-        //             setVisible(visible);
-        //         }
-        //     }
-        // }}
         />
     }
     return options.length > 0
