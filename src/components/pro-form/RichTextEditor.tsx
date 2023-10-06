@@ -51,7 +51,7 @@ function RichTextEditor(props: any) {
                     items: [
                         'heading',
                         '|',
-                        'alignment',
+                        // 'alignment',
                         'bold',
                         'italic',
                         'link',
