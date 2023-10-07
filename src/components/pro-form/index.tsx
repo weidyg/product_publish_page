@@ -110,6 +110,11 @@ function RemoteSelect(props: any) {
             value={value}
             onChange={onChange}
             options={options}
+            triggerProps={{
+                autoAlignPopupWidth: false,
+                autoAlignPopupMinWidth: true,
+                position: 'bl',
+            }}
             notFoundContent={
                 fetching ? (
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
