@@ -166,6 +166,15 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
             || FieldNames.sku(props) || FieldNames.saleProp(props);
         return _shouldUpdate!;
     }
+    const isComplexType = type == 'complex' || type == 'multiComplex';
+    const _uiType = getUiTypeOrDefault(props);
+    const _rules = getValiRules(rules);
+    const isPrice = name?.toLocaleLowerCase()?.includes('price');
+    const inputNumberProps = {
+        precision: isPrice ? 2 : undefined,
+        step: isPrice ? 0.01 : undefined
+    }
+
     const { form } = Form.useFormContext();
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
@@ -176,24 +185,15 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                     return;
                 }
                 const tipValues = getTipValues(values) || [];
-                const extra = tipValues.map((value: any, index: any) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
-
-                const _uiType = getUiTypeOrDefault(props);
-                const _rules = getValiRules(rules);
-
-                const isPrice = name?.toLocaleLowerCase()?.includes('price');
-                const inputNumberProps = {
-                    precision: isPrice ? 2 : undefined,
-                    step: isPrice ? 0.01 : undefined
-                }
-
+                const _extra = tipValues.map((value: any, index: any) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
                 const formItemProps: FormItemProps = {
-                    label, extra,
+                    label,
                     rules: _rules,
                     disabled: readOnly,
                     initialValue: value,
                     field: _fieldName,
                     noStyle: noStyle,
+                    extra: !isComplexType ? _extra : undefined,
                     style: subItems.length > 0 ? { marginBottom: '0px' } : {}
                 }
 
@@ -289,8 +289,9 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                         <RichTextEditor />
                     </FormItem>
                 ) : type == 'complex' ? (
-                    FieldNames.cateProp(props) ? (
-                        <FormItem {...formItemProps}>
+                    <FormItem {...formItemProps}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '-8px 0 4px' }}>{_extra}</div>
+                        {FieldNames.cateProp(props) ? (
                             <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
                                 {subItems?.map((sm, si) => {
                                     const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
@@ -301,38 +302,32 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                                     )
                                 })}
                             </Grid>
-                        </FormItem >
-                    )
-                        : FieldNames.saleProp(props) ? (
-                            <FormItem {...formItemProps}>
-                                {subItems?.map((m, i) => {
-                                    return (m.type == 'multiCheck' || m.type == 'complex')
-                                        ? <SalePropFormItem key={i} {...m} />
-                                        : <div key={i}></div>
+                        ) : FieldNames.saleProp(props) ? (
+                            subItems?.map((m, i) => {
+                                return (m.type == 'multiCheck' || m.type == 'complex')
+                                    ? <SalePropFormItem key={i} {...m} />
+                                    : <div key={i}></div>
+                            })
+                        ) : (
+                            <Space wrap={true}>
+                                {subItems?.map((sm: any, si: any) => {
+                                    return (<ProFormItem key={si} {...sm} />)
                                 })}
-                            </FormItem >
-                        )
-                            : (
-                                <FormItem {...formItemProps}>
-                                    <Space wrap={true}>
-                                        {subItems?.map((sm: any, si: any) => {
-                                            return (<ProFormItem key={si} {...sm} />)
-                                        })}
-                                    </Space>
-                                </FormItem >
-                            )
+                            </Space>
+                        )}
+                    </FormItem >
                 ) : type == 'multiComplex' ? (
-                    FieldNames.sku(props) ? (
-                        <FormItem {...formItemProps}>
+                    <FormItem {...formItemProps}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '-8px 0 4px' }}>{_extra}</div>
+                        {FieldNames.sku(props) ? (
                             <SkuEditableTable {...props}
                                 salePropValues={_.get(values, salePropFieldName!)}
                             />
-                        </FormItem >
-                    ) : (
-                        <FormItem {...formItemProps}>
+                        ) : (
                             <ProFormList {...props} />
-                        </FormItem >
-                    )
+                        )
+                        }
+                    </FormItem >
                 ) : <div>---{label}---</div>;
             }}
         </Form.Item>

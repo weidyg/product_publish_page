@@ -198,14 +198,14 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
                     if (isNumber(length)) {
                         if (hasMaxLength && hasMinLength) {
                             if (length > maxLength! || length < minLength!) {
-                                callback(`范围应为 ${minLength} ~ ${maxLength} ${isArrVal ? '条' : '个字符'}之间!`);
+                                callback(`范围应为 ${minLength} ~ ${maxLength} ${isArrVal ? '条' : '个字符'}之间`);
                             }
                         }
                         else if (hasMaxLength && length > maxLength!) {
-                            callback(`不能超过 ${maxLength} ${isArrVal ? '条' : '个字符'}!`);
+                            callback(`不能超过 ${maxLength} ${isArrVal ? '条' : '个字符'}`);
                         }
                         else if (hasMinLength && length < minLength!) {
-                            callback(`至少需要 ${minLength} ${isArrVal ? '条' : '个字符'}!`);
+                            callback(`至少需要 ${minLength} ${isArrVal ? '条' : '个字符'}`);
                         }
                     }
                 },
@@ -220,14 +220,14 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
                     const _value = parseFloat(value);
                     if (hasMaxValue && hasMinValue && maxValue != minValue) {
                         if (_value > maxValue! || _value < minValue!) {
-                            callback(`值范围应为 ${minValue} ~ ${maxValue} 之间!`);
+                            callback(`值范围应为 ${minValue} ~ ${maxValue} 之间`);
                         }
                     }
                     else if (hasMaxValue && value > maxValue!) {
-                        callback(`最大值为 ${maxValue} !`);
+                        callback(`最大值为 ${maxValue}`);
                     }
                     else if (hasMinValue && value < minValue!) {
-                        callback(`最小值为 ${minValue} !`);
+                        callback(`最小值为 ${minValue}`);
                     }
                 }
             });
