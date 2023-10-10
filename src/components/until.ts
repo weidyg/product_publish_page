@@ -65,10 +65,10 @@ export function getUniquekey(obj: ObjVal, getValue?: (val: any) => any): string 
 }
 export type ObjVal = { [key: string]: any }
 export type SkuItem = { key?: string; props?: { [x: string]: any };[x: string]: any; }
-export function getSkuItems(skuSalePropName: string, salePropNames: string[], saleProp: { [x: string]: any; }, skuItems?: SkuItem[]): SkuItem[] {
+
+export function getSkuSaleProp(salePropNames: string[], saleProp: { [x: string]: any; }): any {
     let next = true;
     let obj: any = {};
-    const newData: any[] = [];
     salePropNames.forEach(key => {
         if (!next) { return; }
         const salePropItem = saleProp[key];
@@ -81,7 +81,12 @@ export function getSkuItems(skuSalePropName: string, salePropNames: string[], sa
         next = obj[key]?.length > 0;
         if (!next) { obj = {}; }
     });
-    const saleObjs = calcDescartes(obj);
+    return obj;
+}
+
+export function getSkuItems(skuSaleProp: ObjVal, skuSalePropName: string, skuItems?: SkuItem[]): SkuItem[] {
+    const newData: any[] = [];
+    const saleObjs = calcDescartes(skuSaleProp);
     const tempSkuItems = skuItems?.map(obj => {
         const tempObj = { ...obj };
         tempObj.key = tempObj.key || getUniquekey(tempObj[skuSalePropName], v => v?.value || v?.text);

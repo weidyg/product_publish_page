@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect, useMemo } from 'react';
-import { Table, Input, Select, Form, InputNumber, TableColumnProps, Popover } from '@arco-design/web-react';
+import { Table, Input, Select, Form, InputNumber, TableColumnProps, Popover, Button, Space, Divider, Typography, Checkbox, Tag } from '@arco-design/web-react';
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import { isObject } from '@arco-design/web-react/es/_util/is';
 import * as _ from "lodash"
 import styles from './index.module.less'
-import { FieldNames, getSkuItems, getTips, getUiTypeOrDefault, getValiRules, isNumberOrStrNumber } from '../until';
+import { FieldNames, getSkuItems, getSkuSaleProp, getTips, getUiTypeOrDefault, getValiRules, isNumberOrStrNumber } from '../until';
 import { FieldUiType, MyFormItemProps } from '../../pages/product/edit/interface';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 
@@ -129,15 +129,18 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
         value: 'value' in props ? props.value : undefined,
     });
 
+    const [skuSalePropValue, SetSkuSalePropValue] = useState<any>({});
     useEffect(() => {
         const skuSaleProp = subItems.find((f: any) => FieldNames.skuProps(f));
         const skuSalePropName = skuSaleProp?.name!;
         const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
-        const newData = getSkuItems(skuSalePropName, salePropNames, salePropValues, value);
+        const skuSalePropValue = getSkuSaleProp(salePropNames, salePropValues);
+        const newData = getSkuItems(skuSalePropValue, skuSalePropName, value);
         if (JSON.stringify(value) != JSON.stringify(newData)) {
             if (!('value' in props)) { setValue(newData); }
             if (props.onChange) { props.onChange(newData); }
         }
+        SetSkuSalePropValue(skuSalePropValue);
     }, [JSON.stringify(salePropValues)]);
 
     const columns = useMemo(() => {
@@ -162,34 +165,73 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
 
     const data = value.filter(f => f.key);
     return (<>
-        {/* <Form layout='inline'>
-            {subItems.map(m => {
+        <Space style={{ marginBottom: '8px' }}>
+            {subItems.map((m, i) => {
+                const isSkuProps = FieldNames.skuProps(m);
+                if (isSkuProps) {
+                    console.log('skuProps', m);
+                    return <Select
+                        placeholder={'查看已选规则'}
+                        triggerProps={{
+                            autoAlignPopupWidth: false,
+                            autoAlignPopupMinWidth: true,
+                            position: 'bl',
+                        }}
+                    >
+                        <div style={{ padding: '8px' }}>
+                            {m?.subItems?.map((pm, pi) => {
+                                const sspvs = (pm.name && skuSalePropValue[pm.name]) || [];
+                                return <div key={pi}>
+                                    <div style={{ margin: '8px 4px' }}>{pm.label}</div>
+                                    {sspvs.map((sm: any, si: number) => {
+                                        return (
+                                            <Checkbox key={si} value={sm.value}>
+                                                {({ checked }) => {
+                                                    return (
+                                                        <Tag key={si}
+                                                            color={checked ? 'arcoblue' : ''}
+                                                            bordered>
+                                                            {sm.text}
+                                                        </Tag>
+                                                    );
+                                                }}
+                                            </Checkbox>
+                                        );
+                                    })}
+                                </div>
+
+                                // <Divider key={pi} orientation='left' >{pm.label}</Divider>
+                            })}
+                        </div>
+                    </Select>
+                }
                 const uiType = getUiTypeOrDefault(m)
-                return <Form.Item
-                    field={m.name}
-                >
+                return <div key={i}>
                     {uiType == 'input' ? (
-                        <Input placeholder={'请输入'} />
+                        <Input allowClear
+                            placeholder={m.label}
+                            style={{ width: '120px' }} />
                     ) : uiType == 'inputNumber' ? (
-                        <InputNumber
-                            placeholder={'请输入'}
-                        />
+                        <InputNumber placeholder={m.label}
+                            style={{ width: '120px' }} />
                     ) : uiType == 'select' ? (
-                        <Select
-                            placeholder={'请选择'}
+                        <Select allowClear
+                            placeholder={m.label}
                             options={m.options}
                             triggerProps={{
                                 autoAlignPopupWidth: false,
                                 autoAlignPopupMinWidth: true,
                                 position: 'bl',
                             }}
+                            style={{ width: '120px' }}
                         />
                     ) : (
                         <>_</>
                     )}
-                </Form.Item>
+                </div>
             })}
-        </Form> */}
+            <Button type='primary'>批量填充</Button>
+        </Space>
         <Table
             data={data}
             components={{
