@@ -1,5 +1,5 @@
 import { createContext, useEffect, useMemo, useState } from "react";
-import { Button, Card, Form, Message, PageHeader, Result, Skeleton, Space, Spin } from "@arco-design/web-react";
+import { Button, Card, Form, Message, Modal, PageHeader, Result, Skeleton, Space, Spin } from "@arco-design/web-react";
 import styles from './style/index.module.less'
 import { MyFormItemProps } from "./interface";
 import { ProFormItem } from "../../../components/pro-form";
@@ -50,7 +50,7 @@ function ProductEdit() {
             const values = await form.validate();
             try {
                 await saveProductEditData(values, publish);
-                console.log('values success', values);
+                // console.log('values success', values);
                 Message.info('保存成功！');
             } catch (error: any) {
                 Message.error(error?.message);
