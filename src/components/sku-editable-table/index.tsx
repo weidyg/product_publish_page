@@ -130,6 +130,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
     });
 
     const [skuSalePropValue, SetSkuSalePropValue] = useState<any>({});
+    const [skuBatchFillValue, SetSkuBatchFillValue] = useState<any>({});
     useEffect(() => {
         const skuSaleProp = subItems.find((f: any) => FieldNames.skuProps(f));
         const skuSalePropName = skuSaleProp?.name!;
@@ -165,6 +166,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
 
     const data = value.filter(f => f.key);
     return (<>
+        {JSON.stringify(skuBatchFillValue)}
         <Space style={{ marginBottom: '8px' }}>
             {subItems.map((m, i) => {
                 const isSkuProps = FieldNames.skuProps(m);
@@ -199,8 +201,6 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                                         );
                                     })}
                                 </div>
-
-                                // <Divider key={pi} orientation='left' >{pm.label}</Divider>
                             })}
                         </div>
                     </Select>
@@ -210,10 +210,26 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                     {uiType == 'input' ? (
                         <Input allowClear
                             placeholder={m.label}
-                            style={{ width: '120px' }} />
+                            style={{ width: '120px' }}
+                            onChange={value => {
+                                if (m.name) {
+                                    SetSkuBatchFillValue({
+                                        ...skuBatchFillValue,
+                                        [m.name]: value
+                                    });
+                                }
+                            }} />
                     ) : uiType == 'inputNumber' ? (
                         <InputNumber placeholder={m.label}
-                            style={{ width: '120px' }} />
+                            style={{ width: '120px' }}
+                            onChange={value => {
+                                if (m.name) {
+                                    SetSkuBatchFillValue({
+                                        ...skuBatchFillValue,
+                                        [m.name]: value
+                                    });
+                                }
+                            }} />
                     ) : uiType == 'select' ? (
                         <Select allowClear
                             placeholder={m.label}
@@ -224,6 +240,14 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                                 position: 'bl',
                             }}
                             style={{ width: '120px' }}
+                            onChange={value => {
+                                if (m.name) {
+                                    SetSkuBatchFillValue({
+                                        ...skuBatchFillValue,
+                                        [m.name]: value
+                                    });
+                                }
+                            }}
                         />
                     ) : (
                         <>_</>
