@@ -76,7 +76,7 @@
           }
         })
         .catch(error => {
-          console.log("error", JSON.stringify(error));
+          console.log("error", error);
           return Promise.reject({
             code: error?.code,
             message: error?.message || '请求错误!',
