@@ -34,7 +34,7 @@ export function calcDescartes(obj: ObjVal, getValue?: (val: any) => any) {
 export function sortObj(obj: ObjVal): any {
     if (!obj) { return obj; }
     let newObj: { [key: string]: any } = {};
-    let keysSorted = Object.keys(obj).sort((a, b) => { return obj[b] - obj[a] });
+    let keysSorted = Object.keys(obj).sort();
     for (let i = 0; i < keysSorted.length; i++) {
         newObj[keysSorted[i]] = obj[keysSorted[i]];
     }
@@ -42,6 +42,7 @@ export function sortObj(obj: ObjVal): any {
 }
 export function getUniquekey(obj: ObjVal, getValue?: (val: any) => any): string {
     const newObj = sortObj(obj) || {};
+    console.log('sortObj', obj, newObj);
     const keys = Object.keys(newObj);
     let deepValues = [];
     for (let i = 0; i < keys.length; i++) {

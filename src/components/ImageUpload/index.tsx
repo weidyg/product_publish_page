@@ -5,6 +5,7 @@ import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import { ImageUploadProps, ImageUploadSize } from './interface';
 import styles from './style/index.module.less';
 import { UploadItem } from '@arco-design/web-react/es/Upload';
+import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 
 const defaultProps: ImageUploadProps = {
   size: 'default',
@@ -12,19 +13,18 @@ const defaultProps: ImageUploadProps = {
   value: ''
 };
 
+const createFile = (value?: string) => {
+  return value ? { uid: `${new Date().getTime()}`, url: value } : undefined;
+}
+
 function ImageUpload(baseProps: ImageUploadProps) {
   const props = useMergeProps<ImageUploadProps>(baseProps, defaultProps, {});
-  const { size, text, value, onChange, ...rest } = props;
+  const { size, text, onChange, ...rest } = props;
 
-  const defaultFile: UploadItem | undefined = useMemo(() => {
-    return value ? { uid: `${new Date().getTime()}`, url: value } : undefined;
-  }, [value]);
-
-  const [imgFile, setImgFile] = useState<UploadItem | undefined>(defaultFile);
-
-  useEffect(() => {
-    onChange && onChange(imgFile?.url);
-  }, [imgFile?.url])
+  const [imgFile, setImgFile] = useMergeValue<UploadItem | undefined>(undefined, {
+    defaultValue: 'defaultValue' in props ? createFile(props.defaultValue) : undefined,
+    value: 'value' in props ? createFile(props.value) : undefined,
+  });
 
   const handleChange = (_fileList: UploadItem[], file: UploadItem) => {
     let newFile = { ...file || {} };
@@ -33,7 +33,8 @@ function ImageUpload(baseProps: ImageUploadProps) {
       // newFile.url = URL.createObjectURL(file?.originFile as any);
     }
     if (file?.url != newFile?.url) {
-      setImgFile(newFile);
+      if (!('value' in props)) { setImgFile(newFile); }
+      onChange && onChange(newFile?.url);
     }
   }
   const handleProgress = (file: UploadItem) => {

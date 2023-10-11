@@ -131,6 +131,7 @@ function ProductEdit() {
                                             form.setFieldValue(quantityFullName!, quantity);
                                         }
                                     }
+                                    // console.log('values', values);
                                 }}
                                 validateMessages={{
                                     required: (_, { label }) => `${label || ''}不能为空`,

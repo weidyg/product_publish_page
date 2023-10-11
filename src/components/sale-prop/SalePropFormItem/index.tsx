@@ -241,7 +241,6 @@ function SalePropFormItem(props: MyFormItemProps) {
             </Form.List>
         </Form.Item>
     );
-    return <></>
 }
 
 export default SalePropFormItem
