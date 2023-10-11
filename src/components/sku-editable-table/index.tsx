@@ -209,7 +209,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                 if (!keys.includes(m.key)) { return m; }
                 Object.keys(fillData).forEach(f => {
                     const name = `${rootField}[${i}].${f}`;
-                    const value = fillData[f] || m[f];
+                    const value = fillData[f];
                     form.setFieldValue(name, value);
                 })
                 updateCount++;
