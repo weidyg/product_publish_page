@@ -42,7 +42,7 @@ export function sortObj(obj: ObjVal): any {
 }
 export function getUniquekey(obj: ObjVal, getValue?: (val: any) => any): string {
     const newObj = sortObj(obj) || {};
-    console.log('sortObj', obj, newObj);
+    // console.log('sortObj', obj, newObj);
     const keys = Object.keys(newObj);
     let deepValues = [];
     for (let i = 0; i < keys.length; i++) {

@@ -188,6 +188,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
         const tempSkuBatchFillPropValueObjs: { [x: string]: string } = {};
         Object.keys(skuSalePropObjVal).forEach(key => {
             let values = skuBatchFillPropValueObjs[key] || [];
+            // console.log("getskuBatchFillKeys", key, values, skuBatchFillValue);
             if (values.length == 0) { values = (skuSalePropObjVal[key] || []).map((m: { value: any; }) => m.value); }
             tempSkuBatchFillPropValueObjs[key] = values;
         });
@@ -197,7 +198,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
     }
 
     const handleFillSkuData = () => {
-        const fillData = skuBatchFillValue || {};
+        const fillData = Object.assign({}, skuBatchFillValue);
         delete fillData[skuSalePropName];
         if (Object.keys(fillData).length == 0) { return; }
         SetFillDataLoading(true);
@@ -221,8 +222,15 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
         }, 10);
     }
 
+    const skuFillChange = (name: string, value: any) => {
+        SetSkuBatchFillValue((data: any) => {
+            return { ...data, [name]: value }
+        });
+    }
+
     const data = value.filter(f => f.key);
     return (<>
+        {/* {JSON.stringify(skuBatchFillValue)} */}
         <Space wrap>
             {subItems.map((m, i) => {
                 const { label, name, options = [] } = m;
@@ -235,8 +243,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                     Object.keys(propValue || {}).forEach(f => {
                         selectLength += propValue[f]?.length || 0;
                     });
-                    return <Select
-                        key={i}
+                    return <Select key={i} style={{ width: '180px' }}
                         placeholder={'当前默认选定所有规格'}
                         value={selectLength > 0 ? '查看已选规格' : undefined}
                         triggerProps={{
@@ -257,10 +264,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                                         value={propValue[pName]}
                                         onChange={(value) => {
                                             propValue[pName] = value;
-                                            SetSkuBatchFillValue({
-                                                ...skuBatchFillValue,
-                                                [name]: propValue
-                                            });
+                                            skuFillChange(name, propValue);
                                         }} >
                                         {sspvs.map((sm: any, si: number) => {
                                             return (
@@ -283,12 +287,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                             })}
                             <div style={{ margin: '8px 4px', }}>
                                 <Link hoverable={false}
-                                    onClick={() => {
-                                        SetSkuBatchFillValue({
-                                            ...skuBatchFillValue,
-                                            [name]: undefined
-                                        });
-                                    }}
+                                    onClick={() => { skuFillChange(name, undefined); }}
                                     style={{ fontSize: '12px', color: 'var(--color-text-1)' }}
                                 >
                                     清空已选
@@ -304,22 +303,14 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                                 placeholder={label}
                                 style={{ width: '120px' }}
                                 value={skuBatchFillValue[name]}
-                                onChange={value => {
-                                    SetSkuBatchFillValue({
-                                        ...skuBatchFillValue,
-                                        [name]: value
-                                    });
-                                }} />
+                                onChange={value => { skuFillChange(name, value); }}
+                            />
                         ) : uiType == 'inputNumber' ? (
                             <InputNumber placeholder={label}
                                 style={{ width: '120px' }}
                                 value={skuBatchFillValue[name]}
-                                onChange={value => {
-                                    SetSkuBatchFillValue({
-                                        ...skuBatchFillValue,
-                                        [name]: value
-                                    });
-                                }} />
+                                onChange={value => { skuFillChange(name, value); }}
+                            />
                         ) : uiType == 'select' ? (
                             <Select allowClear
                                 placeholder={label}
@@ -331,12 +322,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                                 }}
                                 style={{ width: '120px' }}
                                 value={skuBatchFillValue[name]}
-                                onChange={value => {
-                                    SetSkuBatchFillValue({
-                                        ...skuBatchFillValue,
-                                        [name]: value
-                                    });
-                                }}
+                                onChange={value => { skuFillChange(name, value); }}
                             />
                         ) : (
                             <>_</>
@@ -346,8 +332,8 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
 
                 </>
             })}
-            <Button loading={fillDataLoading}
-                type='primary'
+            <Button type='primary'
+                loading={fillDataLoading}
                 onClick={handleFillSkuData}>
                 批量填充
             </Button>
