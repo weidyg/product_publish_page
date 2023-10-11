@@ -251,35 +251,33 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                         )}
                     </FormItem>
                 ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
-                    nestItems.length > 0 ? (
-                        <FormItem {...formItemProps}>
+                    <FormItem {...formItemProps}>
+                        {nestItems.length > 0 ? (
                             <ProFormList {...props} />
-                        </FormItem >
-                    ) : (
-                        <FormItem {...formItemProps}>
-                            {optionAction ? (
-                                <RemoteSelect showSearch
-                                    allowClear={allowClear && _uiType != 'multiSelect'}
-                                    label={label}
-                                    optionAction={optionAction}
-                                    options={options}
-                                    allowCreate={allowCustom}
-                                    mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
-                                    placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
-                                    style={{ maxWidth: '274px', minWidth: '96px' }}
-                                />
-                            ) : (
-                                <Select showSearch
-                                    allowClear={allowClear && _uiType != 'multiSelect'}
-                                    options={options}
-                                    allowCreate={allowCustom}
-                                    mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
-                                    placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
-                                    style={{ maxWidth: '358px', minWidth: '180px' }}
-                                />
-                            )}
-                        </FormItem>
-                    )
+                        ) : (optionAction ? (
+                            <RemoteSelect showSearch
+                                label={label}
+                                optionAction={optionAction}
+                                options={options}
+                                maxTagCount={3}
+                                allowCreate={allowCustom}
+                                allowClear={allowClear && _uiType != 'multiSelect'}
+                                mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
+                                placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
+                                style={{ maxWidth: '274px', minWidth: '96px' }}
+                            />
+                        ) : (
+                            <Select showSearch
+                                options={options}
+                                allowCreate={allowCustom}
+                                maxTagCount={3}
+                                allowClear={allowClear && _uiType != 'multiSelect'}
+                                mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
+                                placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
+                                style={{ maxWidth: '358px', minWidth: '180px' }}
+                            />
+                        ))}
+                    </FormItem>
                 ) : _uiType == 'imageUpload' ? (
                     <FormItem {...formItemProps}>
                         <ImageUpload size={picSize} />
