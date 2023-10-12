@@ -1,20 +1,22 @@
 
+
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox, Message, Spin, Empty, Alert } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconRefresh } from '@arco-design/web-react/icon';
-import styles from './index.module.less'
-import SkuEditableTable from '../sku-editable-table';
-
-import ImageUpload from '../ImageUpload';
-import { FieldNames, checkDependRules, getTips, getUiTypeOrDefault, getValiRules } from '../until';
-import SalePropFormItem from '../sale-prop/SalePropFormItem';
-import { MyFormItemProps } from '../../pages/product/edit/interface';
-import _, { debounce } from 'lodash';
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { getRemoteOptions } from '../api';
-import { ProductEditContext } from '../../pages/product/edit';
-import { ErrorBoundary } from 'react-error-boundary';
+import { isObject, isString, isUndefined } from '@arco-design/web-react/es/_util/is';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
+import cs from '@arco-design/web-react/es/_util/classNames';
+import _, { debounce } from 'lodash';
+import { ErrorBoundary } from 'react-error-boundary';
+import { FieldNames, checkDependRules, getStringLength, getTips, getUiTypeOrDefault, getValiRules, isNumberOrStrNumber, sliceString } from '../until';
+import { ProductEditContext } from '../../pages/product/edit';
+import { MyFormItemProps } from '../../pages/product/edit/interface';
+import SalePropFormItem from '../sale-prop/SalePropFormItem';
+import SkuEditableTable from '../sku-editable-table';
 import RichTextEditor from './RichTextEditor';
+import ImageUpload from '../ImageUpload';
+import { getRemoteOptions } from '../api';
+import { ConfigContext } from '@arco-design/web-react/es/ConfigProvider';
 
 function ProFormList(props: MyFormItemProps) {
     const { type, label, name, namePath, value, subItems = [], nestItems = [], ...rest } = props;
@@ -148,6 +150,69 @@ function FormItem(props: any) {
     </ErrorBoundary>
 }
 
+function formatValue(value: any, maxLength: any, isByteUnit: boolean) {
+    const str = value !== null && !isUndefined(value) && !isString(value) ? String(value) : value || '';
+    if (maxLength) {
+        return sliceString(value, 0, maxLength, isByteUnit);
+    }
+    return str;
+}
+
+function FormInput(props: any) {
+    const { style, suffix, showWordLimit, maxLength, allowClear, restProps } = props;
+    const trueMaxLength = isObject(maxLength) ? maxLength.length : maxLength;
+    const mergedMaxLength = isObject(maxLength) && maxLength.errorOnly ? undefined : trueMaxLength;
+    const isByteUnit = isObject(maxLength) && maxLength.unit == 'byte';
+    // const showByteLength = isObject(maxLength) && maxLength.show == 'byte';
+
+    const { getPrefixCls = () => { }, rtl } = useContext(ConfigContext);
+    const prefixCls = getPrefixCls('input');
+
+    const [value, setValue] = useMergeValue('', {
+        defaultValue: 'defaultValue' in props ? formatValue(props.defaultValue, mergedMaxLength, isByteUnit) : undefined,
+        value: 'value' in props ? formatValue(props.value, mergedMaxLength, isByteUnit) : undefined,
+    });
+
+    const onChange = (value: any, e: any) => {
+        if (!('value' in props)) { setValue(value); }
+        props.onChange && props.onChange(value, e);
+    };
+
+    const valueLength = getStringLength(value, isByteUnit);
+
+    const lengthError = useMemo(() => {
+        if (!mergedMaxLength && trueMaxLength) {
+            return valueLength > trueMaxLength;
+        }
+        return false;
+    }, [valueLength, trueMaxLength, mergedMaxLength]);
+
+    let suffixElement = suffix;
+    if (trueMaxLength && showWordLimit) {
+        const [leftWord, rightWord] = rtl ? [trueMaxLength, valueLength] : [valueLength, trueMaxLength];
+        suffixElement = (
+            <span
+                className={cs(`${prefixCls}-word-limit`, {
+                    [`${prefixCls}-word-limit-error`]: lengthError,
+                })}
+            >
+                {`${leftWord}/${rightWord}`}
+                {/* {(!isByteUnit || showByteLength)
+                    ? `${leftWord}/${rightWord}`
+                    : `${Math.ceil(leftWord / 2)}/${Math.ceil(rightWord / 2)}`
+                } */}
+            </span>
+        );
+    }
+
+    return <Input {...restProps}
+        allowClear={allowClear}
+        style={style}
+        value={value} onChange={onChange}
+        suffix={suffixElement}
+    />
+}
+
 export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { salePropFieldName?: string }) {
     const {
         type, label = '', name, namePath, value,
@@ -199,15 +264,14 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
 
                 return _uiType == 'input' ? (
                     <FormItem {...formItemProps} >
-                        <Input allowClear={allowClear}
+                        <FormInput allowClear={allowClear}
                             placeholder={`请输入${label}`}
                             style={{ maxWidth: '734px', minWidth: '220px' }}
-                        // showWordLimit={isNumber(rules?.maxLength)}
-                        // maxLength={
-                        //     isNumber(rules?.maxLength)
-                        //         ? { length: rules!.maxLength, errorOnly: true }
-                        //         : undefined
-                        // } 
+                            showWordLimit={isNumberOrStrNumber(rules?.maxLength)}
+                            maxLength={isNumberOrStrNumber(rules?.maxLength)
+                                ? { length: rules?.maxLength!, unit: 'byte', errorOnly: true, }
+                                : undefined
+                            }
                         />
                     </FormItem>
                 ) : _uiType == 'inputTextArea' ? (

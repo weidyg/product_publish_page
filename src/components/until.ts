@@ -199,19 +199,31 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
                 validator: (value: any, callback: (error?: ReactNode) => void) => {
                     const isArrVal = isArray(value);
                     let length = isArrVal ? value.length
-                        : isString(value) ? value.replace(/[^\u0000-\u00ff]/g, "**").length
+                        : isString(value) ? getStringLength(value, true)
                             : undefined;
                     if (isNumber(length)) {
                         if (hasMaxLength && hasMinLength) {
                             if (length > maxLength! || length < minLength!) {
-                                callback(`范围应为 ${minLength} ~ ${maxLength} ${isArrVal ? '条' : '个字符'}之间`);
+                                if (isArrVal) {
+                                    callback(`范围应为 ${minLength} ~ ${maxLength} 条之间`);
+                                } else {
+                                    callback(`范围应为 ${minLength! / 2} ~ ${maxLength! / 2} 个汉字（${minLength} ~ ${maxLength}字符）之间`);
+                                }
                             }
                         }
                         else if (hasMaxLength && length > maxLength!) {
-                            callback(`不能超过 ${maxLength} ${isArrVal ? '条' : '个字符'}`);
+                            if (isArrVal) {
+                                callback(`不能超过 ${maxLength} 条`);
+                            } else {
+                                callback(`最多允许输入 ${maxLength! / 2} 个汉字（${maxLength}字符）`);
+                            }
                         }
                         else if (hasMinLength && length < minLength!) {
-                            callback(`至少需要 ${minLength} ${isArrVal ? '条' : '个字符'}`);
+                            if (isArrVal) {
+                                callback(`至少需要 ${maxLength} 条`);
+                            } else {
+                                callback(`至少输入 ${maxLength! / 2} 个汉字（${maxLength}字符）`);
+                            }
                         }
                     }
                 },
@@ -295,4 +307,36 @@ export function getTips(tipRules: MyFormDependRules[]): [
         }));
     };
     return [shouldUpdate, getValues];
+}
+
+export function getStringLength(value: string, isByteUnit: boolean): number {
+    if (!value) { return 0; }
+    let length = 0;
+    if (isByteUnit) {
+        for (let i = 0; i < value.length; i++) {
+            const c = value.charCodeAt(i);
+            const isByte = (c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f);
+            length += isByte ? 1 : 2;
+        }
+        return length
+    }
+    return value.length;
+}
+
+export function sliceString(value: string, start?: number, end?: number, isByteUnit?: boolean): string {
+    if (!isString(value)) { return value; }
+    if (isByteUnit && (start || end)) {
+        let length = 0;
+        let startSet = !start;
+        let endSet = !end;
+        for (let i = 0; i < value.length; i++) {
+            if (startSet && endSet) { break; }
+            const c = value.charCodeAt(i);
+            const isByte = (c >= 0x0001 && c <= 0x007e) || (0xff60 <= c && c <= 0xff9f);
+            length += isByte ? 1 : 2;
+            if (!startSet && start && length > start) { start = i - 1; startSet = true; }
+            if (!endSet && end && length > end) { end = i - 1; endSet = true; }
+        }
+    }
+    return value.slice(start, end);
 }

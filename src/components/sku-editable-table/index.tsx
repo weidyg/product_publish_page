@@ -296,41 +296,37 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                         </div>
                     </Select>
                 }
-                return <>
-                    {(i < 5 || showMoreBatch) && <div key={i}>
-                        {uiType == 'input' ? (
-                            <Input allowClear
-                                placeholder={label}
-                                style={{ width: '120px' }}
-                                value={skuBatchFillValue[name]}
-                                onChange={value => { skuFillChange(name, value); }}
-                            />
-                        ) : uiType == 'inputNumber' ? (
-                            <InputNumber placeholder={label}
-                                style={{ width: '120px' }}
-                                value={skuBatchFillValue[name]}
-                                onChange={value => { skuFillChange(name, value); }}
-                            />
-                        ) : uiType == 'select' ? (
-                            <Select allowClear
-                                placeholder={label}
-                                options={options}
-                                triggerProps={{
-                                    autoAlignPopupWidth: false,
-                                    autoAlignPopupMinWidth: true,
-                                    position: 'bl',
-                                }}
-                                style={{ width: '120px' }}
-                                value={skuBatchFillValue[name]}
-                                onChange={value => { skuFillChange(name, value); }}
-                            />
-                        ) : (
-                            <>_</>
-                        )}
-                    </div>
-                    }
-
-                </>
+                return (i < 5 || showMoreBatch) && <div key={i}>
+                    {uiType == 'input' ? (
+                        <Input allowClear
+                            placeholder={label}
+                            style={{ width: '120px' }}
+                            value={skuBatchFillValue[name]}
+                            onChange={value => { skuFillChange(name, value); }}
+                        />
+                    ) : uiType == 'inputNumber' ? (
+                        <InputNumber placeholder={label}
+                            style={{ width: '120px' }}
+                            value={skuBatchFillValue[name]}
+                            onChange={value => { skuFillChange(name, value); }}
+                        />
+                    ) : uiType == 'select' ? (
+                        <Select allowClear
+                            placeholder={label}
+                            options={options}
+                            triggerProps={{
+                                autoAlignPopupWidth: false,
+                                autoAlignPopupMinWidth: true,
+                                position: 'bl',
+                            }}
+                            style={{ width: '120px' }}
+                            value={skuBatchFillValue[name]}
+                            onChange={value => { skuFillChange(name, value); }}
+                        />
+                    ) : (
+                        <>_</>
+                    )}
+                </div>
             })}
             <Button type='primary'
                 loading={fillDataLoading}
