@@ -50,7 +50,7 @@ function ProductEdit() {
             const values = await form.validate();
             try {
                 await saveProductEditData(values, publish);
-                // console.log('values success', values);
+                console.log('values success', values);
                 Message.info('保存成功！');
             } catch (error: any) {
                 Message.error(error?.message);

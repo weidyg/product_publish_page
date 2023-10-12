@@ -17,8 +17,9 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
         columns.push({
             title: "No",
             editable: true,
-            dataIndex: 'index',
             align: 'center',
+            rootField: rootField,
+            dataIndex: 'index',
             width: 60
         })
     }
@@ -90,7 +91,7 @@ function EditableCell(props: any) {
     const isPrice = name?.toLowerCase()?.includes('price');
     const formItemRules = getValiRules(rules, isPrice);
     const { index } = useContext(EditableRowContext);
-    const field = `${rootField}[${index}].${dataIndex}`;
+    const field = dataIndex == 'index' ? undefined : `${rootField}[${index}].${dataIndex}`;
     const initialValue = _.get(rowData, dataIndex) || value;
     return (<>
         <Form.Item noStyle
