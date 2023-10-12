@@ -10,8 +10,8 @@ declare global {
 
 export async function loadProductEditData(): Promise<{
     platformId: number,
-    shopId: number,
     platformName: string;
+    shopId: number,
     shopName: string;
     fullCategoryName: string;
     schema: any;

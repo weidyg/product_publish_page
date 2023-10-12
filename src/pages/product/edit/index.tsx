@@ -7,7 +7,9 @@ import { FieldNames } from "../../../components/until";
 import { loadProductEditData, saveProductEditData } from "../../../components/api";
 
 type OptVal = { id?: number, name?: string };
-type ProductEditContextValue = { getShopId?: () => number | undefined };
+type ProductEditContextValue = {
+    getShopId?: () => number | undefined
+};
 export const ProductEditContext = createContext<ProductEditContextValue>({});
 function ProductEdit() {
     const [form] = Form.useForm();
