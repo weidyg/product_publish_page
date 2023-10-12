@@ -90,11 +90,11 @@ function SalePropInput(props: SalePropInputProps) {
 
     function childrenDom() {
         return <Input allowClear
-            placeholder={"请选择输入"}
             style={{ width: '200px' }}
+            placeholder={`请选择${allowCustom ? '或输入' : ''}`}
+            readOnly={allowCustom == false}
             suffix={isSelVal ? <StandardIcon /> : ''}
             value={value}
-            readOnly={allowCustom == false}
             onChange={(val) => {
                 handleChange(val);
                 if (!val && !visible) { setVisible(true); }
@@ -131,10 +131,12 @@ export interface SalePropInputFormItemProps {
     topGropFieldName?: string,
     isGroup?: boolean,
     options: SalePropOption[],
-    nestItems?: MyFormItemProps[]
+    nestItems?: MyFormItemProps[],
+    allowCustom?: boolean
 }
 function SalePropInputFormItem(props: SalePropInputFormItemProps) {
-    const { fieldKey, fieldName, nestItems, options, topValuesFieldName, topGropFieldName, isGroup } = props;
+    const { allowCustom, nestItems, options,
+        fieldKey, fieldName, topValuesFieldName, topGropFieldName, isGroup } = props;
     const imgForm = nestItems?.find(f => f.name == 'img');
     const remarkForm = nestItems?.find(f => f.name == 'remark');
 
@@ -160,6 +162,7 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps) {
                     valueFieldName={`${fieldName}.value`}
                     topGropFieldName={topGropFieldName}
                     topValuesFieldName={topValuesFieldName!}
+                    allowCustom={allowCustom}
                 />
             </Form.Item>
             <Form.Item hidden
@@ -183,7 +186,7 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps) {
 }
 
 function SalePropFormItem(props: MyFormItemProps) {
-    const { label, nestItems, namePath, name, options
+    const { label, nestItems, namePath, name, options, allowCustom
         , optionGroupUnique: isGroup } = props;
     const fieldName = namePath?.join('.') || name;
     const groupFieldName = isGroup ? `${fieldName}.group` : undefined;
@@ -212,6 +215,7 @@ function SalePropFormItem(props: MyFormItemProps) {
                                         nestItems={nestItems}
                                         isGroup={isGroup}
                                         options={options as any}
+                                        allowCustom={allowCustom}
                                     />
                                     <Form.Item >
                                         <Button type='text'

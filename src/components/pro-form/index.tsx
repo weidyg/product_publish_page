@@ -1,7 +1,7 @@
 
 
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox, Message, Spin, Empty, Alert } from '@arco-design/web-react';
+import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox, Message, Spin, Empty, Alert, InputProps } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconRefresh } from '@arco-design/web-react/icon';
 import { isObject, isString, isUndefined } from '@arco-design/web-react/es/_util/is';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
@@ -158,8 +158,16 @@ function formatValue(value: any, maxLength: any, isByteUnit: boolean) {
     return str;
 }
 
-function FormInput(props: any) {
-    const { style, suffix, showWordLimit, maxLength, allowClear, restProps } = props;
+interface FormInputProps extends Omit<InputProps, 'maxLength'> {
+    maxLength?: number | {
+        length: number;
+        errorOnly?: boolean;
+        unit?: 'byte' | 'default'
+    };
+}
+
+function FormInput(props: FormInputProps) {
+    const { suffix, showWordLimit, maxLength, ...restProps } = props;
     const trueMaxLength = isObject(maxLength) ? maxLength.length : maxLength;
     const mergedMaxLength = isObject(maxLength) && maxLength.errorOnly ? undefined : trueMaxLength;
     const isByteUnit = isObject(maxLength) && maxLength.unit == 'byte';
@@ -206,8 +214,6 @@ function FormInput(props: any) {
     }
 
     return <Input {...restProps}
-        allowClear={allowClear}
-        style={style}
         value={value} onChange={onChange}
         suffix={suffixElement}
     />
@@ -327,7 +333,7 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                                 allowCreate={allowCustom}
                                 allowClear={allowClear && _uiType != 'multiSelect'}
                                 mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
-                                placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
+                                placeholder={`请选择${allowCustom ? '或输入' : ''}${label}`}
                                 style={{ maxWidth: '274px', minWidth: '96px' }}
                             />
                         ) : (
@@ -337,7 +343,7 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                                 maxTagCount={3}
                                 allowClear={allowClear && _uiType != 'multiSelect'}
                                 mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
-                                placeholder={`请选择${_uiType == 'multiSelect' ? '或输入' : ''}${label}`}
+                                placeholder={`请选择${allowCustom ? '或输入' : ''}${label}`}
                                 style={{ maxWidth: '358px', minWidth: '180px' }}
                             />
                         ))}
