@@ -1,6 +1,6 @@
 
 
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox, Message, Spin, Empty, Alert, InputProps } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconRefresh } from '@arco-design/web-react/icon';
 import { isObject, isString, isUndefined } from '@arco-design/web-react/es/_util/is';
@@ -85,7 +85,7 @@ function RemoteSelect(props: any) {
             debouncedFetchOptions(optionAction);
         }
     }, []);
-    const { shopId } = useContext(ProductEditContext);
+    const { shopId, categoryId } = useContext(ProductEditContext);
     const debouncedFetchOptions = useCallback(
         debounce(async (optionAction: string, forceUpdate?: boolean) => {
             if (fetching) { return; }
@@ -93,7 +93,7 @@ function RemoteSelect(props: any) {
             try {
                 if (shopId! > 0) {
                     setOptions([]);
-                    const options = await getRemoteOptions(shopId, optionAction, forceUpdate);
+                    const options = await getRemoteOptions(shopId, categoryId, optionAction, forceUpdate);
                     setOptions(options);
                     forceUpdate && Message.success(`${label}同步成功！`);
                 } else {
@@ -325,6 +325,10 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                             <ProFormList {...props} />
                         ) : (optionAction ? (
                             <RemoteSelect showSearch
+                                filterOption={(inputValue: string, option: ReactElement) =>
+                                    option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
+                                    option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+                                }
                                 label={label}
                                 optionAction={optionAction}
                                 options={options}
@@ -337,6 +341,10 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                             />
                         ) : (
                             <Select showSearch
+                                filterOption={(inputValue: string, option: ReactElement) =>
+                                    option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
+                                    option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+                                }
                                 options={options}
                                 allowCreate={allowCustom}
                                 maxTagCount={3}

@@ -48,8 +48,8 @@
       return post("https://localhost:44331/api/services/app/ProductPublish/SaveProductEditData", data);
     }
 
-    function getRemoteOptions(shopId, optionAction, forceUpdate) {
-      const data = { ShopId: shopId, Action: optionAction, ForceUpdate: forceUpdate };
+    function getRemoteOptions(shopId, categoryId, optionAction, forceUpdate) {
+      const data = { ShopId: shopId, CategoryId: categoryId, Action: optionAction, ForceUpdate: forceUpdate };
       return post("https://localhost:44331/api/services/app/ProductPublish/GetOptions", data);
     }
 
