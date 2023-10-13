@@ -1,14 +1,15 @@
 import { createContext, useEffect, useMemo, useState } from "react";
 import { Button, Card, Form, Message, Modal, PageHeader, Result, Skeleton, Space, Spin } from "@arco-design/web-react";
 import styles from './style/index.module.less'
-import { MyFormItemProps } from "./interface";
+import { MyFormItemProps, ProductEditDataProps } from "./interface";
 import { ProFormItem } from "../../../components/pro-form";
 import { FieldNames } from "../../../components/until";
 import { loadProductEditData, saveProductEditData } from "../../../components/api";
 
-type OptVal = { id?: number, name?: string };
 type ProductEditContextValue = {
-    getShopId?: () => number | undefined
+    platformId?: number,
+    shopId?: number,
+    categoryId?: string;
 };
 export const ProductEditContext = createContext<ProductEditContextValue>({});
 function ProductEdit() {
@@ -16,11 +17,8 @@ function ProductEdit() {
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
     const [publishLoading, setPublishLoading] = useState(false);
-    const [formSchema, setFormSchema] = useState<MyFormItemProps[]>([]);
-    const [shop, setShop] = useState<OptVal>();
-    const [platform, setPlatform] = useState<OptVal>();
-    const [categoryPath, setCategoryPath] = useState('');
-    const [loadErrMsg, setLoadErrMsg] = useState();
+    const [loadErrMsg, setLoadErrMsg] = useState<string>();
+    const [productEditData, setProductEditData] = useState<ProductEditDataProps>();
 
     useEffect(() => {
         loadingInitData();
@@ -29,17 +27,9 @@ function ProductEdit() {
     const loadingInitData = async () => {
         setLoading(true);
         try {
-            const {
-                platformId, shopId,
-                platformName, shopName,
-                fullCategoryName,
-                schema, data
-            } = await loadProductEditData();
-            setFormSchema(schema);
-            setPlatform({ id: platformId, name: platformName });
-            setShop({ id: shopId, name: shopName });
-            setCategoryPath(fullCategoryName);
-            form?.setFieldsValue(data);
+            const productEditData = await loadProductEditData();
+            setProductEditData(productEditData);
+            form?.setFieldsValue(productEditData?.data || {});
         } catch (error: any) {
             setLoadErrMsg(error?.message);
         } finally {
@@ -65,7 +55,9 @@ function ProductEdit() {
             setPublishLoading(false);
         }
     }
-
+    const { formSchema=[], platformName, shopName, categoryNamePath
+        , platformId, shopId, categoryId
+    } = productEditData || {};
     const [skuFullName, skuStockName, quantityFullName] = useMemo(() => {
         const skuProp = formSchema.find((f: any) => FieldNames.sku(f));
         const skuStockProp = skuProp?.subItems?.find((f: any) => FieldNames.skuStock(f));
@@ -103,15 +95,13 @@ function ProductEdit() {
                         />
                     </div>
                     : <>
-                        <PageHeader title={platform?.name} subTitle={shop?.name} />
+                        <PageHeader title={platformName} subTitle={shopName} />
                         <Card hoverable className={styles['product-card']}>
                             <Skeleton loading={loading} animation text={{ rows: 1 }}>
-                                {`当前类目：${categoryPath}`}
+                                {`当前类目：${categoryNamePath || '--'}`}
                             </Skeleton>
                         </Card>
-                        <ProductEditContext.Provider value={{
-                            getShopId: function () { return shop?.id }
-                        }}>
+                        <ProductEditContext.Provider value={{ platformId, shopId, categoryId }}>
                             <Form id='spuForm'
                                 form={form}
                                 layout='vertical'

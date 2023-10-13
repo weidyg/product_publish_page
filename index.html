@@ -26,7 +26,7 @@
           var {
             PlatformId, ShopId,
             PlatformName, ShopName,
-            FullCategoryName,
+            CategoryId, CategoryNamePath,
             FormSchemaJson = '[]',
             FormDataJson = '{}'
           } = data;
@@ -35,8 +35,9 @@
             shopId: ShopId,
             platformName: PlatformName,
             shopName: ShopName,
-            fullCategoryName: FullCategoryName,
-            schema: JSON.parse(FormSchemaJson),
+            categoryId: CategoryId,
+            categoryNamePath: CategoryNamePath,
+            formSchema: JSON.parse(FormSchemaJson),
             data: JSON.parse(FormDataJson),
           }
         });

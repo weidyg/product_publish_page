@@ -80,25 +80,24 @@ function RemoteSelect(props: any) {
     const { label, optionAction, options: propOptions = [], value, onChange, ...rest } = props
     const [options, setOptions] = useState(propOptions);
     const [fetching, setFetching] = useState(false);
-    const { getShopId } = useContext(ProductEditContext);
     useEffect(() => {
         if (optionAction && options.length == 0) {
             debouncedFetchOptions(optionAction);
         }
     }, []);
+    const { shopId } = useContext(ProductEditContext);
     const debouncedFetchOptions = useCallback(
         debounce(async (optionAction: string, forceUpdate?: boolean) => {
             if (fetching) { return; }
             setFetching(true);
             try {
-                const shopId = getShopId && getShopId();
                 if (shopId! > 0) {
                     setOptions([]);
                     const options = await getRemoteOptions(shopId, optionAction, forceUpdate);
                     setOptions(options);
                     forceUpdate && Message.success(`${label}同步成功！`);
                 } else {
-                    console.log('getShopId error', getShopId);
+                    console.log('shopId error', shopId);
                 }
             } catch (error: any) {
                 Message.error(error?.message || error);

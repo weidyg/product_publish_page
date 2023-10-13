@@ -79,3 +79,13 @@ export enum FieldTag {
     SkuProps = "n:sku_prop",
     SkuStock = "n:sku_stock",
 }
+export interface ProductEditDataProps {
+    platformId: number,
+    platformName: string;
+    shopId: number,
+    shopName: string;
+    categoryId: string;
+    categoryNamePath: string;
+    formSchema: MyFormItemProps[];
+    data: { [x: string]: any };
+}

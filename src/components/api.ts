@@ -1,4 +1,4 @@
-import { MyFormItemOption } from "../pages/product/edit/interface";
+import { MyFormItemOption, ProductEditDataProps } from "../pages/product/edit/interface";
 
 declare global {
     interface Window {
@@ -8,15 +8,7 @@ declare global {
     }
 }
 
-export async function loadProductEditData(): Promise<{
-    platformId: number,
-    platformName: string;
-    shopId: number,
-    shopName: string;
-    fullCategoryName: string;
-    schema: any;
-    data: any;
-}> {
+export async function loadProductEditData(): Promise<ProductEditDataProps> {
     return await window.loadProductEditData();
 }
 
