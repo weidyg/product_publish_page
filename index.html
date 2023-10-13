@@ -17,13 +17,12 @@
       const r = search.match(reg) || [];
       return r[2];
     }
-
+    
     const id = getQueryString('id');
     const loadProductEditDataUrl="https://localhost:44331/api/services/app/ProductPublish/GetProductEditData";
     const saveProductEditDataUrl="https://localhost:44331/api/services/app/ProductPublish/SaveProductEditData";
     const getRemoteOptionsUrl="https://localhost:44331/api/services/app/ProductPublish/GetOptions";
 
-    
     function loadProductEditData() {
       const data = { ItemId: id };
       return post(loadProductEditDataUrl, data)
