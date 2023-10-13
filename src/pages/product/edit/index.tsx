@@ -42,7 +42,7 @@ function ProductEdit() {
             const values = await form.validate();
             try {
                 await saveProductEditData(values, publish);
-                // console.log('values success', values);
+                console.log('values success', values);
                 Message.info(`保存${publish ? '并发布' : ''}成功！`);
             } catch (error: any) {
                 if (publish) {
@@ -163,6 +163,7 @@ function ProductEdit() {
                                                 {publishLoading ? ' 保存并发布中...' : ' 保存并发布'}
                                             </Button>
                                             <Button
+                                                type='outline'
                                                 size='large'
                                                 loading={saveLoading}
                                                 disabled={publishLoading}

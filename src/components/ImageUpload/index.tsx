@@ -25,23 +25,27 @@ function ImageUpload(baseProps: ImageUploadProps) {
     defaultValue: 'defaultValue' in props ? createFile(props.defaultValue) : undefined,
     value: 'value' in props ? createFile(props.value) : undefined,
   });
+  const handleChange = (file?: UploadItem) => {
+    if (file?.url != imgFile?.url) {
+      if (!('value' in props)) { setImgFile(file); }
+      onChange && onChange(file?.url);
+    }
+  }
 
-  const handleChange = (_fileList: UploadItem[], file: UploadItem) => {
+  const handleUploadChange = (_fileList: UploadItem[], file: UploadItem) => {
     let newFile = { ...file || {} };
     if (file.originFile && file.percent == 100) {
       Message.warning('暂不支持图片上传！'); return undefined;
       // newFile.url = URL.createObjectURL(file?.originFile as any);
     }
-    if (file?.url != newFile?.url) {
-      if (!('value' in props)) { setImgFile(newFile); }
-      onChange && onChange(newFile?.url);
-    }
+    handleChange(file);
   }
+
   const handleProgress = (file: UploadItem) => {
     // setImgFile(file);
   }
   const handleDelete = () => {
-    setImgFile(undefined);
+    handleChange(undefined);
   }
 
 
@@ -51,7 +55,7 @@ function ImageUpload(baseProps: ImageUploadProps) {
       <Upload
         action='/'
         fileList={imgFile ? [imgFile] : []}
-        onChange={handleChange}
+        onChange={handleUploadChange}
         onProgress={handleProgress}
         showUploadList={false}
       >
@@ -77,7 +81,7 @@ function ImageUpload(baseProps: ImageUploadProps) {
                 content='目前暂不支持图片上传，删除后无法再次添加图片，是否继续删除?'
                 onOk={handleDelete}
               >
-                <IconDelete />
+                <IconDelete style={{ cursor: 'pointer' }} />
               </Popconfirm>
             </Space>
           </div>
