@@ -42,10 +42,17 @@ function ProductEdit() {
             const values = await form.validate();
             try {
                 await saveProductEditData(values, publish);
-                console.log('values success', values);
-                Message.info('保存成功！');
+                // console.log('values success', values);
+                Message.info(`保存${publish ? '并发布' : ''}成功！`);
             } catch (error: any) {
-                Message.error(error?.message);
+                if (publish) {
+                    Modal.error({
+                        title: '保存并发布失败',
+                        content: error?.message
+                    });
+                } else {
+                    Message.error(error?.message);
+                }
             }
         } catch (error) {
             console.log('validate error', JSON.stringify(error));
@@ -55,7 +62,7 @@ function ProductEdit() {
             setPublishLoading(false);
         }
     }
-    const { formSchema=[], platformName, shopName, categoryNamePath
+    const { formSchema = [], platformName, shopName, categoryNamePath
         , platformId, shopId, categoryId
     } = productEditData || {};
     const [skuFullName, skuStockName, quantityFullName] = useMemo(() => {
