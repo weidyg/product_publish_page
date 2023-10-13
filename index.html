@@ -19,9 +19,14 @@
     }
 
     const id = getQueryString('id');
+    const loadProductEditDataUrl="https://localhost:44331/api/services/app/ProductPublish/GetProductEditData";
+    const saveProductEditDataUrl="https://localhost:44331/api/services/app/ProductPublish/SaveProductEditData";
+    const getRemoteOptionsUrl="https://localhost:44331/api/services/app/ProductPublish/GetOptions";
+
+    
     function loadProductEditData() {
       const data = { ItemId: id };
-      return post("https://localhost:44331/api/services/app/ProductPublish/GetProductEditData", data)
+      return post(loadProductEditDataUrl, data)
         .then((data) => {
           var {
             PlatformId, ShopId,
@@ -45,14 +50,13 @@
 
     function saveProductEditData(dataJson, publish) {
       const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
-      return post("https://localhost:44331/api/services/app/ProductPublish/SaveProductEditData", data);
+      return post(saveProductEditDataUrl, data);
     }
 
     function getRemoteOptions(shopId, categoryId, optionAction, forceUpdate) {
       const data = { ShopId: shopId, CategoryId: categoryId, Action: optionAction, ForceUpdate: forceUpdate };
-      return post("https://localhost:44331/api/services/app/ProductPublish/GetOptions", data);
+      return post(getRemoteOptionsUrl, data);
     }
-
 
     function post(url, data) {
       return fetch(url, {
