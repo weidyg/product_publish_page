@@ -6,7 +6,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   build: {
     target: 'es2015',
-    chunkSizeWarningLimit:2048,
+    chunkSizeWarningLimit: 2048,
     // rollupOptions: {
     //   output: {
     //     manualChunks(id) {
