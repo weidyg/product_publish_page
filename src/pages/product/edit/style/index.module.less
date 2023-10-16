@@ -27,8 +27,30 @@
         margin-bottom: 24px !important;
     }
 
-    &-card {
+    &-cate {
         margin-bottom: 16px;
+    }
+
+    &-form {
+        margin-bottom: 16px;
+        padding: 16px 24px;
+    }
+
+    &-content {
+        z-index: 2;
+        width: 998px;
+        margin: 0 auto;
+
+        @media screen and (min-width: 1756px) {
+            width: 1240px;
+            margin: 0 auto;
+            padding-right: 0;
+        }
+
+        @media screen and (min-width: 1280px) and (max-width: 1440px) {
+            flex: 1;
+        }
+
     }
 
     &-header,

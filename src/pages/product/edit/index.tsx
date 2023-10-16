@@ -119,7 +119,7 @@ function ProductEdit() {
                                     />
                                 </div>
                                 : <>
-                                    <Card hoverable className={styles['product-card']}>
+                                    <Card hoverable className={styles['product-cate']}>
                                         <Skeleton loading={loading} animation text={{ rows: 1 }}>
                                             {`当前类目：${categoryNamePath || '--'}`}
                                         </Skeleton>
@@ -156,7 +156,7 @@ function ProductEdit() {
                                                 },
                                             }}
                                         >
-                                            <Card hoverable className={styles['product-card']}>
+                                            <Card hoverable className={styles['product-form']}>
                                                 <Skeleton loading={loading} animation text={{ rows: 10 }}>
                                                     {formSchema.map((m: MyFormItemProps, i: any) => {
                                                         return <ProFormItem key={i} {...m} salePropFieldName={salePropFieldName} />
