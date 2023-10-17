@@ -340,3 +340,11 @@ export function sliceString(value: string, start?: number, end?: number, isByteU
     }
     return value.slice(start, end);
 }
+
+
+export function getQueryString(name: string) {
+    const reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+    const search = window.location.search.split('?')[1] || '';
+    const r = search.match(reg) || [];
+    return r[2];
+}
