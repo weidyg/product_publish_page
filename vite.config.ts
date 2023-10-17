@@ -7,15 +7,15 @@ export default defineConfig({
   build: {
     target: 'es2015',
     chunkSizeWarningLimit: 2048,
-    // rollupOptions: {
-    //   output: {
-    //     manualChunks(id) {
-    //       if (id.includes('node_modules')) {
-    //         return id.toString().split('node_modules/')[1].split('/')[0].toString();
-    //       }
-    //     }
-    //   }
-    // }
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        }
+      }
+    }
   },
   server: {
     host: '192.168.110.110',
