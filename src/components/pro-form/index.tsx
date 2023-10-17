@@ -17,6 +17,7 @@ import RichTextEditor from './RichTextEditor';
 import ImageUpload from '../ImageUpload';
 import { getRemoteOptions } from '../api';
 import { ConfigContext } from '@arco-design/web-react/es/ConfigProvider';
+import styles from './index.module.less'
 
 function ProFormList(props: MyFormItemProps) {
     const { type, label, name, namePath, value, subItems = [], nestItems = [], ...rest } = props;
@@ -139,7 +140,7 @@ function RemoteSelect(props: any) {
 }
 
 function FormItem(props: any) {
-    const { children, label, style, ...formItemProps } = props;
+    const { children, label, style, uiType, ...formItemProps } = props;
     return <ErrorBoundary fallback={
         <Form.Item label={label}>
             <Alert type='error' content={`组件渲染出错`} />
@@ -219,10 +220,11 @@ function FormInput(props: FormInputProps) {
         suffix={suffixElement}
     />
 }
-type UIFormItemProps = Omit<FormItemProps, 'rules'>;
-export function ProFormItem(props: UIFormItemProps & MyFormItemProps & { picSize?: 'mini' } & { salePropFieldName?: string }) {
+type UIFormItemProps = Omit<FormItemProps, 'rules' | 'label'>;
+export function ProFormItem(props: MyFormItemProps & UIFormItemProps
+    & { picSize?: 'mini', salePropFieldName?: string }) {
     const {
-        type, label = '', name, namePath, value,
+        type, label = '', name, namePath, value, tags = [],
         optionAction, options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
         fieldName, noStyle, picSize, allowClear = true,
@@ -235,7 +237,7 @@ export function ProFormItem(props: UIFormItemProps & MyFormItemProps & { picSize
     const shouldUpdate = (prev: any, next: any, info: any) => {
         if (JSON.stringify(prev) == JSON.stringify(next)) { return false; }
         let _shouldUpdate = tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info)
-            || FieldNames.sku(props) || FieldNames.saleProp(props);
+            || FieldNames.sku(tags) || FieldNames.saleProp(tags);
         return _shouldUpdate!;
     }
     const isComplexType = type == 'complex' || type == 'multiComplex';
@@ -246,7 +248,7 @@ export function ProFormItem(props: UIFormItemProps & MyFormItemProps & { picSize
         precision: isPrice ? 2 : undefined,
         step: isPrice ? 0.01 : undefined
     }
-
+    const _label = <span title={label}>{label}</span>;
     const { form } = Form.useFormContext();
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
@@ -264,7 +266,7 @@ export function ProFormItem(props: UIFormItemProps & MyFormItemProps & { picSize
                 );
                 const formItemProps: FormItemProps = {
                     ...uiFormItemProps,
-                    label: label,
+                    label: _label,
                     rules: _rules,
                     disabled: readOnly,
                     initialValue: value,
@@ -373,21 +375,26 @@ export function ProFormItem(props: UIFormItemProps & MyFormItemProps & { picSize
                 ) : type == 'complex' ? (
                     <FormItem {...formItemProps}>
                         {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{_extra}</div>}
-                        {FieldNames.cateProp(props) ? (
+                        {FieldNames.cateProp(tags) ? (
                             <Card style={{ background: 'var(--color-fill-1)' }}
                                 bodyStyle={{ padding: '16px 16px 0' }}>
                                 <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
                                     {subItems?.map((sm, si) => {
                                         const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
                                         return (
-                                            <Grid.GridItem key={'complex' + si} style={{ maxWidth: '358px' }}>
-                                                <ProFormItem key={si} {...sm} uiType={uiType} layout={'horizontal'} />
+                                            <Grid.GridItem key={'complex' + si}>
+                                                <ProFormItem key={si} {...sm}
+                                                    uiType={uiType}
+                                                    layout={'horizontal'}
+                                                    labelAlign='right'
+                                                    className={styles['form-label-ellipsis']}
+                                                />
                                             </Grid.GridItem>
                                         )
                                     })}
                                 </Grid>
                             </Card>
-                        ) : FieldNames.saleProp(props) ? (<>
+                        ) : FieldNames.saleProp(tags) ? (<>
                             {subItems?.map((m, i) => {
                                 return (m.type == 'multiCheck' || m.type == 'complex')
                                     ? <SalePropFormItem key={i} {...m} />
@@ -405,7 +412,7 @@ export function ProFormItem(props: UIFormItemProps & MyFormItemProps & { picSize
                 ) : type == 'multiComplex' ? (
                     <FormItem {...formItemProps} style={{ marginBottom: '20px' }}>
                         {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '0px 0 4px' }}>{_extra}</div>}
-                        {FieldNames.sku(props) ? (
+                        {FieldNames.sku(tags) ? (
                             <SkuEditableTable {...props}
                                 salePropValues={_.get(values, salePropFieldName!)}
                             />

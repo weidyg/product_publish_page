@@ -104,13 +104,13 @@ export function getSkuItems(skuSaleProp: ObjVal, skuSalePropName: string, skuIte
 
 
 export const FieldNames = {
-    desc: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Description),
-    cateProp: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.cateProp),
-    saleProp: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SaleProp),
-    sku: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Sku),
-    skuProps: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SkuProps),
-    skuStock: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.SkuStock),
-    quantity: (props: MyFormItemProps) => props?.tags?.includes(FieldTag.Quantity),
+    desc: (tags?: FieldTag[]) => tags?.includes(FieldTag.Description),
+    cateProp: (tags?: FieldTag[]) => tags?.includes(FieldTag.cateProp),
+    saleProp: (tags?: FieldTag[]) => tags?.includes(FieldTag.SaleProp),
+    sku: (tags?: FieldTag[]) => tags?.includes(FieldTag.Sku),
+    skuProps: (tags?: FieldTag[]) => tags?.includes(FieldTag.SkuProps),
+    skuStock: (tags?: FieldTag[]) => tags?.includes(FieldTag.SkuStock),
+    quantity: (tags?: FieldTag[]) => tags?.includes(FieldTag.Quantity),
 };
 export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): boolean | undefined {
     const getDeepValue = (values: any, fieldName: string, namePath: string[]) => {
@@ -255,11 +255,11 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
 }
 
 export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undefined {
-    const { uiType, type, name, allowCustom, options = [], rules = {} } = _props;
+    const { uiType, type, name, allowCustom, options = [], rules = {}, tags = [] } = _props;
     if (uiType) { return uiType; }
 
-    if (FieldNames.sku(_props)) { return 'skuEditTable'; }
-    if (FieldNames.desc(_props)) { return 'richTextEditor'; }
+    if (FieldNames.sku(tags)) { return 'skuEditTable'; }
+    if (FieldNames.desc(tags)) { return 'richTextEditor'; }
     switch (type) {
         case 'input':
             {

@@ -67,9 +67,9 @@ function ProductEdit() {
         , platformId, shopId, categoryId
     } = productEditData || {};
     const [skuFullName, skuStockName, quantityFullName] = useMemo(() => {
-        const skuProp = formSchema.find((f: any) => FieldNames.sku(f));
-        const skuStockProp = skuProp?.subItems?.find((f: any) => FieldNames.skuStock(f));
-        const quantityProp = formSchema.find((f: any) => FieldNames.quantity(f));
+        const skuProp = formSchema.find((f: MyFormItemProps) => FieldNames.sku(f?.tags));
+        const skuStockProp = skuProp?.subItems?.find((f: MyFormItemProps) => FieldNames.skuStock(f?.tags));
+        const quantityProp = formSchema.find((f: MyFormItemProps) => FieldNames.quantity(f?.tags));
         if (skuProp && skuStockProp && quantityProp) {
             const skuName = skuProp.namePath?.join('.') || skuProp.name;
             const skuStockName = skuStockProp.name;
@@ -80,7 +80,7 @@ function ProductEdit() {
     }, [JSON.stringify(formSchema)]);
 
     const salePropFieldName = useMemo(() => {
-        const saleProp = formSchema.find((f: any) => FieldNames.saleProp(f));
+        const saleProp = formSchema.find((f: MyFormItemProps) => FieldNames.saleProp(f?.tags));
         return saleProp?.namePath?.join('.') || saleProp?.name;
     }, [JSON.stringify(formSchema)]);
 
@@ -151,7 +151,7 @@ function ProductEdit() {
                                                 // console.log('values', values);
                                             }}
                                             validateMessages={{
-                                                required: (_, { label }) => `${label || ''}不能为空`,
+                                                required: (_, { label }) => <>{label || ''}{'不能为空'}</>,
                                                 string: {
                                                     length: `字符数必须是 #{length}`,
                                                     match: `不匹配正则 #{pattern}`,

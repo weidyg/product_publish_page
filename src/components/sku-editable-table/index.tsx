@@ -25,14 +25,14 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
     }
     for (let index = 0; index < formItems.length; index++) {
         const skuItem = formItems[index] || {};
-        const { label, name, type, tips = [] } = skuItem;
+        const { label, name, type, tips = [], tags = [] } = skuItem;
         let dataIndex = pName ? `${pName}.${name}` : name;
         const [_, getTipValues] = getTips(tips);
         const tipValues = getTipValues(null) || [];
         const extra = tipValues.map((value: any, index: any) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
         const uiType = !isSkuProps ? getUiTypeOrDefault(skuItem) : undefined;
         if (type?.includes('complex')) {
-            const skuProps = FieldNames.skuProps(skuItem);
+            const skuProps = FieldNames.skuProps(tags);
             const _columns = getSkuTableColumns(skuItem?.subItems || [], rootField, dataIndex, skuProps);
             columns = columns.concat(_columns);
         } else {
@@ -154,7 +154,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
     const [showMoreBatch, SetShowMoreBatch] = useState<boolean>(false);
 
     const [skuSaleProp, skuSalePropName] = useMemo(() => {
-        const skuSaleProp = subItems.find((f: any) => FieldNames.skuProps(f));
+        const skuSaleProp = subItems.find((f: MyFormItemProps) => FieldNames.skuProps(f?.tags));
         const skuSalePropName = skuSaleProp?.name!;
         return [skuSaleProp, skuSalePropName]
     }, []);
@@ -237,7 +237,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
                 const { label, name, options = [] } = m;
                 if (!name) { return; }
                 const uiType = getUiTypeOrDefault(m);
-                const isSkuProps = FieldNames.skuProps(m);
+                const isSkuProps = FieldNames.skuProps(m?.tags);
                 if (isSkuProps) {
                     let selectLength = 0;
                     const propValue = skuBatchFillValue[name] || {};
