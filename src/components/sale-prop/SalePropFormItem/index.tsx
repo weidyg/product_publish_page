@@ -1,4 +1,4 @@
-import { Button, Form, Input, Space, Trigger } from "@arco-design/web-react";
+import { Button, Card, Form, FormItemProps, Input, Space, Trigger } from "@arco-design/web-react";
 import { useEffect, useState } from "react";
 import useMergeValue from "@arco-design/web-react/es/_util/hooks/useMergeValue";
 import SalePropCard from "../SalePropCard";
@@ -134,15 +134,18 @@ export interface SalePropInputFormItemProps {
     nestItems?: MyFormItemProps[],
     allowCustom?: boolean
 }
-function SalePropInputFormItem(props: SalePropInputFormItemProps) {
+type UIFormItemProps = Omit<FormItemProps, 'rules'>;
+function SalePropInputFormItem(props: SalePropInputFormItemProps & UIFormItemProps) {
     const { allowCustom, nestItems, options,
-        fieldKey, fieldName, topValuesFieldName, topGropFieldName, isGroup } = props;
+        fieldKey, fieldName, topValuesFieldName, topGropFieldName, isGroup,
+        ...formItemProps
+    } = props;
     const imgForm = nestItems?.find(f => f.name == 'img');
     const remarkForm = nestItems?.find(f => f.name == 'remark');
 
     return (<Space>
         {imgForm &&
-            <Form.Item
+            <Form.Item {...formItemProps}
                 field={`${fieldName}.${imgForm.name}`}
             >
                 <ImageUpload size='mini' />
@@ -150,7 +153,7 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps) {
         }
 
         <Space size={1}>
-            <Form.Item
+            <Form.Item {...formItemProps}
                 field={`${fieldName}.text`}
                 rules={[{ required: true }]}
             >
@@ -165,13 +168,13 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps) {
                     allowCustom={allowCustom}
                 />
             </Form.Item>
-            <Form.Item hidden
+            <Form.Item hidden  {...formItemProps}
                 field={`${fieldName}.value`}>
                 <Input />
             </Form.Item>
 
             {remarkForm &&
-                <Form.Item
+                <Form.Item  {...formItemProps}
                     field={`${fieldName}.${remarkForm.name}`}
                 >
                     <Input allowClear
@@ -191,59 +194,74 @@ function SalePropFormItem(props: MyFormItemProps) {
     const fieldName = namePath?.join('.') || name;
     const groupFieldName = isGroup ? `${fieldName}.group` : undefined;
     const valueFieldName = isGroup ? `${fieldName}.value` : fieldName;
+    const formItemProps = {};
     return (
-        <Form.Item label={label} field={fieldName}>
+        // <Card bodyStyle={{ padding: '1px' }}>
+        <Form.Item label={label} field={fieldName} style={{ marginBottom: '0px' }}>
             {groupFieldName &&
                 <Form.Item field={groupFieldName} hidden>
                     <Input />
                 </Form.Item >
             }
-            <Form.List field={valueFieldName!}>
-                {(fields, { add, remove, move }) => {
-                    if (fields.length == 0) {
-                        fields.push({ key: 0, field: `${fieldName}[${0}]` });
-                    }
-                    return (<Space wrap>
-                        {fields.map(({ field }, index) => {
-                            return (
-                                <Space key={index} wrap size={4}>
-                                    <SalePropInputFormItem
-                                        fieldKey={index}
-                                        fieldName={field}
-                                        topValuesFieldName={valueFieldName}
-                                        topGropFieldName={groupFieldName}
-                                        nestItems={nestItems}
-                                        isGroup={isGroup}
-                                        options={options as any}
-                                        allowCustom={allowCustom}
-                                    />
-                                    <Form.Item >
-                                        <Button type='text'
-                                            icon={<IconDelete />}
-                                            onClick={() => { remove(index); }}>
+            {/* <Card bodyStyle={{ padding: '1px' }}> */}
+            {/* <Card style={{ background: 'var(--color-fill-1)', }}
+                bodyStyle={{ padding: '16px 16px 0' }}> */}
+                <Form.List field={valueFieldName!}>
+                    {(fields, { add, remove, move }) => {
+                        if (fields.length == 0) {
+                            fields.push({ key: 0, field: `${fieldName}[${0}]` });
+                        }
+                        return (
+                            // <Card bodyStyle={{ padding: '1px' }}>
+                            <Space wrap>
+                                {fields.map(({ field }, index) => {
+                                    return (
+                                        // <Card bodyStyle={{ padding: '1px' }}>
+                                        <Space key={index} wrap size={[4, 0]} style={{ marginBottom: "0px" }}>
+                                            <SalePropInputFormItem
+                                                {...formItemProps}
+                                                fieldKey={index}
+                                                fieldName={field}
+                                                topValuesFieldName={valueFieldName}
+                                                topGropFieldName={groupFieldName}
+                                                nestItems={nestItems}
+                                                isGroup={isGroup}
+                                                options={options as any}
+                                                allowCustom={allowCustom}
+                                            />
+                                            <Form.Item {...formItemProps}>
+                                                <Button type='text'
+                                                    icon={<IconDelete />}
+                                                    onClick={() => { remove(index); }}>
+                                                </Button>
+                                            </Form.Item>
+                                        </Space>
+                                        // </Card>
+                                    );
+                                })}
+                                <Form.Item shouldUpdate>
+                                    {(values) => {
+                                        const salePropValues: any[] = _.get(values, valueFieldName!) || [];
+                                        const disabledAdd = !(salePropValues && salePropValues.every(e => e?.text));
+                                        return <Button
+                                            type='text'
+                                            icon={<IconPlus />}
+                                            disabled={disabledAdd}
+                                            onClick={() => { add(); }}
+                                        >
+                                            新增
                                         </Button>
-                                    </Form.Item>
-                                </Space>
-                            );
-                        })}
-                        <Form.Item shouldUpdate>
-                            {(values) => {
-                                const salePropValues: any[] = _.get(values, valueFieldName!) || [];
-                                const disabledAdd = !(salePropValues && salePropValues.every(e => e?.text));
-                                return <Button
-                                    type='text'
-                                    icon={<IconPlus />}
-                                    disabled={disabledAdd}
-                                    onClick={() => { add(); }}
-                                >
-                                    新增
-                                </Button>
-                            }}
-                        </Form.Item>
-                    </Space>);
-                }}
-            </Form.List>
+                                    }}
+                                </Form.Item>
+                            </Space>
+                            // </Card>
+                        );
+                    }}
+                </Form.List>
+            {/* </Card> */}
+            {/* </Card> */}
         </Form.Item>
+        // </Card>
     );
 }
 

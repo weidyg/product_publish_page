@@ -1,7 +1,7 @@
 
 
 import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox, Message, Spin, Empty, Alert, InputProps } from '@arco-design/web-react';
+import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox, Message, Spin, Empty, Alert, InputProps, Card, Typography } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconRefresh } from '@arco-design/web-react/icon';
 import { isObject, isString, isUndefined } from '@arco-design/web-react/es/_util/is';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
@@ -139,13 +139,15 @@ function RemoteSelect(props: any) {
 }
 
 function FormItem(props: any) {
-    const { children, label, ...formItemProps } = props;
+    const { children, label, style, ...formItemProps } = props;
     return <ErrorBoundary fallback={
         <Form.Item label={label}>
             <Alert type='error' content={`组件渲染出错`} />
         </Form.Item>
     }>
-        <Form.Item label={label} {...formItemProps} >{children}</Form.Item>
+        <Form.Item  {...formItemProps} label={label} style={style}>
+            {children}
+        </Form.Item>
     </ErrorBoundary>
 }
 
@@ -217,14 +219,14 @@ function FormInput(props: FormInputProps) {
         suffix={suffixElement}
     />
 }
-
-export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { salePropFieldName?: string }) {
+type UIFormItemProps = Omit<FormItemProps, 'rules'>;
+export function ProFormItem(props: UIFormItemProps & MyFormItemProps & { picSize?: 'mini' } & { salePropFieldName?: string }) {
     const {
         type, label = '', name, namePath, value,
         optionAction, options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
         fieldName, noStyle, picSize, allowClear = true,
-        valueType, salePropFieldName
+        valueType, salePropFieldName, ...uiFormItemProps
     } = props || {};
 
     const _fieldName = fieldName || namePath?.join('.') || name;
@@ -255,9 +257,14 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                     return;
                 }
                 const tipValues = getTipValues(values) || [];
-                const _extra = tipValues.map((value: any, index: any) => <div key={index} dangerouslySetInnerHTML={{ __html: value }} />);
+                const _extra = tipValues.map((value: any, index: any) =>
+                    index == 0
+                        ? <span key={index} dangerouslySetInnerHTML={{ __html: value }} />
+                        : <div key={index} dangerouslySetInnerHTML={{ __html: value }} />
+                );
                 const formItemProps: FormItemProps = {
-                    label,
+                    ...uiFormItemProps,
+                    label: label,
                     rules: _rules,
                     disabled: readOnly,
                     initialValue: value,
@@ -365,35 +372,39 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                     </FormItem>
                 ) : type == 'complex' ? (
                     <FormItem {...formItemProps}>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '-8px 0 4px' }}>{_extra}</div>
+                        {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{_extra}</div>}
                         {FieldNames.cateProp(props) ? (
-                            <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
-                                {subItems?.map((sm, si) => {
-                                    const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
-                                    return (
-                                        <Grid.GridItem key={'complex' + si} style={{ maxWidth: '358px' }}>
-                                            <ProFormItem key={si} {...sm} uiType={uiType} />
-                                        </Grid.GridItem>
-                                    )
-                                })}
-                            </Grid>
-                        ) : FieldNames.saleProp(props) ? (
-                            subItems?.map((m, i) => {
+                            <Card style={{ background: 'var(--color-fill-1)' }}
+                                bodyStyle={{ padding: '16px 16px 0' }}>
+                                <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
+                                    {subItems?.map((sm, si) => {
+                                        const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
+                                        return (
+                                            <Grid.GridItem key={'complex' + si} style={{ maxWidth: '358px' }}>
+                                                <ProFormItem key={si} {...sm} uiType={uiType} layout={'horizontal'} />
+                                            </Grid.GridItem>
+                                        )
+                                    })}
+                                </Grid>
+                            </Card>
+                        ) : FieldNames.saleProp(props) ? (<>
+                            {subItems?.map((m, i) => {
                                 return (m.type == 'multiCheck' || m.type == 'complex')
                                     ? <SalePropFormItem key={i} {...m} />
                                     : <div key={i}></div>
-                            })
-                        ) : (
+                            })}
+                        </>) : (
                             <Space wrap={true}>
                                 {subItems?.map((sm: any, si: any) => {
                                     return (<ProFormItem key={si} {...sm} />)
                                 })}
                             </Space>
-                        )}
+                        )
+                        }
                     </FormItem >
                 ) : type == 'multiComplex' ? (
-                    <FormItem {...formItemProps}>
-                        <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '-8px 0 4px' }}>{_extra}</div>
+                    <FormItem {...formItemProps} style={{ marginBottom: '20px' }}>
+                        {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '0px 0 4px' }}>{_extra}</div>}
                         {FieldNames.sku(props) ? (
                             <SkuEditableTable {...props}
                                 salePropValues={_.get(values, salePropFieldName!)}
@@ -405,6 +416,6 @@ export function ProFormItem(props: MyFormItemProps & { picSize?: 'mini' } & { sa
                     </FormItem >
                 ) : <div>---{label}---</div>;
             }}
-        </Form.Item>
+        </Form.Item >
     )
 }

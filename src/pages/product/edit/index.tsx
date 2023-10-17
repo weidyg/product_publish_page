@@ -127,6 +127,8 @@ function ProductEdit() {
                                     <ProductEditContext.Provider value={{ platformId, shopId, categoryId }}>
                                         <Form id='spuForm'
                                             form={form}
+                                            labelCol={{ span: 3, offset: 0 }}
+                                            wrapperCol={{ span: 21, offset: 0 }}
                                             layout='vertical'
                                             autoComplete='off'
                                             scrollToFirstError={true}
