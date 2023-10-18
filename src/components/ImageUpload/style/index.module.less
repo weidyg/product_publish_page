@@ -1,7 +1,7 @@
 @picture-size: 120px;
 @picture-operate-size: 24px;
 
-@picture-large-size: 180px;
+@picture-large-size: 220px;
 @picture-operate-large-size: 32px;
 
 @picture-mini-size: 32px;
@@ -58,23 +58,20 @@
   }
 
   .placeholder {
-    top: 35%;
-    position: relative;
-    // font-size: 16px;
-    // color: var(--color-text-3);
-    // transform: translateY(-50%);
-    // white-space: nowrap;
-    // text-overflow: ellipsis;
-    // overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 
-    // width: 70px;
-    // height: 55px;
-    // display: flex;
-    // justify-content: space-between;
-    // align-items: center;
-    // flex-direction: column;
+    .icon {
+      height: 24px;
+    }
 
     .text {
+      line-height: 24px;
+      font-size: 12px;
       text-align: center;
       color: #999;
     }

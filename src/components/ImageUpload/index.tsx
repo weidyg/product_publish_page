@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { Message, Popconfirm, Popover, Progress, Space, Upload } from '@arco-design/web-react';
+import { Card, Message, Popconfirm, Popover, Progress, Space, Trigger, Upload } from '@arco-design/web-react';
 import { IconDelete, IconEdit, IconPlus } from '@arco-design/web-react/icon';
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import { ImageUploadProps, ImageUploadSize } from './interface';
@@ -94,9 +94,25 @@ function ImageUpload(baseProps: ImageUploadProps) {
     <div>  {
       imgFile?.url ? (
         size == 'mini' ? (
-          <Popover content={<ShowImage size={'large'} />} >
-            <div><ShowImage size={size} /></div>
-          </Popover>
+          <Trigger showArrow
+            arrowProps={{
+              style: {
+                zIndex: 10,
+                borderLeft: '1px solid var(--color-neutral-3)',
+                borderTop: '1px solid var(--color-neutral-3)',
+              },
+            }}
+            popup={() =>
+              <Card style={{ borderRadius: '6px' }}
+                bodyStyle={{ padding: '4px', }}
+              >
+                <ShowImage size={'large'} />
+              </Card>
+            } >
+            <div style={{ cursor: 'pointer' }}>
+              <ShowImage size={size} />
+            </div>
+          </Trigger  >
         ) : (
           <ShowImage size={size} />
         )
@@ -111,9 +127,9 @@ function ImageUpload(baseProps: ImageUploadProps) {
                 className={styles['upload-picture-progress']}
               />
             ) : (<>
-              {size != 'mini' && <div className={styles['label']}>{text}</div>}
-              <div className={size != 'mini'?styles['placeholder']:''}>
-                <IconPlus />
+              {size != 'mini' && text && <div className={styles['label']}>{text}</div>}
+              <div className={styles['placeholder']}>
+                <IconPlus className={styles['icon']} />
                 {size != 'mini' && <div className={styles['text']}>添加图片</div>}
               </div>
             </>
