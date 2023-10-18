@@ -151,7 +151,7 @@ function ProductEdit() {
                                                 // console.log('values', values);
                                             }}
                                             validateMessages={{
-                                                required: (_, { label }) => <>{label || ''}{'不能为空'}</>,
+                                                required: (_, { label }) => <>{'必填项'}{label || ''}{'不能为空,请修改'}</>,
                                                 string: {
                                                     length: `字符数必须是 #{length}`,
                                                     match: `不匹配正则 #{pattern}`,

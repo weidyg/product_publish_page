@@ -158,16 +158,11 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
         const skuSalePropName = skuSaleProp?.name!;
         return [skuSaleProp, skuSalePropName]
     }, []);
-
-    // console.log("skuSaleProp", skuSaleProp);
-    // console.log("skuSalePropName", skuSalePropName);
-
+    
     useEffect(() => {
         const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
         const skuSalePropValue = getSkuSaleProp(salePropNames, salePropValues);
         const newData = getSkuItems(skuSalePropValue, skuSalePropName, value);
-        console.log("skuSaleProp", skuSaleProp);
-        
         handleChange(newData);
         SetSkuSalePropObjVal(skuSalePropValue || {});
     }, [JSON.stringify(salePropValues)]);

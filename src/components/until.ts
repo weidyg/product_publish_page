@@ -257,7 +257,9 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
 export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undefined {
     const { uiType, type, name, allowCustom, options = [], rules = {}, tags = [] } = _props;
     if (uiType) { return uiType; }
-
+    // if (name == 'warranty' || name == 'sellPromise' || name == 'sevenDaySupport') {
+    //     return 'checkBox';
+    // }
     if (FieldNames.sku(tags)) { return 'skuEditTable'; }
     if (FieldNames.desc(tags)) { return 'richTextEditor'; }
     switch (type) {
