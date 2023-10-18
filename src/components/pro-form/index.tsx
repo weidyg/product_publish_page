@@ -365,8 +365,8 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                         ))}
                     </FormItem>
                 ) : _uiType == 'imageUpload' ? (
-                    <FormItem {...formItemProps}>
-                        <ImageUpload size={picSize} />
+                    <FormItem {...formItemProps} label=''>
+                        <ImageUpload size={picSize} text={label} />
                     </FormItem >
                 ) : _uiType == 'richTextEditor' ? (
                     <FormItem {...formItemProps}>

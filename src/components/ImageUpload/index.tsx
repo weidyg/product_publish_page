@@ -110,12 +110,13 @@ function ImageUpload(baseProps: ImageUploadProps) {
                 percent={imgFile?.percent || 100}
                 className={styles['upload-picture-progress']}
               />
-            ) : (
-              <div title={text}
-                className={styles['upload-picture-text']}>
+            ) : (<>
+              {size != 'mini' && <div className={styles['label']}>{text}</div>}
+              <div className={size != 'mini'?styles['placeholder']:''}>
                 <IconPlus />
-                <div>{text}</div>
+                {size != 'mini' && <div className={styles['text']}>添加图片</div>}
               </div>
+            </>
             )}
           </div>
         </UploadImage>
