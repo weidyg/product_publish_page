@@ -9,7 +9,7 @@ import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 
 const defaultProps: ImageUploadProps = {
   size: 'default',
-  text: '图片',
+  text: '',
   value: ''
 };
 
