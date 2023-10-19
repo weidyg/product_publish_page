@@ -23,7 +23,7 @@ export default defineConfig({
   plugins: [
     react(),
     vitePluginForArco({
-      theme: '@arco-design/theme-line',
+      theme: '../../../../../src/styles',
       modifyVars: {
         prefix: 'erp',
       }

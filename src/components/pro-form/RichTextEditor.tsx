@@ -1,12 +1,13 @@
+import '@wangeditor/editor/dist/css/style.css' // 引入 css
 
+import React, { useState, useEffect } from 'react'
+import { Editor, Toolbar } from '@wangeditor/editor-for-react'
+import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
-import styles from './index.module.less'
 
-import '@ckeditor/ckeditor5-build-classic/build/translations/zh-cn';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 function RichTextEditor(props: any) {
+    const [editor, setEditor] = useState<IDomEditor | null>(null);
     const [value, setValue] = useMergeValue<string>('', {
         defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
         value: 'value' in props ? props.value : undefined,
@@ -17,47 +18,48 @@ function RichTextEditor(props: any) {
         props.onChange && props.onChange(newValue);
     };
 
-    return <div className={styles['desc']} >
-        <CKEditor
-            editor={ClassicEditor}
-            data={value}
-            config={{
-                language: 'zh-cn',
-                toolbar: {
-                    items: [
-                        'heading',
-                        '|',
-                        // 'alignment',
-                        'bold',
-                        'italic',
-                        'link',
-                        'bulletedList',
-                        'numberedList',
-                        '|',
-                        'outdent',
-                        'indent',
-                        '|',
-                        // 'uploadImage',
-                        'blockQuote',
-                        'insertTable',
-                        // 'mediaEmbed',
-                        'undo',
-                        'redo'
-                    ]
-                },
-            }}
-            onChange={(event, editor) => {
-                const data = editor.getData();
-                handleChange(data);
-            }}
-            onBlur={(event, editor) => {
+    const toolbarConfig: Partial<IToolbarConfig> = {
+        toolbarKeys: [
+            'headerSelect', '|',
+            'bold', 'underline', 'italic', 'color', 'bgColor', '|',
+            'fontSize', 'fontFamily', 'lineHeight', '|',
+            'bulletedList', 'numberedList', '|',
+            'insertTable', 'divider', '|',
+            'undo', 'redo', '|',
+            'fullScreen',
+        ]
+    }
+    const editorConfig: Partial<IEditorConfig> = {
+        placeholder: '请输入内容...',
+    }
 
-            }}
-            onFocus={(event, editor) => {
+    useEffect(() => {
+        return () => {
+            if (editor == null) { return; }
+            editor.destroy(); setEditor(null);
+        }
+    }, [editor])
 
-            }}
-        />
-    </div>
+    return (
+        <>
+            <div style={{ border: '1px solid #ccc', zIndex: 100 }}>
+                <Toolbar
+                    mode="default"
+                    editor={editor}
+                    defaultConfig={toolbarConfig}
+                    style={{ borderBottom: '1px solid #ccc' }}
+                />
+                <Editor
+                    mode="default"
+                    value={value}
+                    defaultConfig={editorConfig}
+                    onCreated={setEditor}
+                    onChange={editor => handleChange(editor.getHtml())}
+                    style={{ height: '500px', overflowY: 'hidden' }}
+                />
+            </div>
+        </>
+    )
 }
 
 export default RichTextEditor;
