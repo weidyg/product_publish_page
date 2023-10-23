@@ -20,8 +20,9 @@ import { ConfigContext } from '@arco-design/web-react/es/ConfigProvider';
 import styles from './index.module.less'
 
 function ProFormList(props: MyFormItemProps) {
-    const { type, label, name, namePath, value, subItems = [], nestItems = [], ...rest } = props;
-    const field = namePath?.join('.') || name;
+    const { type, label, name, namePath, value,
+        subItems = [], nestItems = [], ...rest } = props;
+    const fieldName = namePath?.join('.') || name;
     let formItems = [...subItems];
     if (nestItems.length > 0) {
         formItems = [...nestItems];
@@ -32,10 +33,13 @@ function ProFormList(props: MyFormItemProps) {
             namePath: namePath?.concat('value')
         });
     }
-
+    const required = props?.rules?.required;
     return (
-        <Form.List field={field!} noStyle>
+        <Form.List field={fieldName!} noStyle>
             {(fields: any, { add, remove, move }: any) => {
+                if (required && fields.length == 0) {
+                    fields.push({ key: 0, field: `${fieldName}[${0}]` });
+                }
                 return (
                     <Space wrap size={'mini'}>
                         {fields.map(({ field }: any, index: any) => {
