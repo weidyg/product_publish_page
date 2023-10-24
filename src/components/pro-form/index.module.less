@@ -7,3 +7,38 @@
         width: 100px;
     }
 }
+
+:global {
+    .w-e-bar {
+        background-color: var(--color-bg-2);
+        color: var(--color-text-2);
+    }
+
+    .w-e-bar-item .disabled:hover {
+        background-color: var(--color-bg-3);
+        color: var(--color-text-3);
+    }
+
+    .w-e-bar-item button:hover {
+        background-color: var(--color-bg-1);
+        color: var(--color-text-1);
+    }
+
+    .w-e-text-container {
+        background-color: var(--color-bg-2);
+        color: var(--color-text-2);
+    }
+
+    .w-e-select-list {
+        background-color: var(--color-bg-2);
+        border: 1px solid var(--color-border-2);
+    }
+
+    .w-e-select-list ul li:hover {
+        background-color: var(--color-bg-1);
+    }
+
+    .w-e-select-list ul .selected {
+        background-color: var(--color-bg-1);
+    }
+}

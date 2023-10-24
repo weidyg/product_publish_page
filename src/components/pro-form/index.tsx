@@ -1,6 +1,6 @@
 
 
-import { ReactElement, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { ReactElement, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox, Message, Spin, Empty, Alert, InputProps, Card, Typography } from '@arco-design/web-react';
 import { IconDelete, IconPlus, IconRefresh } from '@arco-design/web-react/icon';
 import { isObject, isString, isUndefined } from '@arco-design/web-react/es/_util/is';
@@ -225,6 +225,7 @@ function FormInput(props: FormInputProps) {
     />
 }
 type UIFormItemProps = Omit<FormItemProps, 'rules' | 'label'>;
+
 export function ProFormItem(props: MyFormItemProps & UIFormItemProps
     & { picSize?: 'mini', salePropFieldName?: string }) {
     const {
@@ -234,6 +235,8 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
         fieldName, noStyle, picSize, allowClear = true,
         valueType, salePropFieldName, ...uiFormItemProps
     } = props || {};
+
+    const skuTableRef = useRef<any>();
 
     const _fieldName = fieldName || namePath?.join('.') || name;
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
@@ -276,7 +279,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     initialValue: value,
                     field: _fieldName,
                     noStyle: noStyle,
-                    extra: !isComplexType ? _extra : undefined,
+                    extra: _extra,//!isComplexType ? _extra : undefined,
                     style: subItems.length > 0 ? { marginBottom: '0px' } : {}
                 }
 
@@ -378,7 +381,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     </FormItem>
                 ) : type == 'complex' ? (
                     <FormItem {...formItemProps}>
-                        {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{_extra}</div>}
+                        {/* {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{_extra}</div>} */}
                         {FieldNames.cateProp(tags) ? (
                             <Card style={{ background: 'var(--color-fill-1)' }}
                                 bodyStyle={{ padding: '16px 16px 0' }}>
@@ -413,18 +416,31 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                         )
                         }
                     </FormItem >
-                ) : type == 'multiComplex' ? (
-                    <FormItem {...formItemProps} style={{ marginBottom: '20px' }}>
-                        {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '0px 0 4px' }}>{_extra}</div>}
-                        {FieldNames.sku(tags) ? (
-                            <SkuEditableTable {...props}
-                                salePropValues={_.get(values, salePropFieldName!)}
-                            />
-                        ) : (
+                ) : type == 'multiComplex' ? (<>
+                    {/* {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '0px 0 4px' }}>{_extra}</div>} */}
+                    {FieldNames.sku(tags) ? (
+                        <Form.Item {...formItemProps} field={''} style={{ marginBottom: '20px' }}>
+                            <FormItem {...formItemProps} noStyle
+                                rules={[{
+                                    validator: async (value: any, callback: (error?: ReactNode) => void) => {
+                                        try {
+                                            await skuTableRef?.current?.validate();
+                                        } catch (error) {
+                                            callback('sku 值校验失败');
+                                        }
+                                    }
+                                }]}
+                                style={{ marginBottom: '20px' }}>
+                                <SkuEditableTable ref={skuTableRef} {...props}
+                                    salePropValues={_.get(values, salePropFieldName!)}
+                                />
+                            </FormItem >
+                        </Form.Item >
+                    ) : (
+                        <FormItem {...formItemProps} style={{ marginBottom: '20px' }}>
                             <ProFormList {...props} />
-                        )
-                        }
-                    </FormItem >
+                        </FormItem >
+                    )}</>
                 ) : <div>---{label}---</div>;
             }}
         </Form.Item >

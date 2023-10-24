@@ -1,14 +1,15 @@
-import React, { useState, useContext, useEffect, useMemo } from 'react';
-import { Table, Input, Select, Form, InputNumber, TableColumnProps, Popover, Button, Space, Divider, Typography, Checkbox, Tag, Message, Link } from '@arco-design/web-react';
-import { IconQuestionCircle } from '@arco-design/web-react/icon';
-import { isObject } from '@arco-design/web-react/es/_util/is';
-import * as _ from "lodash"
-import styles from './index.module.less'
-import { FieldNames, calcDescartes, getSkuItems, getSkuSaleProp, getTips, getUiTypeOrDefault, getUniquekey, getValiRules, isNumberOrStrNumber } from '../until';
+import React, { useState, useRef, useEffect, useContext, useCallback, useMemo, useImperativeHandle, Ref, forwardRef, ReactNode } from 'react';
+import { Button, Table, Input, Select, Form, FormInstance, Space, TableColumnProps, Popover, Message, Checkbox, Tag, Link, InputNumber } from '@arco-design/web-react';
 import { FieldUiType, MyFormItemProps } from '../../pages/product/edit/interface';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
+import { FieldNames, calcDescartes, getSkuItems, getSkuSaleProp, getTips, getUiTypeOrDefault, getUniquekey, getValiRules, isNumberOrStrNumber } from '../until';
+import { IconQuestionCircle } from '@arco-design/web-react/icon';
+import styles from './index.module.less'
+import { isObject } from '@arco-design/web-react/es/_util/is';
 
-const EditableRowContext = React.createContext<{ index?: number }>({});
+const EditableContext = React.createContext<{
+    getForm?: () => FormInstance | null,
+}>({});
 
 type SkuColumnProps = TableColumnProps & { formProps?: MyFormItemProps, rootField?: string, uiType?: FieldUiType };
 const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pName?: string, isSkuProps?: boolean): SkuColumnProps[] => {
@@ -16,7 +17,7 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
     if (!isSkuProps) {
         columns.push({
             title: "No",
-            editable: true,
+            // editable: true,
             align: 'center',
             rootField: rootField,
             dataIndex: 'index',
@@ -60,7 +61,7 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
                         </Popover>
                     )}
                 </div>,
-                editable: true,
+                // editable: true,
                 dataIndex: dataIndex,
                 align: 'center',
                 width: uiType ? 140 : 120,
@@ -73,40 +74,70 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
     return columns;
 }
 
-function EditableRow(props: any) {
-    const { index, children, record, className, ...rest } = props;
-    const providerValue: any = { index }
+function EditableRow(props: { [x: string]: any; children: any; record: any; className: any; }) {
+    const { index, children, record, className, onHandleForm, ...rest } = props;
+    const refForm = useRef<FormInstance>(null);
+    const getForm = () => refForm.current;
+
+    useEffect(() => {
+        const form = getForm && getForm();
+        onHandleForm && onHandleForm(record['key'], form, 'add');
+        return () => {
+            onHandleForm && onHandleForm(record['key'], form, 'del');
+        }
+    }, []);
+
     return (
-        <EditableRowContext.Provider value={providerValue}>
-            <tr {...rest} >
-                {children}
-            </tr>
-        </EditableRowContext.Provider>
+        <EditableContext.Provider value={{ getForm }}>
+            <Form
+                id={`skuRowForm${index}`}
+                wrapper='tr'
+                ref={refForm}
+                wrapperProps={rest}
+                children={children}
+                style={{ display: 'table-row' }}
+                className={`${className} editable-row`}
+                scrollToFirstError={true}
+            />
+        </EditableContext.Provider>
     );
 }
+
 function EditableCell(props: any) {
-    const { children, rowData, column } = props;
-    const { rootField, dataIndex, formProps, uiType } = column;
-    const { name, rules = {}, options = [], value } = formProps || {};
+    const { children, rowData, column, onHandleSave, onHandleValidate } = props;
+    const { dataIndex, formProps, uiType } = column;
+    const { name, rules = {}, options = [] } = formProps || {};
     const isPrice = name?.toLowerCase()?.includes('price');
     const formItemRules = getValiRules(rules, isPrice);
-    const { index } = useContext(EditableRowContext);
-    const field = dataIndex == 'index' ? undefined : `${rootField}[${index}].${dataIndex}`;
-    const initialValue = _.get(rowData, dataIndex) || value;
+    const { getForm } = useContext(EditableContext);
+
+    const cellValueChangeHandler = (value: any) => {
+        const values = { [dataIndex]: value, };
+        onHandleSave && onHandleSave({ ...rowData, ...values });
+    };
+
+    useEffect(() => {
+        const form = getForm && getForm();
+        form?.setFieldValue(dataIndex, rowData[dataIndex]);
+        form?.validate([dataIndex]);
+    }, [rowData[dataIndex]]);
+
     return (<>
         <Form.Item noStyle
             style={{ margin: 0 }}
             labelCol={{ span: 0 }}
             wrapperCol={{ span: 24 }}
-            initialValue={initialValue}
-            field={field}
+            field={dataIndex}
             rules={formItemRules}
+            initialValue={rowData[dataIndex]}
         >
             {uiType == 'input' ? (
-                <Input placeholder={'请输入'} />
+                <Input placeholder={'请输入'}
+                    onChange={cellValueChangeHandler} />
             ) : uiType == 'inputNumber' ? (
                 <InputNumber
                     placeholder={'请输入'}
+                    onChange={cellValueChangeHandler}
                     max={isNumberOrStrNumber(rules?.maxValue) ? rules.maxValue : undefined}
                     min={isNumberOrStrNumber(rules?.minValue) ? rules.minValue : isPrice ? 0.01 : 1}
                     precision={isPrice ? 2 : undefined}
@@ -115,6 +146,7 @@ function EditableCell(props: any) {
             ) : uiType == 'select' ? (
                 <Select
                     placeholder={'请选择'}
+                    onChange={cellValueChangeHandler}
                     options={options}
                     triggerProps={{
                         autoAlignPopupWidth: false,
@@ -130,13 +162,12 @@ function EditableCell(props: any) {
     );
 }
 
-function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
+
+type SkuFormItemProps = MyFormItemProps & { salePropValues: any };
+function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
     const { subItems = [], salePropValues = [], name, namePath, } = props;
     const rootField = namePath?.join('.') || name;
-
-    const { form } = Form.useFormContext();
-    const defaultValue = (form && form.getFieldValue(rootField!)) || [];
-    const [value, setValue] = useMergeValue<any[]>(defaultValue, {
+    const [value, setValue] = useMergeValue<any[]>([], {
         defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
         value: 'value' in props ? props.value : undefined,
     });
@@ -158,7 +189,7 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
         const skuSalePropName = skuSaleProp?.name!;
         return [skuSaleProp, skuSalePropName]
     }, []);
-    
+
     useEffect(() => {
         const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
         const skuSalePropValue = getSkuSaleProp(salePropNames, salePropValues);
@@ -208,11 +239,6 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
             const keys = getskuBatchFillKeys();
             const newData = (value || []).map((m: any, i: number) => {
                 if (!keys.includes(m.key)) { return m; }
-                Object.keys(fillData).forEach(f => {
-                    const name = `${rootField}[${i}].${f}`;
-                    const value = fillData[f];
-                    form.setFieldValue(name, value);
-                })
                 updateCount++;
                 return { ...m, ...fillData };
             });
@@ -229,134 +255,177 @@ function SkuEditableTable(props: MyFormItemProps & { salePropValues: any }) {
         });
     }
 
-    const data = value.filter(f => f.key);
-    return (<>
-        {/* {JSON.stringify(skuBatchFillValue)} */}
-        <Space wrap>
-            {subItems.map((m, i) => {
-                const { label, name, options = [] } = m;
-                if (!name) { return; }
-                const uiType = getUiTypeOrDefault(m);
-                const isSkuProps = FieldNames.skuProps(m?.tags);
-                if (isSkuProps) {
-                    let selectLength = 0;
-                    const propValue = skuBatchFillValue[name] || {};
-                    Object.keys(propValue || {}).forEach(f => {
-                        selectLength += propValue[f]?.length || 0;
-                    });
-                    return <Select key={i} style={{ width: '180px' }}
-                        placeholder={'当前默认选定所有规格'}
-                        value={selectLength > 0 ? '查看已选规格' : undefined}
-                        triggerProps={{
-                            autoAlignPopupWidth: false,
-                            autoAlignPopupMinWidth: true,
-                            position: 'bl',
-                        }}
-                    >
-                        <div style={{ padding: '0px 12px 2px', maxWidth: '360px' }}>
-                            {m?.subItems?.map((pm, pi) => {
-                                const { label: pLabel, name: pName } = pm;
-                                if (!pName) { return; }
-                                const sspvs = skuSalePropObjVal[pName] || [];
-                                const propValue = skuBatchFillValue[name] || {};
-                                return <div key={pi}>
-                                    <div style={{ margin: '8px 4px' }}>{pLabel}</div>
-                                    <Checkbox.Group
-                                        value={propValue[pName]}
-                                        onChange={(value) => {
-                                            propValue[pName] = value;
-                                            skuFillChange(name, propValue);
-                                        }} >
-                                        {sspvs.map((sm: any, si: number) => {
-                                            return (
-                                                <Checkbox key={si} value={sm.value}
-                                                    style={{ margin: '0px 2px 4px 0px' }}>
-                                                    {({ checked }) => {
-                                                        return (
-                                                            <Tag key={si}
-                                                                color={checked ? 'arcoblue' : ''}
-                                                                bordered>
-                                                                {sm.text}
-                                                            </Tag>
-                                                        );
-                                                    }}
-                                                </Checkbox>
-                                            );
-                                        })}
-                                    </Checkbox.Group>
-                                </div>
-                            })}
-                            <div style={{ margin: '8px 4px', }}>
-                                <Link hoverable={false}
-                                    onClick={() => { skuFillChange(name, undefined); }}
-                                    style={{ fontSize: '12px', color: 'var(--color-text-1)' }}
-                                >
-                                    清空已选
-                                </Link>
-                            </div>
-                        </div>
-                    </Select>
+    function handleSave(row: any) {
+        const newData = [...data];
+        const index = newData.findIndex((item) => row.key === item.key);
+        newData.splice(index, 1, { ...newData[index], ...row });
+        handleChange(newData);
+    }
+
+    const [forms, setForms] = useState<{ [key: string]: FormInstance }>({});
+    function handleForm(key: string, form: FormInstance, operate: 'add' | 'del') {
+        console.log('onHandleForm', key, form, operate);
+        setForms((forms: { [key: string]: FormInstance }) => {
+            if (operate == 'add' && form) { forms[key] = form; }
+            if (operate == 'del' && forms[key]) { delete forms[key]; }
+            return forms;
+        });
+    }
+
+    useImperativeHandle(ref, () => {
+        return {
+            validate: async () => {
+                const tempForms = Object.values(forms);
+                for (let index = 0; index < tempForms.length; index++) {
+                    const form = tempForms[index];
+                    await form.validate();
                 }
-                return (i < 5 || showMoreBatch) && <div key={i}>
-                    {uiType == 'input' ? (
-                        <Input allowClear
-                            placeholder={label}
-                            style={{ width: '120px' }}
-                            value={skuBatchFillValue[name]}
-                            onChange={value => { skuFillChange(name, value); }}
-                        />
-                    ) : uiType == 'inputNumber' ? (
-                        <InputNumber placeholder={label}
-                            style={{ width: '120px' }}
-                            value={skuBatchFillValue[name]}
-                            onChange={value => { skuFillChange(name, value); }}
-                        />
-                    ) : uiType == 'select' ? (
-                        <Select allowClear
-                            placeholder={label}
-                            options={options}
+            },
+        };
+    });
+
+    const data = value.filter(f => f.key);
+    return (
+        <div>
+            <Space wrap>
+                {subItems.map((m, i) => {
+                    const { label, name, options = [] } = m;
+                    if (!name) { return; }
+                    const uiType = getUiTypeOrDefault(m);
+                    const isSkuProps = FieldNames.skuProps(m?.tags);
+                    if (isSkuProps) {
+                        let selectLength = 0;
+                        const propValue = skuBatchFillValue[name] || {};
+                        Object.keys(propValue || {}).forEach(f => {
+                            selectLength += propValue[f]?.length || 0;
+                        });
+                        return <Select key={i} style={{ width: '180px' }}
+                            placeholder={'当前默认选定所有规格'}
+                            value={selectLength > 0 ? '查看已选规格' : undefined}
                             triggerProps={{
                                 autoAlignPopupWidth: false,
                                 autoAlignPopupMinWidth: true,
                                 position: 'bl',
                             }}
-                            style={{ width: '120px' }}
-                            value={skuBatchFillValue[name]}
-                            onChange={value => { skuFillChange(name, value); }}
-                        />
-                    ) : (
-                        <>_</>
-                    )}
-                </div>
-            })}
-            <Button type='primary'
-                loading={fillDataLoading}
-                onClick={handleFillSkuData}>
-                批量填充
-            </Button>
-            {subItems?.length > 5 &&
-                <Button type='secondary'
-                    onClick={() => {
-                        SetShowMoreBatch(!showMoreBatch);
-                    }}>
-                    {showMoreBatch ? '收起' : '更多批量'}
+                        >
+                            <div style={{ padding: '0px 12px 2px', maxWidth: '360px' }}>
+                                {m?.subItems?.map((pm, pi) => {
+                                    const { label: pLabel, name: pName } = pm;
+                                    if (!pName) { return; }
+                                    const sspvs = skuSalePropObjVal[pName] || [];
+                                    const propValue = skuBatchFillValue[name] || {};
+                                    return <div key={pi}>
+                                        <div style={{ margin: '8px 4px' }}>{pLabel}</div>
+                                        <Checkbox.Group
+                                            value={propValue[pName]}
+                                            onChange={(value) => {
+                                                propValue[pName] = value;
+                                                skuFillChange(name, propValue);
+                                            }} >
+                                            {sspvs.map((sm: any, si: number) => {
+                                                return (
+                                                    <Checkbox key={si} value={sm.value}
+                                                        style={{ margin: '0px 2px 4px 0px' }}>
+                                                        {({ checked }) => {
+                                                            return (
+                                                                <Tag key={si}
+                                                                    color={checked ? 'arcoblue' : ''}
+                                                                    bordered>
+                                                                    {sm.text}
+                                                                </Tag>
+                                                            );
+                                                        }}
+                                                    </Checkbox>
+                                                );
+                                            })}
+                                        </Checkbox.Group>
+                                    </div>
+                                })}
+                                <div style={{ margin: '8px 4px', }}>
+                                    <Link hoverable={false}
+                                        onClick={() => { skuFillChange(name, undefined); }}
+                                        style={{ fontSize: '12px', color: 'var(--color-text-1)' }}
+                                    >
+                                        清空已选
+                                    </Link>
+                                </div>
+                            </div>
+                        </Select>
+                    }
+                    return (i < 5 || showMoreBatch) && <div key={i}>
+                        {uiType == 'input' ? (
+                            <Input allowClear
+                                placeholder={label}
+                                style={{ width: '120px' }}
+                                value={skuBatchFillValue[name]}
+                                onChange={value => { skuFillChange(name, value); }}
+                            />
+                        ) : uiType == 'inputNumber' ? (
+                            <InputNumber placeholder={label}
+                                style={{ width: '120px' }}
+                                value={skuBatchFillValue[name]}
+                                onChange={value => { skuFillChange(name, value); }}
+                            />
+                        ) : uiType == 'select' ? (
+                            <Select allowClear
+                                placeholder={label}
+                                options={options}
+                                triggerProps={{
+                                    autoAlignPopupWidth: false,
+                                    autoAlignPopupMinWidth: true,
+                                    position: 'bl',
+                                }}
+                                style={{ width: '120px' }}
+                                value={skuBatchFillValue[name]}
+                                onChange={value => { skuFillChange(name, value); }}
+                            />
+                        ) : (
+                            <>_</>
+                        )}
+                    </div>
+                })}
+                <Button type='primary'
+                    loading={fillDataLoading}
+                    onClick={handleFillSkuData}>
+                    批量填充
                 </Button>
-            }
-        </Space >
-        <Table
-            size='small'
-            pagination={false}
-            scroll={{ y: 320, x: true }}
-            data={data}
-            columns={columns}
-            components={{
-                body: {
-                    row: EditableRow,
-                    cell: EditableCell,
-                },
-            }}
-        />
-    </>);
+                {subItems?.length > 5 &&
+                    <Button type='secondary'
+                        onClick={() => {
+                            SetShowMoreBatch(!showMoreBatch);
+                        }}>
+                        {showMoreBatch ? '收起' : '更多批量'}
+                    </Button>
+                }
+            </Space >
+            <Table
+                size='small'
+                pagination={false}
+                scroll={{ y: 320, x: true }}
+                data={data}
+                // columns={columns}
+                onRow={() => ({
+                    onHandleForm: handleForm
+                })}
+                columns={columns.map((column) => {
+                    return {
+                        ...column,
+                        onCell: () => ({
+                            onHandleSave: handleSave
+                        }),
+                    }
+                })}
+                components={{
+                    body: {
+                        row: EditableRow,
+                        cell: EditableCell,
+                    },
+                }}
+            />
+        </div>
+    );
 }
 
-export default SkuEditableTable;
+const SkuEditableTableComponent = forwardRef(SkuEditableTable);
+SkuEditableTableComponent.displayName = 'SkuEditableTable';
+export default SkuEditableTableComponent;

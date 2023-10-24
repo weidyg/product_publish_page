@@ -1,5 +1,5 @@
 import { createContext, useEffect, useMemo, useState } from "react";
-import { Button, Card, Form, Message, Modal, PageHeader, Result, Skeleton, Space, Spin } from "@arco-design/web-react";
+import { Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
 import styles from './style/index.module.less'
 import { MyFormItemProps, ProductEditDataProps } from "./interface";
 import { ProFormItem } from "../../../components/pro-form";
@@ -56,8 +56,8 @@ function ProductEdit() {
                 }
             }
         } catch (error) {
-            console.log('validate error', JSON.stringify(error));
-            Message.error('保存失败！');
+            console.log('validate error', error);
+            Message.error('检测到有必填项未填或格式错误，请补充后重新保存！');
         } finally {
             setSaveLoading(false);
             setPublishLoading(false);
@@ -101,7 +101,7 @@ function ProductEdit() {
                             }
                         />
                     </div>
-                    : <>
+                    : !loading && <>
                         <PageHeader className={styles['product-header']} title={platformName} subTitle={shopName} />
                         <div className={styles['product-content']}>
                             {loadErrMsg ?
@@ -120,9 +120,7 @@ function ProductEdit() {
                                 </div>
                                 : <>
                                     <Card hoverable className={styles['product-cate']}>
-                                        <Skeleton loading={loading} animation text={{ rows: 1 }}>
-                                            {`当前类目：${categoryNamePath || '--'}`}
-                                        </Skeleton>
+                                        {`当前类目：${categoryNamePath || '--'}`}
                                     </Card>
                                     <ProductEditContext.Provider value={{ platformId, shopId, categoryId }}>
                                         <Form id='spuForm'
@@ -139,9 +137,10 @@ function ProductEdit() {
                                             //     console.log('onSubmitFailed', errors);
                                             // }}
                                             onValuesChange={(value, values) => {
+                                                console.log('onValuesChange',value, values);
                                                 if (form && skuFullName && skuStockName && quantityFullName) {
-                                                    const skuStockChanged = Object.keys(value).some(s => s.endsWith(skuStockName!));
-                                                    if (skuStockChanged) {
+                                                    const skuChanged = Object.keys(value).some(s => s.endsWith(skuFullName!));
+                                                    if (skuChanged) {
                                                         let quantity = 0;
                                                         const skus: any[] = form.getFieldValue(skuFullName!) || [];
                                                         skus.forEach(f => { quantity += parseInt(f[skuStockName!]) || 0; });
@@ -159,11 +158,11 @@ function ProductEdit() {
                                             }}
                                         >
                                             <Card hoverable className={styles['product-form']}>
-                                                <Skeleton loading={loading} animation text={{ rows: 10 }}>
-                                                    {formSchema.map((m: MyFormItemProps, i: any) => {
-                                                        return <ProFormItem key={i} {...m} salePropFieldName={salePropFieldName} />
-                                                    })}
-                                                </Skeleton>
+                                                {/* <Skeleton loading={loading} animation text={{ rows: 10 }}> */}
+                                                {formSchema.map((m: MyFormItemProps, i: any) => {
+                                                    return <ProFormItem key={i} {...m} salePropFieldName={salePropFieldName} />
+                                                })}
+                                                {/* </Skeleton> */}
                                             </Card>
                                         </Form>
                                     </ProductEditContext.Provider>
@@ -172,33 +171,31 @@ function ProductEdit() {
                         </div>
                         <div className={styles['product-floor']}>
                             <Card>
-                                <Skeleton loading={loading} animation text={{ rows: 1 }}>
-                                    <Space size={'large'}
-                                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Button
-                                            type='primary'
-                                            size='large'
-                                            loading={publishLoading}
-                                            disabled={saveLoading}
-                                            onClick={() => {
-                                                setPublishLoading(true);
-                                                setTimeout(() => { handleSave(true); }, 100)
-                                            }}>
-                                            {publishLoading ? ' 保存并发布中...' : ' 保存并发布'}
-                                        </Button>
-                                        <Button
-                                            type='outline'
-                                            size='large'
-                                            loading={saveLoading}
-                                            disabled={publishLoading}
-                                            onClick={() => {
-                                                setSaveLoading(true);
-                                                setTimeout(() => { handleSave(); }, 10)
-                                            }}>
-                                            {saveLoading ? '保存中...' : '保 存'}
-                                        </Button>
-                                    </Space>
-                                </Skeleton>
+                                <Space size={'large'}
+                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Button
+                                        type='primary'
+                                        size='large'
+                                        loading={publishLoading}
+                                        disabled={saveLoading}
+                                        onClick={() => {
+                                            setPublishLoading(true);
+                                            setTimeout(() => { handleSave(true); }, 100)
+                                        }}>
+                                        {publishLoading ? ' 保存并发布中...' : ' 保存并发布'}
+                                    </Button>
+                                    <Button
+                                        type='outline'
+                                        size='large'
+                                        loading={saveLoading}
+                                        disabled={publishLoading}
+                                        onClick={() => {
+                                            setSaveLoading(true);
+                                            setTimeout(() => { handleSave(); }, 10)
+                                        }}>
+                                        {saveLoading ? '保存中...' : '保 存'}
+                                    </Button>
+                                </Space>
                             </Card>
                         </div>
                     </>
