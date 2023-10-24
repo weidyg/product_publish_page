@@ -25,6 +25,7 @@ function SalePropCard(baseProps: SalePropCardProps) {
 
     const defalutGroup = isGroup ? (propGroup || groupOptions?.find(() => true)?.value) : undefined;
 
+    const [loading, setLoading] = useState(false);
     const [values, setValues] = useState(propValues);
     const [groupValue, setGroupValue] = useState(defalutGroup);
     const checkOptions = useMemo(() => {
@@ -46,17 +47,24 @@ function SalePropCard(baseProps: SalePropCardProps) {
     };
 
     const handleOk = () => {
-        if (groupValue != propGroup && propGroup) {
-            const oldGroup = groupOptions?.find(f => f.value == propGroup)?.label || propGroup;
-            const newGroup = groupOptions?.find(f => f.value == groupValue)?.label || groupValue;
-            Modal.confirm({
-                title: '操作确认',
-                content: `“${oldGroup}”将更换成“${newGroup}”，${oldGroup}及sku数据将被清空，确认更换？`,
-                onOk: () => { handleChange(); }
-            });
-        } else {
-            handleChange();
-        }
+        setLoading(true);
+        setTimeout(() => {
+            if (groupValue != propGroup && propGroup) {
+                const oldGroup = groupOptions?.find(f => f.value == propGroup)?.label || propGroup;
+                const newGroup = groupOptions?.find(f => f.value == groupValue)?.label || groupValue;
+                Modal.confirm({
+                    title: '操作确认',
+                    content: `“${oldGroup}”将更换成“${newGroup}”，${oldGroup}及sku数据将被清空，确认更换？`,
+                    onOk: () => {
+                        handleChange();
+                        setLoading(false);
+                    }
+                });
+            } else {
+                handleChange();
+                setLoading(false);
+            }
+        }, 10);
     };
 
     const handleChange = () => {
@@ -71,7 +79,7 @@ function SalePropCard(baseProps: SalePropCardProps) {
         <Card className={styles['trigger-popup']}
             title={<Space>
                 <>已选 {values?.length || 0} 个</>
-                <Button shape='round' type='primary' size='mini'
+                <Button loading={loading} shape='round' type='primary' size='mini'
                     onClick={handleOk}>
                     确 认
                 </Button>

@@ -104,7 +104,7 @@ function EditableRow(props: { [x: string]: any; children: any; record: any; clas
 }
 
 function EditableCell(props: any) {
-    const { children, rowData, column, onHandleSave, onHandleValidate } = props;
+    const { children, rowData, column, onHandleSave } = props;
     const { dataIndex, formProps, uiType } = column;
     const { name, rules = {}, options = [] } = formProps || {};
     const isPrice = name?.toLowerCase()?.includes('price');
@@ -119,7 +119,6 @@ function EditableCell(props: any) {
     useEffect(() => {
         const form = getForm && getForm();
         form?.setFieldValue(dataIndex, rowData[dataIndex]);
-        form?.validate([dataIndex]);
     }, [rowData[dataIndex]]);
 
     return (<>
@@ -264,7 +263,6 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
 
     const [forms, setForms] = useState<{ [key: string]: FormInstance }>({});
     function handleForm(key: string, form: FormInstance, operate: 'add' | 'del') {
-        console.log('onHandleForm', key, form, operate);
         setForms((forms: { [key: string]: FormInstance }) => {
             if (operate == 'add' && form) { forms[key] = form; }
             if (operate == 'del' && forms[key]) { delete forms[key]; }

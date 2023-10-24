@@ -1,10 +1,11 @@
-import { createContext, useEffect, useMemo, useState } from "react";
+import { ReactElement, ReactNode, createContext, useEffect, useMemo, useState } from "react";
 import { Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
 import styles from './style/index.module.less'
 import { MyFormItemProps, ProductEditDataProps } from "./interface";
 import { ProFormItem } from "../../../components/pro-form";
 import { FieldNames } from "../../../components/until";
 import { loadProductEditData, saveProductEditData } from "../../../components/api";
+import Paragraph from "@arco-design/web-react/es/Typography/paragraph";
 
 type ProductEditContextValue = {
     platformId?: number,
@@ -38,30 +39,33 @@ function ProductEdit() {
     }
 
     const handleSave = async (publish?: boolean) => {
-        try {
-            const values = await form.validate();
+        publish ? setPublishLoading(true) : setSaveLoading(true);
+        setTimeout(async () => {
             try {
-                await saveProductEditData(values, publish);
-                console.log('values success', values);
-                Message.info(`保存${publish ? '并发布' : ''}成功！`);
-            } catch (error: any) {
-                if (publish) {
-                    Modal.error({
-                        maskClosable: false,
-                        title: '保存并发布失败',
-                        content: error?.message
-                    });
-                } else {
-                    Message.error(error?.message);
+                const values = await form.validate();
+                try {
+                    await saveProductEditData(values, publish);
+                    console.log('values success', values);
+                    Message.info(`保存${publish ? '并发布' : ''}成功！`);
+                } catch (error: any) {
+                    if (publish) {
+                        Modal.error({
+                            maskClosable: false,
+                            title: '保存并发布失败',
+                            content: <Paragraph>{error?.message}</Paragraph>
+                        });
+                    } else {
+                        Message.error(error?.message);
+                    }
                 }
+            } catch (error) {
+                console.log('validate error', error);
+                Message.error('检测到有必填项未填或格式错误，请补充后重新保存！');
+            } finally {
+                setSaveLoading(false);
+                setPublishLoading(false);
             }
-        } catch (error) {
-            console.log('validate error', error);
-            Message.error('检测到有必填项未填或格式错误，请补充后重新保存！');
-        } finally {
-            setSaveLoading(false);
-            setPublishLoading(false);
-        }
+        }, 100);
     }
     const { formSchema = [], platformName, shopName, categoryNamePath
         , platformId, shopId, categoryId
@@ -137,17 +141,16 @@ function ProductEdit() {
                                             //     console.log('onSubmitFailed', errors);
                                             // }}
                                             onValuesChange={(value, values) => {
-                                                console.log('onValuesChange',value, values);
                                                 if (form && skuFullName && skuStockName && quantityFullName) {
                                                     const skuChanged = Object.keys(value).some(s => s.endsWith(skuFullName!));
                                                     if (skuChanged) {
                                                         let quantity = 0;
                                                         const skus: any[] = form.getFieldValue(skuFullName!) || [];
                                                         skus.forEach(f => { quantity += parseInt(f[skuStockName!]) || 0; });
-                                                        form.setFieldValue(quantityFullName!, quantity);
+                                                        const oldQuantity = form.getFieldValue(quantityFullName!);
+                                                        if (oldQuantity != quantity) { form.setFieldValue(quantityFullName!, quantity); }
                                                     }
                                                 }
-                                                // console.log('values', values);
                                             }}
                                             validateMessages={{
                                                 required: (_, { label }) => <>{'必填项'}{label || ''}{'不能为空,请修改'}</>,
@@ -178,10 +181,7 @@ function ProductEdit() {
                                         size='large'
                                         loading={publishLoading}
                                         disabled={saveLoading}
-                                        onClick={() => {
-                                            setPublishLoading(true);
-                                            setTimeout(() => { handleSave(true); }, 100)
-                                        }}>
+                                        onClick={() => { handleSave(true); }}>
                                         {publishLoading ? ' 保存并发布中...' : ' 保存并发布'}
                                     </Button>
                                     <Button
@@ -189,10 +189,7 @@ function ProductEdit() {
                                         size='large'
                                         loading={saveLoading}
                                         disabled={publishLoading}
-                                        onClick={() => {
-                                            setSaveLoading(true);
-                                            setTimeout(() => { handleSave(); }, 10)
-                                        }}>
+                                        onClick={() => { handleSave(); }}>
                                         {saveLoading ? '保存中...' : '保 存'}
                                     </Button>
                                 </Space>

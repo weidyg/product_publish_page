@@ -206,58 +206,62 @@ function SalePropFormItem(props: MyFormItemProps) {
             {/* <Card bodyStyle={{ padding: '1px' }}> */}
             {/* <Card style={{ background: 'var(--color-fill-1)', }}
                 bodyStyle={{ padding: '16px 16px 0' }}> */}
-                <Form.List field={valueFieldName!}>
-                    {(fields, { add, remove, move }) => {
-                        if (fields.length == 0) {
-                            fields.push({ key: 0, field: `${fieldName}[${0}]` });
-                        }
-                        return (
-                            // <Card bodyStyle={{ padding: '1px' }}>
-                            <Space wrap>
-                                {fields.map(({ field }, index) => {
-                                    return (
-                                        // <Card bodyStyle={{ padding: '1px' }}>
-                                        <Space key={index} wrap size={[4, 0]} style={{ marginBottom: "0px" }}>
-                                            <SalePropInputFormItem
-                                                {...formItemProps}
-                                                fieldKey={index}
-                                                fieldName={field}
-                                                topValuesFieldName={valueFieldName}
-                                                topGropFieldName={groupFieldName}
-                                                nestItems={nestItems}
-                                                isGroup={isGroup}
-                                                options={options as any}
-                                                allowCustom={allowCustom}
-                                            />
-                                            <Form.Item {...formItemProps}>
-                                                <Button type='text'
-                                                    icon={<IconDelete />}
-                                                    onClick={() => { remove(index); }}>
-                                                </Button>
-                                            </Form.Item>
-                                        </Space>
-                                        // </Card>
-                                    );
-                                })}
-                                <Form.Item shouldUpdate>
-                                    {(values) => {
-                                        const salePropValues: any[] = _.get(values, valueFieldName!) || [];
-                                        const disabledAdd = !(salePropValues && salePropValues.every(e => e?.text));
-                                        return <Button
-                                            type='text'
-                                            icon={<IconPlus />}
-                                            disabled={disabledAdd}
-                                            onClick={() => { add(); }}
-                                        >
-                                            新增
-                                        </Button>
-                                    }}
-                                </Form.Item>
-                            </Space>
-                            // </Card>
-                        );
-                    }}
-                </Form.List>
+            <Form.List field={valueFieldName!}>
+                {(fields, { add, remove, move }) => {
+                    if (fields.length == 0) {
+                        fields.push({ key: 0, field: `${fieldName}[${0}]` });
+                    }
+                    return (
+                        // <Card bodyStyle={{ padding: '1px' }}>
+                        <Space wrap>
+                            {fields.map(({ field }, index) => {
+                                return (
+                                    // <Card bodyStyle={{ padding: '1px' }}>
+                                    <Space key={index} wrap size={[4, 0]} style={{ marginBottom: "0px" }}>
+                                        <SalePropInputFormItem
+                                            {...formItemProps}
+                                            fieldKey={index}
+                                            fieldName={field}
+                                            topValuesFieldName={valueFieldName}
+                                            topGropFieldName={groupFieldName}
+                                            nestItems={nestItems}
+                                            isGroup={isGroup}
+                                            options={options as any}
+                                            allowCustom={allowCustom}
+                                        />
+                                        <Form.Item {...formItemProps}>
+                                            <Button type='text'
+                                                icon={<IconDelete />}
+                                                onClick={() => { remove(index); }}>
+                                            </Button>
+                                        </Form.Item>
+                                    </Space>
+                                    // </Card>
+                                );
+                            })}
+                            <Form.Item shouldUpdate={
+                                (prevValues: Partial<FormData>, currentValues: Partial<FormData>, info: { isFormList?: boolean; field?: any; isInner?: boolean; }) => {
+                                    return info?.field == valueFieldName;
+                                }
+                            }>
+                                {(values) => {
+                                    const salePropValues: any[] = _.get(values, valueFieldName!) || [];
+                                    const disabledAdd = !(salePropValues && salePropValues.every(e => e?.text));
+                                    return <Button
+                                        type='text'
+                                        icon={<IconPlus />}
+                                        disabled={disabledAdd}
+                                        onClick={() => { add(); }}
+                                    >
+                                        新增
+                                    </Button>
+                                }}
+                            </Form.Item>
+                        </Space>
+                        // </Card>
+                    );
+                }}
+            </Form.List>
             {/* </Card> */}
             {/* </Card> */}
         </Form.Item>
