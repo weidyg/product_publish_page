@@ -15,6 +15,7 @@ type ProductEditContextValue = {
 export const ProductEditContext = createContext<ProductEditContextValue>({});
 function ProductEdit() {
     const [form] = Form.useForm();
+    const [reload, setReload] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
     const [publishLoading, setPublishLoading] = useState(false);
@@ -98,7 +99,11 @@ function ProductEdit() {
                             subTitle={loadErrMsg}
                             extra={
                                 <Button type='primary'
-                                    onClick={() => { location.reload(); }}
+                                    loading={reload}
+                                    onClick={() => {
+                                        setReload(true)
+                                        location.reload();
+                                    }}
                                 >
                                     刷新
                                 </Button>
