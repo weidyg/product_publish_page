@@ -91,25 +91,24 @@ function RemoteSelect(props: any) {
         }
     }, []);
     const { shopId, categoryId } = useContext(ProductEditContext);
-    const debouncedFetchOptions = useCallback(
-        debounce(async (optionAction: string, forceUpdate?: boolean) => {
-            if (fetching) { return; }
-            setFetching(true);
-            try {
-                if (shopId! > 0) {
-                    setOptions([]);
-                    const options = await getRemoteOptions(shopId, categoryId, optionAction, forceUpdate);
-                    setOptions(options);
-                    forceUpdate && Message.success(`${label}同步成功！`);
-                } else {
-                    console.log('shopId error', shopId);
-                }
-            } catch (error: any) {
-                Message.error(error?.message || error);
-            } finally {
-                setFetching(false);
+    const debouncedFetchOptions = useCallback(debounce(async (optionAction: string, forceUpdate?: boolean) => {
+        if (fetching) { return; }
+        setFetching(true);
+        try {
+            if (shopId! > 0) {
+                setOptions([]);
+                const options = await getRemoteOptions(shopId, categoryId, optionAction, forceUpdate);
+                setOptions(options);
+                forceUpdate && Message.success(`${label}同步成功！`);
+            } else {
+                console.log('shopId error', shopId);
             }
-        }, 500), []);
+        } catch (error: any) {
+            Message.error(error?.message || error);
+        } finally {
+            setFetching(false);
+        }
+    }, 500), []);
 
     return <div>
         <Select
@@ -120,6 +119,11 @@ function RemoteSelect(props: any) {
                 autoAlignPopupWidth: false,
                 autoAlignPopupMinWidth: true,
                 position: 'bl',
+                onVisibleChange(visible) {
+                    if (visible && !fetching && options.length == 0) {
+                        debouncedFetchOptions(optionAction, false);
+                    }
+                },
             }}
             notFoundContent={
                 fetching ? (
