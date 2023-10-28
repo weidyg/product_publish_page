@@ -72,13 +72,19 @@ export function getSkuSaleProp(salePropNames: string[], saleProp: { [x: string]:
     let obj: any = {};
     salePropNames.forEach(key => {
         if (!next) { return; }
+        obj[key] = [];
+        let temp: any[] = [];
         const salePropItem = saleProp[key];
         if (isArray(salePropItem)) {
-            obj[key] = [...salePropItem];
+            temp = [...salePropItem];
         } else if (isArray(salePropItem?.value)) {
-            obj[key] = [...salePropItem?.value];
+            temp = [...salePropItem?.value];
         }
-        obj[key] = obj[key]?.filter((f: any) => !!(f?.text));
+        temp = temp?.filter((f: any) => !!(f?.text));
+        temp.forEach(f => {
+            const hasValue = obj[key].some((item: any) => JSON.stringify(item) == JSON.stringify(f));
+            if (!hasValue) { obj[key].push(f); }
+        });
         next = obj[key]?.length > 0;
         if (!next) { obj = {}; }
     });

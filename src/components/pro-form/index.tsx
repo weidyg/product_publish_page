@@ -324,136 +324,136 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     <FormItem {...formItemProps}>
                         <Radio.Group options={options} />
                     </FormItem>
-                ) : _uiType == 'checkBoxGroup' ? (
-                    <FormItem {...formItemProps}>
-                        {valueType == 'object' ? (
-                            <Space>
-                                {options.map((m, i) => {
-                                    return <Form.Item key={i}
-                                        field={`${_fieldName}.${m.value}`}>
-                                        <Checkbox>{m.label}</Checkbox>
-                                    </Form.Item>
-                                })}
-                            </Space>
-                        ) : (
-                            <Checkbox.Group options={options} />
-                        )}
-                    </FormItem>
-                ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
-                    <FormItem {...formItemProps}>
-                        {nestItems.length > 0 ? (
-                            <ProFormList {...props} />
-                        ) : (optionAction ? (
-                            <RemoteSelect showSearch
-                                filterOption={(inputValue: string, option: ReactElement) =>
-                                    option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
-                                    option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
-                                }
-                                label={label}
-                                optionAction={optionAction}
-                                options={options}
-                                maxTagCount={3}
-                                allowCreate={allowCustom}
-                                allowClear={allowClear && _uiType != 'multiSelect'}
-                                mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
-                                placeholder={`请选择${allowCustom ? '或输入' : ''}${label}`}
-                                style={{ maxWidth: '274px', minWidth: '96px' }}
-                            />
-                        ) : (
-                            <Select showSearch
-                                filterOption={(inputValue: string, option: ReactElement) =>
-                                    option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
-                                    option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
-                                }
-                                options={options}
-                                allowCreate={allowCustom}
-                                maxTagCount={3}
-                                allowClear={allowClear && _uiType != 'multiSelect'}
-                                mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
-                                placeholder={`请选择${allowCustom ? '或输入' : ''}${label}`}
-                                style={{ maxWidth: '358px', minWidth: '180px' }}
-                            />
-                        ))}
-                    </FormItem>
-                ) : _uiType == 'imageUpload' ? (
-                    <FormItem {...formItemProps} label=''>
-                        <ImageUpload size={picSize} text={label} />
-                    </FormItem >
-                ) : _uiType == 'richTextEditor' ? (
-                    <FormItem {...formItemProps}>
-                        <RichTextEditor />
-                    </FormItem>
-                ) : type == 'complex' ? (
-                    <FormItem {...formItemProps}>
-                        {/* {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{_extra}</div>} */}
-                        {FieldNames.cateProp(tags) ? (
-                            <Card style={{ background: 'var(--color-fill-1)' }}
-                                bodyStyle={{
-                                    padding: '16px 16px 0',
-                                    maxWidth: "950px",
-                                    margin: 'auto'
-                                }}>
-                                <Grid.Row >
-                                    {/* <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}> */}
-                                    {subItems?.map((sm, si) => {
-                                        const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
-                                        return (<Grid.Col key={'complex' + si} span={12}>
-                                            {/* <Grid.GridItem key={'complex' + si}> */}
-                                            <ProFormItem key={si} {...sm}
-                                                uiType={uiType}
-                                                layout={'horizontal'}
-                                                labelAlign='right'
-                                                className={styles['form-label-ellipsis']}
-                                            />
-                                            {/* </Grid.GridItem> */}
-                                        </Grid.Col>
-                                        )
+                )
+                    : _uiType == 'checkBoxGroup' ? (
+                        <FormItem {...formItemProps}>
+                            {valueType == 'object' ? (
+                                <Space>
+                                    {options.map((m, i) => {
+                                        return <Form.Item key={i}
+                                            field={`${_fieldName}.${m.value}`}>
+                                            <Checkbox>{m.label}</Checkbox>
+                                        </Form.Item>
                                     })}
-                                    {/* </Grid> */}
-
-                                </Grid.Row>
-                            </Card>
-                        ) : FieldNames.saleProp(tags) ? (<>
-                            {subItems?.map((m, i) => {
-                                return (m.type == 'multiCheck' || m.type == 'complex')
-                                    ? <SalePropFormItem key={i} {...m} />
-                                    : <div key={i}></div>
-                            })}
-                        </>) : (
-                            <Space wrap={true}>
-                                {subItems?.map((sm: any, si: any) => {
-                                    return (<ProFormItem key={si} {...sm} />)
-                                })}
-                            </Space>
-                        )
-                        }
-                    </FormItem >
-                ) : type == 'multiComplex' ? (<>
-                    {/* {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '0px 0 4px' }}>{_extra}</div>} */}
-                    {FieldNames.sku(tags) ? (
-                        <Form.Item {...formItemProps} field={''} style={{ marginBottom: '20px' }}>
-                            <FormItem {...formItemProps} noStyle
-                                rules={[{
-                                    validator: async (value: any, callback: (error?: ReactNode) => void) => {
-                                        try {
-                                            await skuTableRef?.current?.validate();
-                                        } catch (error) {
-                                            callback('sku 值校验失败');
-                                        }
+                                </Space>
+                            ) : (
+                                <Checkbox.Group options={options} />
+                            )}
+                        </FormItem>
+                    ) : _uiType == 'select' || _uiType == 'multiSelect' ? (
+                        <FormItem {...formItemProps}>
+                            {nestItems.length > 0 ? (
+                                <ProFormList {...props} />
+                            ) : (optionAction ? (
+                                <RemoteSelect showSearch
+                                    filterOption={(inputValue: string, option: ReactElement) =>
+                                        option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
+                                        option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
                                     }
-                                }]}
-                                style={{ marginBottom: '20px' }}>
-                                <SkuEditableTable ref={skuTableRef} {...props}
-                                    salePropValues={_.get(values, salePropFieldName!)}
+                                    label={label}
+                                    optionAction={optionAction}
+                                    options={options}
+                                    maxTagCount={3}
+                                    allowCreate={allowCustom}
+                                    allowClear={allowClear && _uiType != 'multiSelect'}
+                                    mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
+                                    placeholder={`请选择${allowCustom ? '或输入' : ''}${label}`}
+                                    style={{ maxWidth: '274px', minWidth: '96px' }}
                                 />
-                            </FormItem >
-                        </Form.Item >
-                    ) : (
-                        <FormItem {...formItemProps} style={{ marginBottom: '20px' }}>
-                            <ProFormList {...props} />
+                            ) : (
+                                <Select showSearch
+                                    filterOption={(inputValue: string, option: ReactElement) =>
+                                        option.props.value.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0 ||
+                                        option.props.children.toLowerCase().indexOf(inputValue.toLowerCase()) >= 0
+                                    }
+                                    options={options}
+                                    allowCreate={allowCustom}
+                                    maxTagCount={3}
+                                    allowClear={allowClear && _uiType != 'multiSelect'}
+                                    mode={_uiType == 'multiSelect' ? 'multiple' : undefined}
+                                    placeholder={`请选择${allowCustom ? '或输入' : ''}${label}`}
+                                    style={{ maxWidth: '358px', minWidth: '180px' }}
+                                />
+                            ))}
+                        </FormItem>
+                    ) : _uiType == 'imageUpload' ? (
+                        <FormItem {...formItemProps} label=''>
+                            <ImageUpload size={picSize} text={label} />
                         </FormItem >
-                    )}</>
-                ) : <div>---{label}---</div>;
+                    ) : _uiType == 'richTextEditor' ? (
+                        <FormItem {...formItemProps}>
+                            <RichTextEditor />
+                        </FormItem>
+                    ) : type == 'complex' ? (
+                        <FormItem {...formItemProps}>
+                            {/* {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{_extra}</div>} */}
+                            {FieldNames.cateProp(tags) ? (<>
+                                <Card style={{ background: 'var(--color-fill-1)' }}
+                                    bodyStyle={{
+                                        padding: '16px 16px 0',
+                                        maxWidth: "950px",
+                                        margin: 'auto'
+                                    }}>
+                                    <Grid.Row >
+                                        {/* <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}> */}
+                                        {subItems?.map((sm, si) => {
+                                            const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
+                                            return (<Grid.Col key={'complex' + si} span={12}>
+                                                {/* <Grid.GridItem key={'complex' + si}> */}
+                                                <ProFormItem key={si} {...sm}
+                                                    uiType={uiType}
+                                                    layout={'horizontal'}
+                                                    labelAlign='right'
+                                                    className={styles['form-label-ellipsis']}
+                                                />
+                                                {/* </Grid.GridItem> */}
+                                            </Grid.Col>
+                                            )
+                                        })}
+                                        {/* </Grid> */}
+                                    </Grid.Row>
+                                </Card>
+                            </>) : FieldNames.saleProp(tags) ? (<>
+                                {subItems?.map((m, i) => {
+                                    return (m.type == 'multiCheck' || m.type == 'complex')
+                                        ? <SalePropFormItem key={i} {...m} />
+                                        : <div key={i}></div>
+                                })}
+                            </>) : (
+                                <Space wrap={true}>
+                                    {subItems?.map((sm: any, si: any) => {
+                                        return (<ProFormItem key={si} {...sm} />)
+                                    })}
+                                </Space>
+                            )
+                            }
+                        </FormItem >
+                    ) : type == 'multiComplex' ? (<>
+                        {/* {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '0px 0 4px' }}>{_extra}</div>} */}
+                        {FieldNames.sku(tags) ? (
+                            <FormItem {...formItemProps} field={''} style={{ marginBottom: '20px' }}>
+                                <FormItem {...formItemProps} noStyle
+                                    rules={[{
+                                        validator: async (value: any, callback: (error?: ReactNode) => void) => {
+                                            try {
+                                                await skuTableRef?.current?.validate();
+                                            } catch (error) {
+                                                callback('sku 值校验失败');
+                                            }
+                                        }
+                                    }]}
+                                    style={{ marginBottom: '20px' }}>
+                                    <SkuEditableTable ref={skuTableRef} {...props}
+                                        salePropValues={_.get(values, salePropFieldName!)}
+                                    />
+                                </FormItem >
+                            </FormItem >
+                        ) : (
+                            <FormItem {...formItemProps} style={{ marginBottom: '20px' }}>
+                                <ProFormList {...props} />
+                            </FormItem >
+                        )}
+                    </>) : <div>---{label}---</div>;
             }}
         </Form.Item >
     )
