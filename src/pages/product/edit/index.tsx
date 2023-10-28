@@ -1,5 +1,5 @@
 import { ReactElement, ReactNode, createContext, useEffect, useMemo, useState } from "react";
-import { Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
+import { Button, Card, Form, Message, Modal, PageHeader, Result, Skeleton, Space, Spin } from "@arco-design/web-react";
 import styles from './style/index.module.less'
 import { MyFormItemProps, ProductEditDataProps } from "./interface";
 import { ProFormItem } from "../../../components/pro-form";
@@ -49,15 +49,11 @@ function ProductEdit() {
                     console.log('values success', values);
                     Message.info(`保存${publish ? '并发布' : ''}成功！`);
                 } catch (error: any) {
-                    if (publish) {
-                        Modal.error({
-                            maskClosable: false,
-                            title: '保存并发布失败',
-                            content: <Paragraph>{error?.message}</Paragraph>
-                        });
-                    } else {
-                        Message.error(error?.message);
-                    }
+                    Modal.error({
+                        maskClosable: false,
+                        title: `保存${publish ? '并发布' : ''}失败`,
+                        content: <Paragraph>{error?.message}</Paragraph>
+                    });
                 }
             } catch (error) {
                 console.log('validate error', error);
@@ -139,6 +135,7 @@ function ProductEdit() {
                                             layout='vertical'
                                             autoComplete='off'
                                             scrollToFirstError={true}
+                                            disabled={saveLoading || publishLoading}
                                             // onSubmit={(values: FormData) => {
                                             //     console.log('onSubmit', values);
                                             // }}
@@ -185,7 +182,7 @@ function ProductEdit() {
                                         type='primary'
                                         size='large'
                                         loading={publishLoading}
-                                        disabled={saveLoading}
+                                        disabled={saveLoading || publishLoading}
                                         onClick={() => { handleSave(true); }}>
                                         {publishLoading ? ' 保存并发布中...' : ' 保存并发布'}
                                     </Button>
@@ -193,7 +190,7 @@ function ProductEdit() {
                                         type='outline'
                                         size='large'
                                         loading={saveLoading}
-                                        disabled={publishLoading}
+                                        disabled={saveLoading || publishLoading}
                                         onClick={() => { handleSave(); }}>
                                         {saveLoading ? '保存中...' : '保 存'}
                                     </Button>

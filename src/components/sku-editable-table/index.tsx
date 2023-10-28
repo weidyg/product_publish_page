@@ -6,6 +6,7 @@ import { FieldNames, calcDescartes, getSkuItems, getSkuSaleProp, getTips, getUiT
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { isObject } from '@arco-design/web-react/es/_util/is';
+import { debounce } from 'lodash';
 
 const EditableContext = React.createContext<{
     getForm?: () => FormInstance | null,
@@ -21,7 +22,7 @@ const getSkuTableColumns = (formItems: MyFormItemProps[], rootField?: string, pN
             align: 'center',
             rootField: rootField,
             dataIndex: 'index',
-            width: 60
+            width: 65
         })
     }
     for (let index = 0; index < formItems.length; index++) {
@@ -111,10 +112,10 @@ function EditableCell(props: any) {
     const formItemRules = getValiRules(rules, isPrice);
     const { getForm } = useContext(EditableContext);
 
-    const cellValueChangeHandler = (value: any) => {
+    const cellValueChangeHandler = useCallback(debounce((value: any) => {
         const values = { [dataIndex]: value, };
         onHandleSave && onHandleSave({ ...rowData, ...values });
-    };
+    }, 500), []);
 
     useEffect(() => {
         const form = getForm && getForm();
@@ -171,12 +172,13 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         value: 'value' in props ? props.value : undefined,
     });
 
-    const handleChange = (newData: any[]) => {
+    const handleChange = useCallback(debounce((newData: any[]) => {
         if (JSON.stringify(value) != JSON.stringify(newData)) {
+            newData = newData.filter(f => f.key);
             if (!('value' in props)) { setValue(newData); }
             if (props.onChange) { props.onChange(newData); }
         }
-    }
+    }, 500), []);
 
     const [skuSalePropObjVal, SetSkuSalePropObjVal] = useState<any>({});
     const [skuBatchFillValue, SetSkuBatchFillValue] = useState<any>({});
@@ -254,13 +256,6 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         });
     }
 
-    function handleSave(row: any) {
-        const newData = [...data];
-        const index = newData.findIndex((item) => row.key === item.key);
-        newData.splice(index, 1, { ...newData[index], ...row });
-        handleChange(newData);
-    }
-
     const [forms, setForms] = useState<{ [key: string]: FormInstance }>({});
     function handleForm(key: string, form: FormInstance, operate: 'add' | 'del') {
         setForms((forms: { [key: string]: FormInstance }) => {
@@ -282,7 +277,18 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         };
     });
 
-    const data = value.filter(f => f.key);
+    // const tableData = useMemo(() => {
+    //     // value.filter(f => f.key).forEach((m, i) => m.index = i);
+    //     return value;
+    // }, [JSON.stringify(value)]);
+
+    const handleSave = useCallback(debounce((row: any) => {
+        const newData = [...value];
+        const index = newData.findIndex((item) => row.key === item.key);
+        newData.splice(index, 1, { ...newData[index], ...row });
+        handleChange(newData);
+    }, 500), []);
+
     return (
         <div>
             <Space wrap>
@@ -400,8 +406,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
                 size='small'
                 pagination={false}
                 scroll={{ y: 320, x: true }}
-                data={data}
-                // columns={columns}
+                data={value}
                 onRow={() => ({
                     onHandleForm: handleForm
                 })}

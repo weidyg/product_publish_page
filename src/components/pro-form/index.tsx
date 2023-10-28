@@ -388,22 +388,30 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                         {/* {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{_extra}</div>} */}
                         {FieldNames.cateProp(tags) ? (
                             <Card style={{ background: 'var(--color-fill-1)' }}
-                                bodyStyle={{ padding: '16px 16px 0' }}>
-                                <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}>
+                                bodyStyle={{
+                                    padding: '16px 16px 0',
+                                    maxWidth: "950px",
+                                    margin: 'auto'
+                                }}>
+                                <Grid.Row >
+                                    {/* <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}> */}
                                     {subItems?.map((sm, si) => {
                                         const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
-                                        return (
-                                            <Grid.GridItem key={'complex' + si}>
-                                                <ProFormItem key={si} {...sm}
-                                                    uiType={uiType}
-                                                    layout={'horizontal'}
-                                                    labelAlign='right'
-                                                    className={styles['form-label-ellipsis']}
-                                                />
-                                            </Grid.GridItem>
+                                        return (<Grid.Col key={'complex' + si} span={12}>
+                                            {/* <Grid.GridItem key={'complex' + si}> */}
+                                            <ProFormItem key={si} {...sm}
+                                                uiType={uiType}
+                                                layout={'horizontal'}
+                                                labelAlign='right'
+                                                className={styles['form-label-ellipsis']}
+                                            />
+                                            {/* </Grid.GridItem> */}
+                                        </Grid.Col>
                                         )
                                     })}
-                                </Grid>
+                                    {/* </Grid> */}
+
+                                </Grid.Row>
                             </Card>
                         ) : FieldNames.saleProp(tags) ? (<>
                             {subItems?.map((m, i) => {

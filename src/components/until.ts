@@ -95,9 +95,11 @@ export function getSkuItems(skuSaleProp: ObjVal, skuSalePropName: string, skuIte
     });
     saleObjs.forEach(obj => {
         const key = getUniquekey(obj, v => v?.value || v?.text);
-        const skuItem = tempSkuItems?.find(f => f.key == key) || {};
-        const dataItem: any = { ...skuItem, key, [skuSalePropName]: obj };
-        newData.push(dataItem)
+        if (!newData.some(s => s.key == key)) {
+            const skuItem = tempSkuItems?.find(f => f.key == key) || {};
+            const dataItem: any = { ...skuItem, key, [skuSalePropName]: obj };
+            newData.push(dataItem)
+        }
     });
     return newData;
 }
@@ -350,3 +352,15 @@ export function getQueryString(name: string) {
     const r = search.match(reg) || [];
     return r[2];
 }
+
+export const duplicate = function (arr: string | any[]) {
+    let temp: any = {};
+    for (let i = 0; i < arr.length; i++) {
+        if (temp[arr[i]]) {
+            return true
+        } else {
+            temp[arr[i]] = 1
+        }
+    }
+    return false
+} 

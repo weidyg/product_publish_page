@@ -1,4 +1,4 @@
-import { Button, Card, Form, FormItemProps, Input, Space, Trigger } from "@arco-design/web-react";
+import { Button, Card, Form, FormItemProps, Input, Message, Space, Trigger } from "@arco-design/web-react";
 import { useEffect, useState } from "react";
 import useMergeValue from "@arco-design/web-react/es/_util/hooks/useMergeValue";
 import SalePropCard from "../SalePropCard";
@@ -7,6 +7,7 @@ import { IconDelete, IconInfoCircle, IconPlus } from "@arco-design/web-react/ico
 import ImageUpload from "../../ImageUpload";
 import _ from "lodash";
 import { MyFormItemProps } from "../../../pages/product/edit/interface";
+import { duplicate } from "../../until";
 
 export interface SalePropInputProps {
     isGroup?: boolean,
@@ -59,6 +60,9 @@ function SalePropInput(props: SalePropInputProps) {
                             newFieldValue.push({ value: v, text: text });
                         }
                     }
+                    if (duplicate(newFieldValue)) {
+                        Message.error(`检测到多个重复值，请删除其他重复值！`);
+                    }
                     form.setFieldValue(topValuesFieldName, newFieldValue);
                 }
                 if (changeGroup && topGropFieldName) {
@@ -73,6 +77,11 @@ function SalePropInput(props: SalePropInputProps) {
     }
 
     const handleChange = (newValue: any) => {
+        const fieldValue = form.getFieldValue(topValuesFieldName) || [];
+        if (fieldValue.some((s: { text: any; }) => s.text == newValue)) {
+            Message.error(`已经存在值 “${newValue}”，不允许重复设置！`);
+            return;
+        }
         if (!('value' in props)) { setValue(value); }
         onChange && onChange(newValue);
         valueFieldName && form.setFieldValue(valueFieldName, undefined);
