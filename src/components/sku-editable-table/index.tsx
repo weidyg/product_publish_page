@@ -6,7 +6,6 @@ import { FieldNames, calcDescartes, getSkuItems, getSkuSaleProp, getTips, getUiT
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { isObject } from '@arco-design/web-react/es/_util/is';
-import { debounce } from 'lodash';
 
 const EditableContext = React.createContext<{
     getForm?: () => FormInstance | null,
@@ -133,10 +132,12 @@ function EditableCell(props: any) {
         >
             {uiType == 'input' ? (
                 <Input placeholder={'请输入'}
+                    value={rowData[dataIndex]}
                     onChange={cellValueChangeHandler} />
             ) : uiType == 'inputNumber' ? (
                 <InputNumber
                     placeholder={'请输入'}
+                    value={rowData[dataIndex]}
                     onChange={cellValueChangeHandler}
                     max={isNumberOrStrNumber(rules?.maxValue) ? rules.maxValue : undefined}
                     min={isNumberOrStrNumber(rules?.minValue) ? rules.minValue : isPrice ? 0.01 : 1}
@@ -146,6 +147,7 @@ function EditableCell(props: any) {
             ) : uiType == 'select' ? (
                 <Select
                     placeholder={'请选择'}
+                    value={rowData[dataIndex]}
                     onChange={cellValueChangeHandler}
                     options={options}
                     triggerProps={{
@@ -181,6 +183,18 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         });
     }
 
+    useImperativeHandle(ref, () => {
+        return {
+            validate: async () => {
+                const tempForms = Object.values(forms);
+                for (let index = 0; index < tempForms.length; index++) {
+                    const form = tempForms[index];
+                    await form.validate();
+                }
+            },
+        };
+    });
+
     const [skuSaleProp, skuSalePropName] = useMemo(() => {
         const skuSaleProp = subItems.find((f: MyFormItemProps) => FieldNames.skuProps(f?.tags));
         const skuSalePropName = skuSaleProp?.name!;
@@ -204,11 +218,6 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         })
     }, []);
 
-    // const normaKeys = (data: any[]) => {
-    //     data?.forEach(obj => { obj.key = obj.key || getUniquekey(obj[skuSalePropName], v => v?.value || v?.text); });
-    //     return data;
-    // };
-
     const [data, setData] = useMergeValue<any[]>([], {
         defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
         value: 'value' in props ? props.value : undefined,
@@ -220,6 +229,13 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
             if (!('value' in props)) { setData(newData); }
             if (props.onChange) { props.onChange(newData); }
         }
+    };
+
+    const handleSave = (row: any) => {
+        const newData = [...data];
+        const index = newData.findIndex((item) => row.key === item.key);
+        newData.splice(index, 1, { ...newData[index], ...row });
+        handleChange(newData);
     };
 
     useEffect(() => {
@@ -235,7 +251,6 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         const tempSkuBatchFillPropValueObjs: { [x: string]: string } = {};
         Object.keys(skuSalePropObjVal).forEach(key => {
             let values = skuBatchFillPropValueObjs[key] || [];
-            // console.log("getskuBatchFillKeys", key, values, skuBatchFillValue);
             if (values.length == 0) { values = (skuSalePropObjVal[key] || []).map((m: { value: any; }) => m.value); }
             tempSkuBatchFillPropValueObjs[key] = values;
         });
@@ -267,51 +282,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
             return { ...data, [name]: value }
         });
     }
-    const handleSave = (row: any) => {
-        const newData = [...data];
-        const index = newData.findIndex((item) => row.key === item.key);
-        newData.splice(index, 1, { ...newData[index], ...row });
-        handleChange(newData);
-    };
 
-    const SkuTable = useMemo(() => {
-        if (data.some(s => !s.key)) { return <></> }
-        return <Table
-            size='small'
-            pagination={false}
-            scroll={{ y: 320, x: true }}
-            data={data}
-            onRow={() => ({
-                onHandleForm: handleForm
-            })}
-            columns={columns.map((column) => {
-                return {
-                    ...column,
-                    onCell: () => ({
-                        onHandleSave: handleSave
-                    }),
-                }
-            })}
-            components={{
-                body: {
-                    row: EditableRow,
-                    cell: EditableCell,
-                },
-            }}
-        />
-    }, [JSON.stringify(data)]);
-
-    useImperativeHandle(ref, () => {
-        return {
-            validate: async () => {
-                const tempForms = Object.values(forms);
-                for (let index = 0; index < tempForms.length; index++) {
-                    const form = tempForms[index];
-                    await form.validate();
-                }
-            },
-        };
-    });
     return (
         <div>
             <Space wrap>
@@ -425,7 +396,27 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
                     </Button>
                 }
             </Space >
-            {SkuTable}
+            {data?.every(s => s.key) && <Table
+                size='small'
+                data={data}
+                pagination={false}
+                scroll={{ y: 320, x: true }}
+                onRow={() => ({ onHandleForm: handleForm })}
+                columns={columns.map((column) => {
+                    return {
+                        ...column,
+                        onCell: () => ({
+                            onHandleSave: handleSave
+                        })
+                    }
+                })}
+                components={{
+                    body: {
+                        row: EditableRow,
+                        cell: EditableCell,
+                    },
+                }}
+            />}
         </div>
     );
 }
