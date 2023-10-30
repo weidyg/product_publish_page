@@ -90,7 +90,7 @@ function SalePropInput(props: SalePropInputProps) {
 
     const handleChange = (newValue: any) => {
         let option;
-        const old = fieldValue.find((f: any) => compare(f?.text, newValue));
+        const old = fieldValue?.find((f: any) => compare(f?.text, newValue));
         if (old == null) { option = options.find(f => compare(f?.label, newValue)) || { label: newValue, value: undefined }; }
         else { Message.error(`已经存在值 “${old?.text}”，不允许重复设置！`); }
         if (!('value' in props)) { setValue(option?.label); }
