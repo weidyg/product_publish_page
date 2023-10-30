@@ -9,7 +9,6 @@ const defaultProps: SalePropCardProps = {};
 function SalePropCard(baseProps: SalePropCardProps) {
     const props = useMergeProps<SalePropCardProps>(baseProps, defaultProps, {});
     const { isGroup, options, values: propValues, group: propGroup, onOk, onCancel } = props;
-
     const groupOptions = useMemo(() => {
         if (!isGroup) { return []; }
         let gOpts: SalePropGroupOption[] = [];
@@ -74,7 +73,6 @@ function SalePropCard(baseProps: SalePropCardProps) {
     const vaildDisabled = (val: any): boolean => {
         return (groupValue == propGroup && propValues?.includes(val)) || false;
     };
-
     return (
         <Card className={styles['trigger-popup']}
             title={<Space>

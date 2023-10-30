@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useMergeValue from "@arco-design/web-react/es/_util/hooks/useMergeValue";
 import SalePropCard from "../SalePropCard";
 import { SalePropOption } from "../SalePropCard/interface";
-import { IconDelete, IconInfoCircle, IconPlus } from "@arco-design/web-react/icon";
+import { IconDelete, IconPlus } from "@arco-design/web-react/icon";
 import ImageUpload from "../../ImageUpload";
-import _, { throttle } from "lodash";
 import { MyFormItemProps } from "../../../pages/product/edit/interface";
+import { get } from "lodash";
 
 export interface SalePropInputProps {
     isGroup?: boolean,
@@ -33,14 +33,14 @@ function SalePropInput(props: SalePropInputProps) {
         value: 'value' in props ? props.value : undefined,
     });
 
-    const fieldGroup = topGropFieldName && form.getFieldValue(topGropFieldName);
-    const [group, setGroup] = useState(fieldGroup);
+    const group = topGropFieldName && form.getFieldValue(topGropFieldName);
+    // const [group, setGroup] = useState(defaultGroup);
 
-    const options = useMemo(() => {
-        const groupId = group?.value;
-        const opts: SalePropOption[] = (isGroup ? allOptions.filter(f => f.group?.value == groupId) : allOptions) || [];
-        return opts;
-    }, [group?.value]);
+    // const options = useCallback((g?: any) => {
+    //     const groupId = g || group?.value;
+    //     const opts: SalePropOption[] = (isGroup ? allOptions.filter(f => f.group?.value == groupId) : allOptions) || [];
+    //     return opts;
+    // }, [group?.value]);
 
     const fieldValue = form.getFieldValue(topValuesFieldName);
     const currValIds = fieldValue && fieldValue.map((m: any) => m?.value);
@@ -52,8 +52,10 @@ function SalePropInput(props: SalePropInputProps) {
             options={allOptions}
             onOk={(vals?: string[], gVal?: string) => {
                 const changeGroup = group?.value !== gVal;
-                const newGroup = options.find(f => f.group?.value == gVal)?.group;
-                if (changeGroup) { setGroup(newGroup); }
+                const newGroup = allOptions.find(f => f.group?.value == gVal)?.group;
+                if (topGropFieldName && newGroup) { form.setFieldValue(topGropFieldName, newGroup); }
+
+                const options = (isGroup ? allOptions.filter(f => f.group?.value == newGroup?.value) : allOptions) || [];
                 const newFieldValue = changeGroup ? [] : [...(fieldValue || [])];
                 const newAddValIds = vals?.filter(f => !newFieldValue.some(s => `${f}` == `${s?.value}`));
                 if (newAddValIds && newAddValIds.length > 0) {
@@ -70,6 +72,7 @@ function SalePropInput(props: SalePropInputProps) {
                     // if (duplicate(newFieldValue)) {
                     //     Message.error(`检测到多个重复值，请删除其他重复值！`);
                     // }
+                    console.log('topValuesFieldName', newFieldValue);
                     form.setFieldValue(topValuesFieldName, newFieldValue);
                 }
                 setVisible(false);
@@ -91,21 +94,26 @@ function SalePropInput(props: SalePropInputProps) {
     const handleChange = (newValue: any) => {
         let option;
         const old = fieldValue?.find((f: any) => compare(f?.text, newValue));
-        if (old == null) { option = options.find(f => compare(f?.label, newValue)) || { label: newValue, value: undefined }; }
-        else { Message.error(`已经存在值 “${old?.text}”，不允许重复设置！`); }
+        if (old == null) {
+            const options = (isGroup ? allOptions.filter(f => f.group?.value == group?.value) : allOptions) || [];
+            option = options.find(f => compare(f?.label, newValue)) || { label: newValue, value: undefined };
+        }
+        else if (old?.text) {
+            Message.error(`已经存在值 “${old?.text}”，不允许重复设置！`);
+        }
         if (!('value' in props)) { setValue(option?.label); }
         onChange && onChange(option?.label);
         valueFieldName && form.setFieldValue(valueFieldName, option?.value);
     };
-    
+
     useEffect(() => {
         var id = valueFieldName && form.getFieldValue(valueFieldName);
         setIsSelVal(id && id !== value);
     }, [value])
 
-    useEffect(() => {
-        if (topGropFieldName) { form.setFieldValue(topGropFieldName, group); }
-    }, [group?.value])
+    // useEffect(() => {
+    //     if (topGropFieldName) { form.setFieldValue(topGropFieldName, group); }
+    // }, [group?.value])
 
     function StandardIcon() {
         return <img style={{ width: '14px', }}
@@ -125,7 +133,7 @@ function SalePropInput(props: SalePropInputProps) {
             }}
         />
     }
-    return options.length > 0
+    return allOptions.length > 0
         ? <Trigger
             popup={popup}
             trigger='focus'
@@ -217,7 +225,6 @@ function SalePropFormItem(props: MyFormItemProps) {
     const fieldName = namePath?.join('.') || name;
     const groupFieldName = isGroup ? `${fieldName}.group` : undefined;
     const valueFieldName = isGroup ? `${fieldName}.value` : fieldName;
-    const formItemProps = {};
     return (
         <Form.Item label={label} field={fieldName} style={{ marginBottom: '0px' }}>
             {groupFieldName &&
@@ -236,7 +243,6 @@ function SalePropFormItem(props: MyFormItemProps) {
                                 return (
                                     <Space key={index} wrap size={[4, 0]} style={{ marginBottom: "0px" }}>
                                         <SalePropInputFormItem
-                                            {...formItemProps}
                                             fieldKey={index}
                                             fieldName={field}
                                             topValuesFieldName={valueFieldName}
@@ -246,7 +252,7 @@ function SalePropFormItem(props: MyFormItemProps) {
                                             options={options as any}
                                             allowCustom={allowCustom}
                                         />
-                                        <Form.Item {...formItemProps}>
+                                        <Form.Item>
                                             <Button type='text'
                                                 icon={<IconDelete />}
                                                 onClick={() => { remove(index); }}>
@@ -262,7 +268,7 @@ function SalePropFormItem(props: MyFormItemProps) {
                                 }
                             }>
                                 {(values) => {
-                                    const salePropValues: any[] = _.get(values, valueFieldName!) || [];
+                                    const salePropValues: any[] = get(values, valueFieldName!) || [];
                                     const disabledAdd = !(salePropValues && salePropValues.every(e => e?.text));
                                     return <Button
                                         type='text'
