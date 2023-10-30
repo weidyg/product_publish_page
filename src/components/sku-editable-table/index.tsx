@@ -6,6 +6,7 @@ import { FieldNames, calcDescartes, getSkuItems, getSkuSaleProp, getTips, getUiT
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { isObject } from '@arco-design/web-react/es/_util/is';
+import { debounce, throttle } from 'lodash';
 
 const EditableContext = React.createContext<{
     getForm?: () => FormInstance | null,
@@ -97,7 +98,7 @@ function EditableRow(props: { [x: string]: any; children: any; record: any; clas
                 children={children}
                 style={{ display: 'table-row' }}
                 className={`${className} editable-row`}
-                scrollToFirstError={true}
+            // scrollToFirstError={true}
             />
         </EditableContext.Provider>
     );

@@ -363,8 +363,10 @@ export const duplicate = function (arr: string | any[]) {
     let temp: any = {};
     for (let i = 0; i < arr.length; i++) {
         if (temp[arr[i]]) {
+            console.log('temp[arr[i]]', temp[arr[i]]);
             return true
         } else {
+            console.log('temp[arr[i]]=1', temp[arr[i]]);
             temp[arr[i]] = 1
         }
     }
