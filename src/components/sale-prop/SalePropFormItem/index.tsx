@@ -34,14 +34,6 @@ function SalePropInput(props: SalePropInputProps) {
     });
 
     const group = topGropFieldName && form.getFieldValue(topGropFieldName);
-    // const [group, setGroup] = useState(defaultGroup);
-
-    // const options = useCallback((g?: any) => {
-    //     const groupId = g || group?.value;
-    //     const opts: SalePropOption[] = (isGroup ? allOptions.filter(f => f.group?.value == groupId) : allOptions) || [];
-    //     return opts;
-    // }, [group?.value]);
-
     const fieldValue = form.getFieldValue(topValuesFieldName);
     const currValIds = fieldValue && fieldValue.map((m: any) => m?.value);
     function popup() {
@@ -69,10 +61,6 @@ function SalePropInput(props: SalePropInputProps) {
                             newFieldValue.push({ value: v, text: text });
                         }
                     }
-                    // if (duplicate(newFieldValue)) {
-                    //     Message.error(`检测到多个重复值，请删除其他重复值！`);
-                    // }
-                    console.log('topValuesFieldName', newFieldValue);
                     form.setFieldValue(topValuesFieldName, newFieldValue);
                 }
                 setVisible(false);
@@ -110,10 +98,6 @@ function SalePropInput(props: SalePropInputProps) {
         var id = valueFieldName && form.getFieldValue(valueFieldName);
         setIsSelVal(id && id !== value);
     }, [value])
-
-    // useEffect(() => {
-    //     if (topGropFieldName) { form.setFieldValue(topGropFieldName, group); }
-    // }, [group?.value])
 
     function StandardIcon() {
         return <img style={{ width: '14px', }}
