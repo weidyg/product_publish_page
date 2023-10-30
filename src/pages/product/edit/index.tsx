@@ -55,9 +55,11 @@ function ProductEdit() {
                         content: <Paragraph>{error?.message}</Paragraph>
                     });
                 }
-            } catch (error) {
-                console.log('validate error', error);
-                Message.error('检测到有必填项未填或格式错误，请补充后重新保存！');
+            } catch (error: any) {
+                console.log('validate error', error?.errors);
+                const keys = Object.keys(error?.errors || {})?.map(m => m && m.split('.')[0]);
+                let labels: any[] = keys.length > 0 ? formSchema.filter(m => keys.includes(m.name!))?.map(m => m.label) || [] : [];
+                Message.error(`检测到 [ ${labels?.join('、')} ] 有必填项未填或格式错误，请补充后重新保存！`);
             } finally {
                 setSaveLoading(false);
                 setPublishLoading(false);
