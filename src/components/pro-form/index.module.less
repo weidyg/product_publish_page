@@ -1,3 +1,5 @@
+@import '@arco-design/web-react/es/style/theme/default.less';
+
 .form-label-ellipsis {
     label {
         text-overflow: ellipsis;
@@ -9,6 +11,20 @@
 }
 
 :global {
+    .@{prefix}-form-label-item>label {
+        font-size: 14px;
+        white-space: nowrap;
+        color: var(--color-text-2);
+        overflow: hidden;
+        /* text-overflow: ellipsis; */
+        display: block;
+        overflow: hidden;
+    }
+
+    .@{prefix}-form-item {
+        margin-bottom: 16px;
+    }
+
     .w-e-bar {
         background-color: var(--color-bg-2);
         color: var(--color-text-2);

@@ -51,6 +51,7 @@ function SalePropInput(props: SalePropInputProps) {
                 const newFieldValue = changeGroup ? [] : [...(fieldValue || [])];
                 const newAddValIds = vals?.filter(f => !newFieldValue.some(s => `${f}` == `${s?.value}`));
                 if (newAddValIds && newAddValIds.length > 0) {
+                    console.log('newAddValIds', newAddValIds);
                     for (let index = 0; index < newAddValIds.length; index++) {
                         const v = newAddValIds[index];
                         const text = options?.find((f: any) => f.value == v)?.label;
@@ -61,7 +62,8 @@ function SalePropInput(props: SalePropInputProps) {
                             newFieldValue.push({ value: v, text: text });
                         }
                     }
-                    form.setFieldValue(topValuesFieldName, newFieldValue);
+                    const fieldValue = newFieldValue.filter(f => f != null);
+                    form.setFieldValue(topValuesFieldName, fieldValue);
                 }
                 setVisible(false);
             }}
@@ -105,7 +107,7 @@ function SalePropInput(props: SalePropInputProps) {
     }
     function childrenDom() {
         return <Input allowClear
-            style={{ width: '200px' }}
+            style={{ width: '180px' }}
             placeholder={`请选择${allowCustom ? '或输入' : ''}`}
             readOnly={allowCustom == false}
             suffix={isSelVal ? <StandardIcon /> : ''}
@@ -194,7 +196,7 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps & UIFormItemPro
                 >
                     <Input allowClear
                         placeholder={remarkForm.label}
-                        style={{ width: '118px' }}
+                        style={{ width: '98px' }}
                     />
                 </Form.Item>
             }
@@ -210,7 +212,7 @@ function SalePropFormItem(props: MyFormItemProps) {
     const groupFieldName = isGroup ? `${fieldName}.group` : undefined;
     const valueFieldName = isGroup ? `${fieldName}.value` : fieldName;
     return (
-        <Form.Item label={label} field={fieldName} style={{ marginBottom: '0px' }}>
+        <Form.Item layout='vertical' label={label} field={fieldName} style={{ marginBottom: '0px' }}>
             {groupFieldName &&
                 <Form.Item field={groupFieldName} hidden>
                     <Input />
@@ -218,9 +220,7 @@ function SalePropFormItem(props: MyFormItemProps) {
             }
             <Form.List field={valueFieldName!}>
                 {(fields, { add, remove, move }) => {
-                    if (fields.length == 0) {
-                        fields.push({ key: 0, field: `${fieldName}[${0}]` });
-                    }
+                    if (fields.length == 0) { fields.push({ key: 0, field: `${fieldName}[${0}]` }); }
                     return (
                         <Space wrap>
                             {fields.map(({ field }, index) => {
@@ -237,7 +237,7 @@ function SalePropFormItem(props: MyFormItemProps) {
                                             allowCustom={allowCustom}
                                         />
                                         <Form.Item>
-                                            <Button type='text'
+                                            <Button type='text' status='danger'
                                                 icon={<IconDelete />}
                                                 onClick={() => { remove(index); }}>
                                             </Button>
@@ -253,12 +253,14 @@ function SalePropFormItem(props: MyFormItemProps) {
                             }>
                                 {(values) => {
                                     const salePropValues: any[] = get(values, valueFieldName!) || [];
-                                    const disabledAdd = !(salePropValues && salePropValues.every(e => e?.text));
+                                    const disabledAdd = !salePropValues.every(e => e?.text)
+                                        || (fields.length == 1 && salePropValues.length == 0);
                                     return <Button
                                         type='text'
                                         icon={<IconPlus />}
                                         disabled={disabledAdd}
                                         onClick={() => { add(); }}
+                                        style={{ padding: '2px' }}
                                     >
                                         新增
                                     </Button>

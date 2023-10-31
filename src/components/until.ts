@@ -112,6 +112,7 @@ export function getSkuItems(skuSaleProp: ObjVal, skuSalePropName: string, skuIte
 
 
 export const FieldNames = {
+    images: (tags?: FieldTag[]) => tags?.includes(FieldTag.Images),
     desc: (tags?: FieldTag[]) => tags?.includes(FieldTag.Description),
     cateProp: (tags?: FieldTag[]) => tags?.includes(FieldTag.cateProp),
     saleProp: (tags?: FieldTag[]) => tags?.includes(FieldTag.SaleProp),

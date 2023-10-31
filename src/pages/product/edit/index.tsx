@@ -134,7 +134,8 @@ function ProductEdit() {
                                             form={form}
                                             labelCol={{ span: 3, offset: 0 }}
                                             wrapperCol={{ span: 21, offset: 0 }}
-                                            layout='vertical'
+                                            // layout='vertical'
+                                             layout='horizontal'
                                             autoComplete='off'
                                             scrollToFirstError={true}
                                             disabled={saveLoading || publishLoading}

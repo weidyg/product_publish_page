@@ -45,18 +45,15 @@ function ProFormList(props: MyFormItemProps) {
                         {fields.map(({ field }: any, index: any) => {
                             return (
                                 <Space key={index} size={'mini'}>
-                                    {
-                                        formItems?.map((sm, si) => {
-                                            const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
-                                            return (
-                                                <ProFormItem key={si}
-                                                    {...sm} noStyle allowClear={false}
-                                                    uiType={uiType} picSize={'mini'}
-                                                    fieldName={field + '.' + sm.name}
-                                                />
-                                            )
-                                        })
-                                    }
+                                    {formItems?.map((sm, si) => {
+                                        const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
+                                        return (
+                                            <ProFormItem key={si}
+                                                {...sm} noStyle allowClear={false}
+                                                uiType={uiType} picSize={'mini'}
+                                                fieldName={field + '.' + sm.name} />
+                                        )
+                                    })}
                                     <Form.Item noStyle>
                                         <Link status='error' onClick={() => { remove(index); }}>
                                             <IconDelete />
@@ -83,7 +80,7 @@ function ProFormList(props: MyFormItemProps) {
 
 function RemoteSelect(props: any) {
     const { label, optionAction, options: propOptions = [], value, onChange, ...rest } = props
-    const [options, setOptions] = useState(propOptions);
+    const [options, setOptions] = useState<any[]>(propOptions);
     const [fetching, setFetching] = useState(false);
     useEffect(() => {
         if (optionAction && options.length == 0) {
@@ -99,6 +96,11 @@ function RemoteSelect(props: any) {
                 setOptions([]);
                 const options = await getRemoteOptions(shopId, categoryId, optionAction, forceUpdate);
                 setOptions(options);
+                const option = options?.find(f => f.value == value);
+                if (!option) {
+                    const value = options?.length > 0 ? options[0].value : undefined;
+                    handleChange(value);
+                }
                 forceUpdate && Message.success(`${label}同步成功！`);
             } else {
                 console.log('shopId error', shopId);
@@ -110,10 +112,15 @@ function RemoteSelect(props: any) {
         }
     }, 500), []);
 
+
+    const handleChange = (value: any) => {
+        onChange && onChange(value);
+    }
+
     return <div>
         <Select
             value={value}
-            onChange={onChange}
+            onChange={handleChange}
             options={options}
             triggerProps={{
                 autoAlignPopupWidth: false,
@@ -124,6 +131,10 @@ function RemoteSelect(props: any) {
                         debouncedFetchOptions(optionAction, false);
                     }
                 },
+            }}
+            renderFormat={(option, value) => {
+                if (!option) { return ''; }
+                return option?.children;
             }}
             notFoundContent={
                 fetching ? (
@@ -239,13 +250,14 @@ function FormInput(props: FormInputProps) {
 type UIFormItemProps = Omit<FormItemProps, 'rules' | 'label'>;
 
 export function ProFormItem(props: MyFormItemProps & UIFormItemProps
-    & { picSize?: 'mini', salePropFieldName?: string }) {
+    & { picSize?: 'mini', salePropFieldName?: string, parentLabel?: any }) {
     const {
         type, label = '', name, namePath, value, tags = [],
         optionAction, options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
         fieldName, noStyle, picSize, allowClear = true,
-        valueType, salePropFieldName, ...uiFormItemProps
+        valueType, salePropFieldName, parentLabel = '', style,
+        ...uiFormItemProps
     } = props || {};
 
     const skuTableRef = useRef<any>();
@@ -267,7 +279,10 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
         precision: isPrice ? 2 : undefined,
         step: isPrice ? 0.01 : undefined
     }
-    const _label = <span title={label}>{label}</span>;
+    const _labelArr = label?.replace('：', ':')?.split(':') || [];
+    const _label = label != parentLabel && <span title={label}>
+        {_labelArr.length == 2 ? _labelArr[0] : label}
+    </span>;
     const { form } = Form.useFormContext();
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
@@ -278,6 +293,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     return;
                 }
                 const tipValues = getTipValues(values) || [];
+                if (_labelArr.length == 2) { tipValues.unshift(_labelArr[1]) }
                 const _extra = tipValues.map((value: any, index: any) =>
                     index == 0
                         ? <span key={index} dangerouslySetInnerHTML={{ __html: value }} />
@@ -292,7 +308,8 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     field: _fieldName,
                     noStyle: noStyle,
                     extra: _extra,//!isComplexType ? _extra : undefined,
-                    style: subItems.length > 0 ? { marginBottom: '0px' } : {}
+                    style: subItems.length > 0 ? { ...style, marginBottom: '0px' } : { ...style },
+                    // className: subItems.length > 0 ? styles['form-label'] : ''
                 }
                 const salePropValues = _.get(values, salePropFieldName!);
 
@@ -403,37 +420,49 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                                     margin: 'auto'
                                 }}>
                                 <Grid.Row >
-                                    {/* <Grid cols={{ xs: 2, sm: 2, md: 2, lg: 2, xl: 2, xxl: 3, xxxl: 3 }} colGap={12}> */}
-                                    {subItems?.map((sm, si) => {
-                                        const uiType = sm.type == 'singleCheck' ? 'select' : sm.uiType;
+                                    {subItems?.filter(f => !['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
                                         return (<Grid.Col key={'complex' + si} span={12}>
-                                            {/* <Grid.GridItem key={'complex' + si}> */}
                                             <ProFormItem key={si} {...sm}
-                                                uiType={uiType}
-                                                layout={'horizontal'}
                                                 labelAlign='right'
+                                                layout={'horizontal'}
+                                                className={styles['form-label-ellipsis']}
+                                                uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
+                                            />
+                                        </Grid.Col>
+                                        )
+                                    })}
+                                    {subItems?.filter(f => ['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
+                                        return (<Grid.Col key={'complex' + si} span={24}>
+                                            <ProFormItem key={si} {...sm}
+                                                labelAlign='right'
+                                                layout={'horizontal'}
                                                 className={styles['form-label-ellipsis']}
                                             />
-                                            {/* </Grid.GridItem> */}
                                         </Grid.Col>
                                         )
                                     })}
                                     {/* </Grid> */}
                                 </Grid.Row>
                             </Card>
-                        </>) : FieldNames.saleProp(tags) ? (<>
-                            {subItems?.map((m, i) => {
-                                return (m.type == 'multiCheck' || m.type == 'complex')
-                                    ? <SalePropFormItem key={i} {...m} />
-                                    : <div key={i}></div>
-                            })}
-                        </>) : (
+                        </>) : FieldNames.saleProp(tags) ? (
+                            <Card bordered={false} bodyStyle={{ padding: '6px 0 0', maxWidth: "950px", margin: 'auto' }}>
+                                {subItems?.map((m, i) => {
+                                    return (m.type == 'multiCheck' || m.type == 'complex')
+                                        ? <SalePropFormItem key={i} {...m} />
+                                        : <div key={i}></div>
+                                })}
+                            </Card>
+                        ) : FieldNames.images(tags) ? (<>
                             <Space wrap={true}>
                                 {subItems?.map((sm: any, si: any) => {
-                                    return (<ProFormItem key={si} {...sm} />)
+                                    return (<ProFormItem key={si} {...sm} parentLabel={label} />)
                                 })}
                             </Space>
-                        )
+                        </>) : (<>
+                            {subItems?.map((sm: any, si: any) => {
+                                return (<ProFormItem key={si} {...sm} parentLabel={label} />)
+                            })}
+                        </>)
                         }
                     </FormItem >
                 ) : type == 'multiComplex' ? (<>

@@ -71,6 +71,7 @@ export type MyFormDependExpress = {
 export enum FieldTag {
     Title = "n:title",
     ProductNo = "n:art_no",
+    Images = "n:images",
     Description = "n:desc",
     Weight = "n:weight",
     Price = "n:price",
