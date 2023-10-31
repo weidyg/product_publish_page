@@ -115,15 +115,16 @@ function ProductEditPage() {
                                     <Card hoverable className={styles['product-cate']}>
                                         {`当前类目：${categoryNamePath || '--'}`}
                                     </Card>
-                                    <ProductEditForm
-                                        form={form}
-                                        className={styles['product-form']}
-                                        shopId={shopId}
-                                        platformId={platformId}
-                                        categoryId={categoryId}
-                                        formSchema={formSchema}
-                                        formData={data}
-                                    />
+                                    <Card hoverable className={styles['product-form']}>
+                                        <ProductEditForm
+                                            form={form}
+                                            shopId={shopId}
+                                            platformId={platformId}
+                                            categoryId={categoryId}
+                                            formSchema={formSchema}
+                                            formData={data}
+                                        />
+                                    </Card>
                                 </>
                             }
                         </div>

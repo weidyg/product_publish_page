@@ -84,7 +84,7 @@ export enum FieldTag {
 }
 
 export interface ProductEditFormProps {
-    className?: string
+    // className?: string
     platformId?: number,
     shopId?: number,
     categoryId?: string;
