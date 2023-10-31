@@ -51,7 +51,6 @@ function SalePropInput(props: SalePropInputProps) {
                 const newFieldValue = changeGroup ? [] : [...(fieldValue || [])];
                 const newAddValIds = vals?.filter(f => !newFieldValue.some(s => `${f}` == `${s?.value}`));
                 if (newAddValIds && newAddValIds.length > 0) {
-                    console.log('newAddValIds', newAddValIds);
                     for (let index = 0; index < newAddValIds.length; index++) {
                         const v = newAddValIds[index];
                         const text = options?.find((f: any) => f.value == v)?.label;
@@ -73,7 +72,9 @@ function SalePropInput(props: SalePropInputProps) {
         />
     }
 
-    const valMap: { [x: string]: string } = { 'XXL': '2XL', 'XXXL': '3XL', 'XXXXL': '4XL', 'XXXXXL': '5XL', 'XXXXXXL': '6XL', }
+    const valMap: { [x: string]: string } = {
+        '2XL': 'XXL', '3XL': 'XXXL', '4XL': 'XXXXL', '5XL': 'XXXXXL', '6XL': 'XXXXXXL',
+    }
     const compare = useCallback((t1: string, t2: string) => {
         let [val1, val2] = [t1?.toUpperCase(), t2?.toUpperCase()];
         val1 = (val1 && valMap[val1]) || val1;
@@ -86,7 +87,7 @@ function SalePropInput(props: SalePropInputProps) {
         const old = fieldValue?.find((f: any) => compare(f?.text, newValue));
         if (old == null) {
             const options = (isGroup ? allOptions.filter(f => f.group?.value == group?.value) : allOptions) || [];
-            option = options.find(f => compare(f?.label, newValue)) || { label: newValue, value: undefined };
+            option = options.find(f => compare(f?.label, newValue)) || { label: newValue, value: newValue };
         }
         else if (old?.text) {
             Message.error(`已经存在值 “${old?.text}”，不允许重复设置！`);
@@ -211,6 +212,7 @@ function SalePropFormItem(props: MyFormItemProps) {
     const fieldName = namePath?.join('.') || name;
     const groupFieldName = isGroup ? `${fieldName}.group` : undefined;
     const valueFieldName = isGroup ? `${fieldName}.value` : fieldName;
+    const { form } = Form.useFormContext();
     return (
         <Form.Item layout='vertical' label={label} field={fieldName} style={{ marginBottom: '0px' }}>
             {groupFieldName &&
@@ -239,7 +241,10 @@ function SalePropFormItem(props: MyFormItemProps) {
                                         <Form.Item>
                                             <Button type='text' status='danger'
                                                 icon={<IconDelete />}
-                                                onClick={() => { remove(index); }}>
+                                                onClick={() => {
+                                                    form?.clearFields(field);
+                                                    remove(index);
+                                                }}>
                                             </Button>
                                         </Form.Item>
                                     </Space>

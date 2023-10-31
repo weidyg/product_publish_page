@@ -6,6 +6,7 @@ import { ProFormItem } from "../../../components/pro-form";
 import { FieldNames } from "../../../components/until";
 import { loadProductEditData, saveProductEditData } from "../../../components/api";
 import Paragraph from "@arco-design/web-react/es/Typography/paragraph";
+import ProductEditForm from "../../../components/product-edit";
 
 type ProductEditContextValue = {
     platformId?: number,
@@ -13,7 +14,7 @@ type ProductEditContextValue = {
     categoryId?: string;
 };
 export const ProductEditContext = createContext<ProductEditContextValue>({});
-function ProductEdit() {
+function ProductEditPage() {
     const [form] = Form.useForm();
     const [reload, setReload] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -21,6 +22,11 @@ function ProductEdit() {
     const [publishLoading, setPublishLoading] = useState(false);
     const [loadErrMsg, setLoadErrMsg] = useState<string>();
     const [productEditData, setProductEditData] = useState<ProductEditDataProps>();
+
+    const { formSchema = [], data = {},
+        platformId, shopId, categoryId
+        , platformName, shopName, categoryNamePath
+    } = productEditData || {};
 
     useEffect(() => {
         loadingInitData();
@@ -47,7 +53,7 @@ function ProductEdit() {
                 try {
                     await saveProductEditData(values, publish);
                     console.log('values success', values);
-                    Message.info(`保存${publish ? '并发布' : ''}成功！`);
+                    Message.success(`保存${publish ? '并发布' : ''}成功！`);
                 } catch (error: any) {
                     Modal.error({
                         maskClosable: false,
@@ -66,26 +72,6 @@ function ProductEdit() {
             }
         }, 100);
     }
-    const { formSchema = [], platformName, shopName, categoryNamePath
-        , platformId, shopId, categoryId
-    } = productEditData || {};
-    const [skuFullName, skuStockName, quantityFullName] = useMemo(() => {
-        const skuProp = formSchema.find((f: MyFormItemProps) => FieldNames.sku(f?.tags));
-        const skuStockProp = skuProp?.subItems?.find((f: MyFormItemProps) => FieldNames.skuStock(f?.tags));
-        const quantityProp = formSchema.find((f: MyFormItemProps) => FieldNames.quantity(f?.tags));
-        if (skuProp && skuStockProp && quantityProp) {
-            const skuName = skuProp.namePath?.join('.') || skuProp.name;
-            const skuStockName = skuStockProp.name;
-            const quantityName = quantityProp.namePath?.join('.') || skuStockProp.name;
-            return [skuName, skuStockName, quantityName,];
-        }
-        return [undefined, undefined, undefined,];
-    }, [JSON.stringify(formSchema)]);
-
-    const salePropFieldName = useMemo(() => {
-        const saleProp = formSchema.find((f: MyFormItemProps) => FieldNames.saleProp(f?.tags));
-        return saleProp?.namePath?.join('.') || saleProp?.name;
-    }, [JSON.stringify(formSchema)]);
 
     return (
         <Spin loading={loading} tip='页面加载中，请稍后...' className={styles['product']}>
@@ -129,51 +115,15 @@ function ProductEdit() {
                                     <Card hoverable className={styles['product-cate']}>
                                         {`当前类目：${categoryNamePath || '--'}`}
                                     </Card>
-                                    <ProductEditContext.Provider value={{ platformId, shopId, categoryId }}>
-                                        <Form id='spuForm'
-                                            form={form}
-                                            labelCol={{ span: 3, offset: 0 }}
-                                            wrapperCol={{ span: 21, offset: 0 }}
-                                            // layout='vertical'
-                                             layout='horizontal'
-                                            autoComplete='off'
-                                            scrollToFirstError={true}
-                                            disabled={saveLoading || publishLoading}
-                                            // onSubmit={(values: FormData) => {
-                                            //     console.log('onSubmit', values);
-                                            // }}
-                                            // onSubmitFailed={(errors: { [key: string]: FieldError; }) => {
-                                            //     console.log('onSubmitFailed', errors);
-                                            // }}
-                                            onValuesChange={(value, values) => {
-                                                if (form && skuFullName && skuStockName && quantityFullName) {
-                                                    const skuChanged = Object.keys(value).some(s => s.endsWith(skuFullName!));
-                                                    if (skuChanged) {
-                                                        let quantity = 0;
-                                                        const skus: any[] = form.getFieldValue(skuFullName!) || [];
-                                                        skus.forEach(f => { quantity += parseInt(f[skuStockName!]) || 0; });
-                                                        const oldQuantity = form.getFieldValue(quantityFullName!);
-                                                        if (oldQuantity != quantity) { form.setFieldValue(quantityFullName!, quantity); }
-                                                    }
-                                                }
-                                            }}
-                                            validateMessages={{
-                                                required: (_, { label }) => <>{'必填项'}{label || ''}{'不能为空,请修改'}</>,
-                                                string: {
-                                                    length: `字符数必须是 #{length}`,
-                                                    match: `不匹配正则 #{pattern}`,
-                                                },
-                                            }}
-                                        >
-                                            <Card hoverable className={styles['product-form']}>
-                                                {/* <Skeleton loading={loading} animation text={{ rows: 10 }}> */}
-                                                {formSchema.map((m: MyFormItemProps, i: any) => {
-                                                    return <ProFormItem key={i} {...m} salePropFieldName={salePropFieldName} />
-                                                })}
-                                                {/* </Skeleton> */}
-                                            </Card>
-                                        </Form>
-                                    </ProductEditContext.Provider>
+                                    <ProductEditForm
+                                        form={form}
+                                        className={styles['product-form']}
+                                        shopId={shopId}
+                                        platformId={platformId}
+                                        categoryId={categoryId}
+                                        formSchema={formSchema}
+                                        formData={data}
+                                    />
                                 </>
                             }
                         </div>
@@ -207,4 +157,4 @@ function ProductEdit() {
     );
 }
 
-export default ProductEdit;
+export default ProductEditPage;

@@ -97,7 +97,7 @@ function EditableRow(props: { [x: string]: any; children: any; record: any; clas
                 children={children}
                 style={{ display: 'table-row' }}
                 className={`${className} editable-row`}
-                // scrollToFirstError={true}
+            // scrollToFirstError={true}
             />
         </EditableContext.Provider>
     );
@@ -190,7 +190,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
             await form.validate();
         }
     };
-   
+
     useImperativeHandle(ref, () => {
         return { validate, };
     });
@@ -251,7 +251,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         const tempSkuBatchFillPropValueObjs: { [x: string]: string } = {};
         Object.keys(skuSalePropObjVal).forEach(key => {
             let values = skuBatchFillPropValueObjs[key] || [];
-            if (values.length == 0) { values = (skuSalePropObjVal[key] || []).map((m: { value: any; }) => m.value); }
+            if (values.length == 0) { values = (skuSalePropObjVal[key] || []).map((m: any) => m.value || m.text); }
             tempSkuBatchFillPropValueObjs[key] = values;
         });
         const skuBatchFillPropValues = calcDescartes(tempSkuBatchFillPropValueObjs, (v) => v) || [];
@@ -282,7 +282,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
             return { ...data, [name]: value }
         });
     }
-
+    const maxNum = 4;
     return (
         <div>
             <Space wrap>
@@ -350,7 +350,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
                             </div>
                         </Select>
                     }
-                    return (i < 5 || showMoreBatch) && <div key={i}>
+                    return (i < maxNum || showMoreBatch) && <div key={i}>
                         {uiType == 'input' ? (
                             <Input allowClear
                                 placeholder={label}
@@ -387,7 +387,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
                     onClick={handleFillSkuData}>
                     批量填充
                 </Button>
-                {subItems?.length > 5 &&
+                {subItems?.length > maxNum &&
                     <Button type='secondary'
                         onClick={() => {
                             SetShowMoreBatch(!showMoreBatch);

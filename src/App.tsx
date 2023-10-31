@@ -1,20 +1,16 @@
 
 import { ConfigProvider, Modal } from '@arco-design/web-react';
-import ProductEdit from './pages/product/edit';
+import ProductEditPage from './pages/product/edit';
 
 function App() {
   Modal.config({ prefixCls: 'erp', })
   return (
-    <ConfigProvider 
-    prefixCls='erp' 
-    autoInsertSpaceInButton={true}
-    componentConfig={
-      {
-        
-      }
-    }
+    <ConfigProvider
+      prefixCls='erp'
+      autoInsertSpaceInButton={true}
+      componentConfig={{}}
     >
-      <ProductEdit />
+      <ProductEditPage />
     </ConfigProvider >
   )
 }
