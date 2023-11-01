@@ -21,6 +21,15 @@ export interface SalePropInputProps {
     onChange?: (value: string) => void,
     allowCustom?: boolean;
 }
+const valMap: { [x: string]: string } = {
+    '2XL': 'XXL', '3XL': 'XXXL', '4XL': 'XXXXL', '5XL': 'XXXXXL', '6XL': 'XXXXXXL',
+}
+const compare = (t1: string, t2: string) => {
+    let [val1, val2] = [t1?.toUpperCase(), t2?.toUpperCase()];
+    val1 = (val1 && valMap[val1]) || val1;
+    val2 = (val2 && valMap[val2]) || val2;
+    return val1 == val2;
+};
 
 function SalePropInput(props: SalePropInputProps) {
     const { fieldKey, topValuesFieldName, topGropFieldName, valueFieldName,
@@ -61,9 +70,18 @@ function SalePropInput(props: SalePropInputProps) {
                             newFieldValue.push({ value: v, text: text });
                         }
                     }
-                    const fieldValue = newFieldValue.filter(f => f != null);
-                    form.setFieldValue(topValuesFieldName, fieldValue);
                 }
+
+                const tempFieldValue: any[] = [];
+                newFieldValue.forEach((f) => {
+                    if (f && !tempFieldValue.some((fi) => fi.text == f.text)) {
+                        tempFieldValue.push(f);
+                    }
+                });
+                if (JSON.stringify(fieldValue) != JSON.stringify(tempFieldValue)) {
+                    form.setFieldValue(topValuesFieldName, tempFieldValue);
+                }
+
                 setVisible(false);
             }}
             onCancel={() => {
@@ -71,16 +89,6 @@ function SalePropInput(props: SalePropInputProps) {
             }}
         />
     }
-
-    const valMap: { [x: string]: string } = {
-        '2XL': 'XXL', '3XL': 'XXXL', '4XL': 'XXXXL', '5XL': 'XXXXXL', '6XL': 'XXXXXXL',
-    }
-    const compare = useCallback((t1: string, t2: string) => {
-        let [val1, val2] = [t1?.toUpperCase(), t2?.toUpperCase()];
-        val1 = (val1 && valMap[val1]) || val1;
-        val2 = (val2 && valMap[val2]) || val2;
-        return val1 == val2;
-    }, []);
 
     const handleChange = (newValue: any) => {
         let option;
@@ -161,6 +169,8 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps & UIFormItemPro
     const imgForm = nestItems?.find(f => f.name == 'img');
     const remarkForm = nestItems?.find(f => f.name == 'remark');
 
+    const { form } = Form.useFormContext();
+    const fieldValue = form.getFieldValue(topValuesFieldName!);
     return (<Space>
         {imgForm &&
             <Form.Item {...formItemProps}
@@ -173,7 +183,16 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps & UIFormItemPro
         <Space size={1}>
             <Form.Item {...formItemProps}
                 field={`${fieldName}.text`}
-                rules={[{ required: true }]}
+                rules={[
+                    { required: true, },
+                    {
+                        validator(value, cb) {
+                            const length = fieldValue?.filter((f: any) => compare(f?.text, value))?.length;
+                            if (length > 1) { return cb(`内容“${value}”不能重复，请检查`); }
+                            return cb();
+                        },
+                    },
+                ]}
             >
                 <SalePropInput
                     isGroup={isGroup}
@@ -208,11 +227,25 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps & UIFormItemPro
 
 function SalePropFormItem(props: MyFormItemProps) {
     const { label, nestItems, namePath, name, options, allowCustom
-        , optionGroupUnique: isGroup } = props;
+        , optionGroupUnique: isGroup, value = [] } = props;
     const fieldName = namePath?.join('.') || name;
     const groupFieldName = isGroup ? `${fieldName}.group` : undefined;
     const valueFieldName = isGroup ? `${fieldName}.value` : fieldName;
     const { form } = Form.useFormContext();
+    // useEffect(() => {
+    //     if (valueFieldName && props.value && props.onChange) {
+    //         const newFieldValue: { text: any; }[] = [];
+    //         props.value.forEach((f: { text: any; }) => {
+    //             if (f && !newFieldValue.some((fi: { text: any; }) => fi.text == f.text)) {
+    //                 newFieldValue.push(f);
+    //             }
+    //         });
+    //         if (newFieldValue.length != value.length) {
+    //             props.onChange(newFieldValue);
+    //         }
+    //     }
+    // }, [])
+
     return (
         <Form.Item layout='vertical' label={label} field={fieldName} style={{ marginBottom: '0px' }}>
             {groupFieldName &&

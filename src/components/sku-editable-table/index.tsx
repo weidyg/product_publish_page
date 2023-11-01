@@ -169,7 +169,6 @@ type SkuFormItemProps = MyFormItemProps & { salePropValues: any };
 function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
     const { subItems = [], salePropValues = [], name, namePath, } = props;
     const rootField = namePath?.join('.') || name;
-    const [skuSalePropObjVal, SetSkuSalePropObjVal] = useState<any>({});
     const [skuBatchFillValue, SetSkuBatchFillValue] = useState<any>({});
     const [fillDataLoading, SetFillDataLoading] = useState<boolean>(false);
     const [showMoreBatch, SetShowMoreBatch] = useState<boolean>(false);
@@ -217,7 +216,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
             }
         })
     }, []);
-
+    // const [data, setData] = useState<any[]>([]);
     const [data, setData] = useMergeValue<any[]>([], {
         defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
         value: 'value' in props ? props.value : undefined,
@@ -238,20 +237,12 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         handleChange(newData);
     };
 
-    useEffect(() => {
-        const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
-        const skuSalePropValue = getSkuSaleProp(salePropNames, salePropValues);
-        const newData = getSkuItems(skuSalePropValue, skuSalePropName, data);
-        handleChange(newData);
-        SetSkuSalePropObjVal(skuSalePropValue || {});
-    }, [JSON.stringify(salePropValues)]);
-
     const getskuBatchFillKeys = () => {
         const skuBatchFillPropValueObjs = skuBatchFillValue[skuSalePropName] || {};
         const tempSkuBatchFillPropValueObjs: { [x: string]: string } = {};
-        Object.keys(skuSalePropObjVal).forEach(key => {
+        Object.keys(skuSalePropValue).forEach(key => {
             let values = skuBatchFillPropValueObjs[key] || [];
-            if (values.length == 0) { values = (skuSalePropObjVal[key] || []).map((m: any) => m.value || m.text); }
+            if (values.length == 0) { values = (skuSalePropValue[key] || []).map((m: any) => m.value || m.text); }
             tempSkuBatchFillPropValueObjs[key] = values;
         });
         const skuBatchFillPropValues = calcDescartes(tempSkuBatchFillPropValueObjs, (v) => v) || [];
@@ -266,7 +257,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         setTimeout(() => {
             let updateCount = 0;
             const keys = getskuBatchFillKeys();
-            const newData = (data || []).map((m: any, i: number) => {
+            const newData = (skuData || []).map((m: any, i: number) => {
                 if (!keys.includes(m.key)) { return m; }
                 updateCount++;
                 return { ...m, ...fillData };
@@ -282,6 +273,14 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
             return { ...data, [name]: value }
         });
     }
+
+    const [skuData, skuSalePropValue] = useMemo(() => {
+        const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
+        const skuSalePropValue = getSkuSaleProp(salePropNames, salePropValues);
+        const newData = getSkuItems(skuSalePropValue, skuSalePropName, data);
+        return [newData, skuSalePropValue];
+    }, [JSON.stringify(salePropValues), JSON.stringify(data)]);
+
     const maxNum = 4;
     return (
         <div>
@@ -310,7 +309,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
                                 {m?.subItems?.map((pm, pi) => {
                                     const { label: pLabel, name: pName } = pm;
                                     if (!pName) { return; }
-                                    const sspvs = skuSalePropObjVal[pName] || [];
+                                    const sspvs = skuSalePropValue[pName] || [];
                                     const propValue = skuBatchFillValue[name] || {};
                                     return <div key={pi}>
                                         <div style={{ margin: '8px 4px' }}>{pLabel}</div>
@@ -396,9 +395,9 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
                     </Button>
                 }
             </Space >
-            {data?.every(s => s.key) && <Table
+            {skuData?.every(s => s.key) && <Table
                 size='small'
-                data={data}
+                data={skuData}
                 pagination={false}
                 scroll={{ y: 320, x: true }}
                 onRow={() => ({ onHandleForm: handleForm })}

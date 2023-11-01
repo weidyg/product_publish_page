@@ -49,7 +49,7 @@ function ProductEditPage() {
             try {
                 const values = await form.validate();
                 try {
-                    await saveProductEditData(values, publish);
+                    await saveProductEditData(values, publish, id);
                     console.log('values success', values);
                     Message.success(`保存${publish ? '并发布' : ''}成功！`);
                 } catch (error: any) {
