@@ -88,6 +88,7 @@ export function getSkuSaleProp(salePropNames: string[], saleProp: { [x: string]:
         next = obj[key]?.length > 0;
         if (!next) { obj = {}; }
     });
+    // console.log('getSkuSaleProp', obj);
     return obj;
 }
 
@@ -99,6 +100,7 @@ export function getSkuItems(skuSaleProp: ObjVal, skuSalePropName: string, skuIte
         tempObj.key = tempObj.key || getUniquekey(tempObj[skuSalePropName], v => v?.value || v?.text);
         return tempObj;
     });
+    // console.log('saleObjs', saleObjs);
     saleObjs.forEach(obj => {
         const key = getUniquekey(obj, v => v?.value || v?.text);
         if (!newData.some(s => s.key == key)) {
@@ -106,7 +108,8 @@ export function getSkuItems(skuSaleProp: ObjVal, skuSalePropName: string, skuIte
             const dataItem: any = { ...skuItem, key, [skuSalePropName]: obj };
             newData.push(dataItem)
         }
-    });
+    }); 
+    // console.log('newData', newData);
     return newData;
 }
 

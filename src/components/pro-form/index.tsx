@@ -482,6 +482,9 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                                 style={{ marginBottom: '20px' }}>
                                 <SkuEditableTable ref={skuTableRef} {...props}
                                     salePropValues={salePropValues}
+                                    onChange={(data: any) => {
+                                        form.setFieldValue(_fieldName!, data);
+                                    }}
                                 />
                             </FormItem >
                         </FormItem >

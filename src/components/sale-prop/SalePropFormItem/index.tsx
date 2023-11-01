@@ -240,6 +240,7 @@ function SalePropFormItem(props: MyFormItemProps) {
                                         />
                                         <Form.Item>
                                             <Button type='text' status='danger'
+                                                shape='circle'
                                                 icon={<IconDelete />}
                                                 onClick={() => {
                                                     form?.clearFields(field);
