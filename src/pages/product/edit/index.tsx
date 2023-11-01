@@ -1,9 +1,7 @@
-import { ReactElement, ReactNode, createContext, useEffect, useMemo, useState } from "react";
-import { Button, Card, Form, Message, Modal, PageHeader, Result, Skeleton, Space, Spin } from "@arco-design/web-react";
+import { createContext, useEffect, useState } from "react";
+import { Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
 import styles from './style/index.module.less'
-import { MyFormItemProps, ProductEditDataProps } from "./interface";
-import { ProFormItem } from "../../../components/pro-form";
-import { FieldNames } from "../../../components/until";
+import { ProductEditDataProps } from "./interface";
 import { loadProductEditData, saveProductEditData } from "../../../components/api";
 import Paragraph from "@arco-design/web-react/es/Typography/paragraph";
 import ProductEditForm from "../../../components/product-edit";
@@ -24,7 +22,7 @@ function ProductEditPage() {
     const [productEditData, setProductEditData] = useState<ProductEditDataProps>();
 
     const { formSchema = [], data = {},
-        platformId, shopId, categoryId
+        itemId, platformId, shopId, categoryId
         , platformName, shopName, categoryNamePath
     } = productEditData || {};
 
@@ -45,7 +43,7 @@ function ProductEditPage() {
         }
     }
 
-    const handleSave = async (publish?: boolean) => {
+    const handleSave = async (id?: string | number, publish?: boolean) => {
         publish ? setPublishLoading(true) : setSaveLoading(true);
         setTimeout(async () => {
             try {
@@ -137,7 +135,7 @@ function ProductEditPage() {
                                         size='large'
                                         loading={publishLoading}
                                         disabled={saveLoading || publishLoading}
-                                        onClick={() => { handleSave(true); }}>
+                                        onClick={() => { handleSave(itemId, true); }}>
                                         {publishLoading ? ' 保存并发布中...' : ' 保存并发布'}
                                     </Button>
                                     <Button
@@ -145,7 +143,7 @@ function ProductEditPage() {
                                         size='large'
                                         loading={saveLoading}
                                         disabled={saveLoading || publishLoading}
-                                        onClick={() => { handleSave(); }}>
+                                        onClick={() => { handleSave(itemId); }}>
                                         {saveLoading ? '保存中...' : '保 存'}
                                     </Button>
                                 </Space>

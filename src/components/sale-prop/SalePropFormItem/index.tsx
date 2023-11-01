@@ -5,8 +5,8 @@ import SalePropCard from "../SalePropCard";
 import { SalePropOption } from "../SalePropCard/interface";
 import { IconDelete, IconPlus } from "@arco-design/web-react/icon";
 import ImageUpload from "../../ImageUpload";
-import { MyFormItemProps } from "../../../pages/product/edit/interface";
 import { get } from "lodash";
+import { MyFormItemProps } from "../../product-edit/interface";
 
 export interface SalePropInputProps {
     isGroup?: boolean,

@@ -9,8 +9,6 @@ import cs from '@arco-design/web-react/es/_util/classNames';
 import _, { debounce, throttle } from 'lodash';
 import { ErrorBoundary } from 'react-error-boundary';
 import { FieldNames, checkDependRules, getStringLength, getTips, getUiTypeOrDefault, getValiRules, isNumberOrStrNumber, sliceString } from '../until';
-import { ProductEditContext } from '../../pages/product/edit';
-import { MyFormItemProps } from '../../pages/product/edit/interface';
 import SalePropFormItem from '../sale-prop/SalePropFormItem';
 import SkuEditableTable from '../sku-editable-table';
 import RichTextEditor from './RichTextEditor';
@@ -18,6 +16,8 @@ import ImageUpload from '../ImageUpload';
 import { getRemoteOptions } from '../api';
 import { ConfigContext } from '@arco-design/web-react/es/ConfigProvider';
 import styles from './index.module.less'
+import { MyFormItemProps } from '../product-edit/interface';
+import { ProductEditContext } from '../product-edit';
 
 function ProFormList(props: MyFormItemProps) {
     const { type, label, name, namePath, value,

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { isArray, isNumber, isString } from "@arco-design/web-react/es/_util/is";
-import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "../pages/product/edit/interface";
 import { ReactNode } from "react";
+import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "./product-edit/interface";
 
 export function isNumberOrStrNumber(obj: any) {
     return isNumber(obj) || !isNaN(Number(obj))
@@ -266,9 +266,6 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
 export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undefined {
     const { uiType, type, name, allowCustom, options = [], rules = {}, tags = [] } = _props;
     if (uiType) { return uiType; }
-    // if (name == 'warranty' || name == 'sellPromise' || name == 'sevenDaySupport') {
-    //     return 'checkBox';
-    // }
     if (FieldNames.sku(tags)) { return 'skuEditTable'; }
     if (FieldNames.desc(tags)) { return 'richTextEditor'; }
     switch (type) {

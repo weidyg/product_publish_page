@@ -1,4 +1,5 @@
-import { MyFormItemOption, ProductEditDataProps } from "../pages/product/edit/interface";
+import { ProductEditDataProps } from "../pages/product/edit/interface";
+import { MyFormItemOption } from "./product-edit/interface";
 
 declare global {
     interface Window {
@@ -8,12 +9,12 @@ declare global {
     }
 }
 
-export async function loadProductEditData(): Promise<ProductEditDataProps> {
-    return await window.loadProductEditData();
+export async function loadProductEditData(id?: string | number): Promise<ProductEditDataProps> {
+    return await window.loadProductEditData(id);
 }
 
-export async function saveProductEditData(values: any, publish?: boolean) {
-    return await window.saveProductEditData(values, publish);
+export async function saveProductEditData(values: any, publish?: boolean, id?: string | number) {
+    return await window.saveProductEditData(id, values, publish);
 }
 
 export async function getRemoteOptions(shopId?: number, categoryId?: string, optionAction?: string, forceUpdate?: boolean): Promise<MyFormItemOption[]> {

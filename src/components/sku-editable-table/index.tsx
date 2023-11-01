@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect, useContext, useCallback, useMemo, useImperativeHandle, Ref, forwardRef, ReactNode, memo } from 'react';
+import React, { useState, useRef, useEffect, useContext, useMemo, useImperativeHandle, Ref, forwardRef, ReactNode, memo } from 'react';
 import { Button, Table, Input, Select, Form, FormInstance, Space, TableColumnProps, Popover, Message, Checkbox, Tag, Link, InputNumber } from '@arco-design/web-react';
-import { FieldUiType, MyFormItemProps } from '../../pages/product/edit/interface';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import { FieldNames, calcDescartes, getSkuItems, getSkuSaleProp, getTips, getUiTypeOrDefault, getUniquekey, getValiRules, isNumberOrStrNumber } from '../until';
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { isObject } from '@arco-design/web-react/es/_util/is';
+import { FieldUiType, MyFormItemProps } from '../product-edit/interface';
 
 const EditableContext = React.createContext<{
     getForm?: () => FormInstance | null,

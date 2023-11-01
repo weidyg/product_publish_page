@@ -30,7 +30,7 @@
       return r[2];
     }
 
-    const id = getQueryString('id');
+    // const id = getQueryString('id');
 
     const baseUrl = 'http://localhost:60486/api/services/app/ProductPublish/';
     const productEditUrls = {
@@ -39,12 +39,14 @@
       getOptions: baseUrl + "GetOptions",
     }
 
-    function loadProductEditData() {
+    function loadProductEditData(id) {
+      id = id || getQueryString('id');
       const data = { ItemId: id };
       return post(productEditUrls.loadData, data)
         .then(function (data) {
           data = data || {};
           return {
+            itemId: data.Id,
             platformId: data.PlatformId,
             shopId: data.ShopId,
             platformName: data.PlatformName,
@@ -57,7 +59,7 @@
         });
     }
 
-    function saveProductEditData(dataJson, publish) {
+    function saveProductEditData(id, dataJson, publish) {
       const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
       return post(productEditUrls.saveData, data);
     }

@@ -1,6 +1,6 @@
 
 import { ConfigProvider, Modal } from '@arco-design/web-react';
-import ProductEditPage from './pages/product/edit';
+import ProductEditPage from './pages/product/edit/index';
 
 function App() {
   Modal.config({ prefixCls: 'erp', })
@@ -8,7 +8,9 @@ function App() {
     <ConfigProvider
       prefixCls='erp'
       autoInsertSpaceInButton={true}
-      componentConfig={{}}
+      componentConfig={{
+
+      }}
     >
       <ProductEditPage />
     </ConfigProvider >
