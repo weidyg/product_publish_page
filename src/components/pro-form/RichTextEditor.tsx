@@ -22,9 +22,9 @@ function RichTextEditor(props: any) {
         toolbarKeys: [
             'headerSelect', '|',
             'bold', 'underline', 'italic', 'color', 'bgColor', '|',
-            'fontSize', 'fontFamily', 'lineHeight', '|',
+            'fontSize', 'fontFamily', /*'lineHeight',*/ '|',
             'bulletedList', 'numberedList', '|',
-            'insertTable', 'divider', '|',
+            // 'insertTable', 'divider', '|',
             'undo', 'redo', '|',
             'fullScreen',
         ]

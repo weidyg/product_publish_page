@@ -131,20 +131,20 @@ function ProductEditPage() {
                                 <Space size={'large'}
                                     style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     <Button
-                                        type='primary'
-                                        size='large'
-                                        loading={saveLoading}
-                                        disabled={saveLoading || publishLoading}
-                                        onClick={() => { handleSave(itemId); }}>
-                                        {saveLoading ? '保存中...' : '保 存'}
-                                    </Button>
-                                    <Button
                                         type='outline'
                                         size='large'
                                         loading={publishLoading}
                                         disabled={saveLoading || publishLoading}
                                         onClick={() => { handleSave(itemId, true); }}>
                                         {publishLoading ? ' 保存并发布中...' : ' 保存并发布至平台'}
+                                    </Button>  
+                                     <Button
+                                        type='primary'
+                                        size='large'
+                                        loading={saveLoading}
+                                        disabled={saveLoading || publishLoading}
+                                        onClick={() => { handleSave(itemId); }}>
+                                        {saveLoading ? '保存中...' : '保 存'}
                                     </Button>
                                 </Space>
                             </Card>

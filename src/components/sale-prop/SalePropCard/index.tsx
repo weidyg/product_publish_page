@@ -8,7 +8,7 @@ import styles from './style/index.module.less';
 const defaultProps: SalePropCardProps = {};
 function SalePropCard(baseProps: SalePropCardProps) {
     const props = useMergeProps<SalePropCardProps>(baseProps, defaultProps, {});
-    const { isGroup, options, values: propValues, group: propGroup, onOk, onCancel } = props;
+    const { isGroup, options, value: propValue, values: propValues, group: propGroup, onOk, onCancel } = props;
     const groupOptions = useMemo(() => {
         if (!isGroup) { return []; }
         let gOpts: SalePropGroupOption[] = [];
@@ -41,7 +41,7 @@ function SalePropCard(baseProps: SalePropCardProps) {
         }
     };
 
-    const handleValueChange = (vals: any) => {
+    const handleValueChange = (vals: any[]) => {
         setValues(vals);
     };
 
@@ -71,12 +71,25 @@ function SalePropCard(baseProps: SalePropCardProps) {
     };
 
     const vaildDisabled = (val: any): boolean => {
-        return (groupValue == propGroup && propValues?.includes(val)) || false;
+        let tempValues = propValues;
+        if (propValue && (values || []).length > 0) {
+            tempValues = tempValues?.filter(f => f != propValue);
+        }
+        return (groupValue == propGroup && tempValues?.includes(val)) || false;
     };
+
+    const selNum = useMemo(() => {
+        let tempValues = values;
+        if (!propValue) { return tempValues?.length || 0; }
+        const otherNum = values?.filter(e => !propValues?.includes(e))?.length || 0;
+        if (otherNum > 0) { tempValues = tempValues?.filter(f => f != propValue); }
+        return tempValues?.length || 0;
+    }, [JSON.stringify(values), propValue]);
+
     return (
         <Card className={styles['trigger-popup']}
             title={<Space>
-                <>已选 {values?.length || 0} 个</>
+                <>已选 {selNum}个</>
                 <Button loading={loading} shape='round' type='primary' size='mini'
                     onClick={handleOk}>
                     确 认
@@ -117,6 +130,10 @@ function SalePropCard(baseProps: SalePropCardProps) {
                                         <Grid.Col key={i} span={6}>
                                             <Checkbox value={val} disabled={disabled}>
                                                 {({ checked }) => {
+                                                    if (checked && val == propValue) {
+                                                        const otherNum = values?.filter(e => !propValues?.includes(e))?.length || 0;
+                                                        if (otherNum > 0) { checked = false; }
+                                                    }
                                                     return (
                                                         <Space align='center'
                                                             className={`${styles['card-checkbox']} ${checked ? styles['card-checkbox-checked'] : ''} ${disabled ? styles['card-checkbox-disabled'] : ''}`}

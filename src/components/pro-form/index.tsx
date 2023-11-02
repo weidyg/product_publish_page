@@ -280,7 +280,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
         step: isPrice ? 0.01 : undefined
     }
     const _labelArr = label?.replace('：', ':')?.split(':') || [];
-    const _label = label != parentLabel && <span title={label}>
+    const _label = label != parentLabel && <span title={label} style={{ marginTop: '10px' }}>
         {_labelArr.length == 2 ? _labelArr[0] : label}
     </span>;
     const { form } = Form.useFormContext();
@@ -289,16 +289,17 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
             {(values: any) => {
                 const _hide = isHide(values) === true;
                 if (_hide) {
-                    form.setFieldValue(_fieldName!, undefined);
+                    console.log('_fieldName',_fieldName);
+                    // form.setFieldValue(_fieldName!, undefined);
                     return;
                 }
                 const tipValues = getTipValues(values) || [];
                 if (_labelArr.length == 2) { tipValues.unshift(_labelArr[1]) }
-                const _extra = tipValues.map((value: any, index: any) =>
+                const _extra = tipValues?.length > 0 ? tipValues.map((value: any, index: any) =>
                     index == 0
                         ? <span key={index} dangerouslySetInnerHTML={{ __html: value }} />
                         : <div key={index} dangerouslySetInnerHTML={{ __html: value }} />
-                );
+                ) : undefined;
                 const formItemProps: FormItemProps = {
                     ...uiFormItemProps,
                     label: _label,
@@ -307,12 +308,10 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     initialValue: value,
                     field: _fieldName,
                     noStyle: noStyle,
-                    extra: _extra,//!isComplexType ? _extra : undefined,
+                    extra: !isComplexType ? _extra : undefined,
                     style: subItems.length > 0 ? { ...style, marginBottom: '0px' } : { ...style },
-                    // className: subItems.length > 0 ? styles['form-label'] : ''
                 }
                 const salePropValues = _.get(values, salePropFieldName!);
-
                 return _uiType == 'input' ? (
                     <FormItem {...formItemProps} >
                         <FormInput allowClear={allowClear}
@@ -410,65 +409,67 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                         <RichTextEditor />
                     </FormItem>
                 ) : type == 'complex' ? (
-                    <FormItem {...formItemProps}>
-                        {/* {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{_extra}</div>} */}
-                        {FieldNames.cateProp(tags) ? (<>
-                            <Card style={{ background: 'var(--color-fill-1)' }}
-                                bodyStyle={{
-                                    padding: '16px 16px 0',
-                                    maxWidth: "950px",
-                                    margin: 'auto'
-                                }}>
-                                <Grid.Row >
-                                    {subItems?.filter(f => !['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
-                                        return (<Grid.Col key={'complex' + si} span={12}>
-                                            <ProFormItem key={si} {...sm}
-                                                labelAlign='right'
-                                                layout={'horizontal'}
-                                                className={styles['form-label-ellipsis']}
-                                                uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
-                                            />
-                                        </Grid.Col>
-                                        )
+                    <Form.Item label={_label} style={{ margin: '0' }}>
+                        {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '8px 0 4px' }}>{_extra}</div>}
+                        <FormItem {...formItemProps} noStyle>
+                            {FieldNames.cateProp(tags) ? (<>
+                                <Card style={{ background: 'var(--color-fill-1)', margin: '0 0 18px 0' }}
+                                    bodyStyle={{
+                                        padding: '16px 16px 0',
+                                        maxWidth: "950px",
+                                        margin: 'auto'
+                                    }}>
+                                    <Grid.Row >
+                                        {subItems?.filter(f => !['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
+                                            return (<Grid.Col key={'complex' + si} span={12}>
+                                                <ProFormItem key={si} {...sm}
+                                                    labelAlign='right'
+                                                    layout={'horizontal'}
+                                                    className={styles['form-label-ellipsis']}
+                                                    uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
+                                                />
+                                            </Grid.Col>
+                                            )
+                                        })}
+                                        {subItems?.filter(f => ['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
+                                            return (<Grid.Col key={'complex' + si} span={24}>
+                                                <ProFormItem key={si} {...sm}
+                                                    labelAlign='right'
+                                                    layout={'horizontal'}
+                                                    className={styles['form-label-ellipsis']}
+                                                />
+                                            </Grid.Col>
+                                            )
+                                        })}
+                                        {/* </Grid> */}
+                                    </Grid.Row>
+                                </Card>
+                            </>) : FieldNames.saleProp(tags) ? (
+                                <Card bordered={false} bodyStyle={{ padding: '6px 0 0', maxWidth: "950px", margin: 'auto' }}>
+                                    {subItems?.map((m, i) => {
+                                        return (m.type == 'multiCheck' || m.type == 'complex')
+                                            ? <SalePropFormItem key={i} {...m} />
+                                            : <div key={i}></div>
                                     })}
-                                    {subItems?.filter(f => ['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
-                                        return (<Grid.Col key={'complex' + si} span={24}>
-                                            <ProFormItem key={si} {...sm}
-                                                labelAlign='right'
-                                                layout={'horizontal'}
-                                                className={styles['form-label-ellipsis']}
-                                            />
-                                        </Grid.Col>
-                                        )
+                                </Card>
+                            ) : FieldNames.images(tags) ? (<>
+                                <Space wrap={true}>
+                                    {subItems?.map((sm: any, si: any) => {
+                                        return (<ProFormItem key={si} {...sm} parentLabel={label} />)
                                     })}
-                                    {/* </Grid> */}
-                                </Grid.Row>
-                            </Card>
-                        </>) : FieldNames.saleProp(tags) ? (
-                            <Card bordered={false} bodyStyle={{ padding: '6px 0 0', maxWidth: "950px", margin: 'auto' }}>
-                                {subItems?.map((m, i) => {
-                                    return (m.type == 'multiCheck' || m.type == 'complex')
-                                        ? <SalePropFormItem key={i} {...m} />
-                                        : <div key={i}></div>
-                                })}
-                            </Card>
-                        ) : FieldNames.images(tags) ? (<>
-                            <Space wrap={true}>
+                                </Space>
+                            </>) : (<>
                                 {subItems?.map((sm: any, si: any) => {
                                     return (<ProFormItem key={si} {...sm} parentLabel={label} />)
                                 })}
-                            </Space>
-                        </>) : (<>
-                            {subItems?.map((sm: any, si: any) => {
-                                return (<ProFormItem key={si} {...sm} parentLabel={label} />)
-                            })}
-                        </>)
-                        }
-                    </FormItem >
-                ) : type == 'multiComplex' ? (<>
-                    {/* {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '0px 0 4px' }}>{_extra}</div>} */}
-                    {FieldNames.sku(tags) ? (
-                        <FormItem {...formItemProps} field={''} style={{ marginBottom: '20px' }}>
+                            </>)
+                            }
+                        </FormItem >
+                    </Form.Item>
+                ) : type == 'multiComplex' ? (
+                    <Form.Item label={_label}>
+                        {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '8px 0 4px' }}>{_extra}</div>}
+                        {FieldNames.sku(tags) ? (
                             <FormItem {...formItemProps} noStyle
                                 rules={[{
                                     validator: async (value: any, callback: (error?: ReactNode) => void) => {
@@ -478,19 +479,18 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                                             callback('sku 值校验失败');
                                         }
                                     }
-                                }]}
-                                style={{ marginBottom: '20px' }}>
+                                }]}>
                                 <SkuEditableTable ref={skuTableRef} {...props}
                                     salePropValues={salePropValues}
                                 />
                             </FormItem >
-                        </FormItem >
-                    ) : (
-                        <FormItem {...formItemProps} style={{ marginBottom: '20px' }}>
-                            <ProFormList {...props} />
-                        </FormItem >
-                    )}
-                </>) : <div>---{label}---</div>;
+                        ) : (
+                            <FormItem {...formItemProps} noStyle>
+                                <ProFormList {...props} />
+                            </FormItem >
+                        )}
+                    </Form.Item>
+                ) : <div>---{label}---</div>;
             }}
         </Form.Item >
     )
