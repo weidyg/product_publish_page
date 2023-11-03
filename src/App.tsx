@@ -1,6 +1,7 @@
 
 import { ConfigProvider, Modal } from '@arco-design/web-react';
 import ProductEditPage from './pages/product/edit/index';
+import ImageSpace from './components/ImageSpace';
 
 function App() {
   Modal.config({ prefixCls: 'erp', })
@@ -12,7 +13,9 @@ function App() {
 
       }}
     >
-      <ProductEditPage />
+      
+      <ImageSpace/>
+      {/* <ProductEditPage /> */}
     </ConfigProvider >
   )
 }
