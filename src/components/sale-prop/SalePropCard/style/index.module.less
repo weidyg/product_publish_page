@@ -1,3 +1,5 @@
+@import '@arco-design/web-react/es/style/theme/default.less';
+
 .card {
   &-group {
     &-content {
@@ -19,11 +21,19 @@
       height: 320px;
       overflow: auto;
       padding: 8px;
+
+      :global {
+        .@{prefix}-checkbox-group {
+          .@{prefix}-checkbox {
+            margin: auto 4px;
+          }
+        }
+      }
     }
 
     padding: 4px 4px 4px 8px;
     margin-bottom: 8px;
-    width: 100px;
+    width: 104px;
     box-sizing: border-box;
     border-radius: var(--border-radius-medium);
     background-color: var(--color-fill-2);

@@ -99,11 +99,10 @@ function SalePropCard(baseProps: SalePropCardProps) {
                         </Button>
                     </Space>
                     <Space >
-                        <Switch checkedText='显示已选' uncheckedText='显示全部'
+                        <Switch checkedText='已选' uncheckedText='全部'
                             checked={showChecked} onChange={(c) => { setShowChecked(c); }} />
                     </Space>
                     {/* <Input placeholder='请输入搜索' suffix={<IconSearch />} /> */}
-
                 </div>
             }
             bodyStyle={{ padding: '0' }}
@@ -130,36 +129,32 @@ function SalePropCard(baseProps: SalePropCardProps) {
                     )}
                     <div className={styles['card-checkbox-content']}>
                         <Checkbox.Group value={values} onChange={handleValueChange}>
-                            <Grid.Row>
-                                {options?.map((item: any, i: any) => {
-                                    const { value: val, label: text } = item;
-                                    const disabled = vaildDisabled(val);
-                                    const checked = vaildChecked(val);
-                                    const show = (showChecked && checked) || !showChecked;
-
-                                    return (show && <Grid.Col key={i} span={6}>
-                                        <Checkbox value={val} disabled={disabled}>
-                                            {({ checked: _checked }) => {
-                                                return (<Space align='center'
-                                                    className={classNames(styles['card-checkbox'], {
-                                                        [styles['card-checkbox-checked']]: checked,
-                                                        [styles['card-checkbox-disabled']]: disabled
-                                                    })}
-                                                >
-                                                    <div className={styles['card-checkbox-mask']}>
-                                                        <IconCheck className={styles['card-checkbox-mask-icon']} />
-                                                    </div>
-                                                    <div className={styles['card-checkbox-title']}>
-                                                        {text}
-                                                    </div>
-                                                </Space>
-                                                );
-                                            }}
-                                        </Checkbox>
-                                    </Grid.Col>
-                                    );
-                                })}
-                            </Grid.Row>
+                            {options?.map((item: any, i: any) => {
+                                const { value: val, label: text } = item;
+                                const disabled = vaildDisabled(val);
+                                const checked = vaildChecked(val);
+                                const show = (showChecked && checked) || !showChecked;
+                                return (show && <Checkbox key={i} value={val} disabled={disabled}>
+                                    {({ checked: _checked }) => {
+                                        return (
+                                            <Space align='center'
+                                                className={classNames(styles['card-checkbox'], {
+                                                    [styles['card-checkbox-checked']]: checked,
+                                                    [styles['card-checkbox-disabled']]: disabled
+                                                })}
+                                            >
+                                                <div className={styles['card-checkbox-mask']}>
+                                                    <IconCheck className={styles['card-checkbox-mask-icon']} />
+                                                </div>
+                                                <div className={styles['card-checkbox-title']}>
+                                                    {text}
+                                                </div>
+                                            </Space>
+                                        );
+                                    }}
+                                </Checkbox>
+                                );
+                            })}
                         </Checkbox.Group>
                     </div>
                 </div>
