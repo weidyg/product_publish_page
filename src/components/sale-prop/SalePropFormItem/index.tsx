@@ -1,5 +1,5 @@
-import { Button, Card, Form, FormItemProps, Input, Message, Space, Trigger } from "@arco-design/web-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Button, Form, FormItemProps, Input, Message, Space, Trigger } from "@arco-design/web-react";
+import { useEffect, useRef, useState } from "react";
 import useMergeValue from "@arco-design/web-react/es/_util/hooks/useMergeValue";
 import SalePropCard from "../SalePropCard";
 import { SalePropOption } from "../SalePropCard/interface";
@@ -46,13 +46,11 @@ function SalePropInput(props: SalePropInputProps) {
     const group = topGropFieldName && form.getFieldValue(topGropFieldName);
     const fieldValue: any[] = form.getFieldValue(topValuesFieldName);
     const currVals = fieldValue && fieldValue.filter(f => f && f?.text != f?.value) || [];
-    const currValIds = currVals.map((m: any) => m?.value);
-    const currValId = currVals.find(f => f?.text == value)?.value;
+    const currValIds = currVals.filter(f => f?.text != value).map((m: any) => m?.value);
 
     function popup() {
         return <SalePropCard
             group={group?.value}
-            value={currValId}
             values={currValIds}
             isGroup={isGroup}
             options={allOptions}
@@ -95,14 +93,6 @@ function SalePropInput(props: SalePropInputProps) {
         />
     }
 
-    // const [option, setOption] = useState<SalePropOption | undefined>();
-    // const handleChange1 = () => {
-    //     if (option) {
-    //         onChange && onChange(option?.label!);
-    //         valueFieldName && form.setFieldValue(valueFieldName, option?.value);
-    //     }
-    // };
-
     const handleChange = (newValue: any) => {
         let option;
         const old = fieldValue?.find((f: any) => compare(f?.text, newValue));
@@ -130,18 +120,17 @@ function SalePropInput(props: SalePropInputProps) {
     }
 
     const defaultPlaceholder = `请选择${allowCustom ? '或输入' : ''}`;
-    // const [placeholder, setPlaceholder] = useState(defaultPlaceholder);
-
+    const placeholder = visible ? value || defaultPlaceholder : defaultPlaceholder;
     const inputRef = useRef<RefInputType>(null);
     function childrenDom() {
         return <Input allowClear
             ref={inputRef}
             style={{ width: '180px' }}
-            placeholder={defaultPlaceholder}
+            placeholder={placeholder}
             readOnly={!allowCustom}
             suffix={isSelVal ? <StandardIcon /> : ''}
             onBlur={() => { updataIcon(); }}
-            value={value}
+            value={visible ? undefined : value}
             onChange={(val) => {
                 handleChange(val);
                 if (!val && !visible) { setVisible(true); }
@@ -257,20 +246,6 @@ function SalePropFormItem(props: MyFormItemProps) {
     const groupFieldName = isGroup ? `${fieldName}.group` : undefined;
     const valueFieldName = isGroup ? `${fieldName}.value` : fieldName;
     const { form } = Form.useFormContext();
-    // useEffect(() => {
-    //     if (valueFieldName && props.value && props.onChange) {
-    //         const newFieldValue: { text: any; }[] = [];
-    //         props.value.forEach((f: { text: any; }) => {
-    //             if (f && !newFieldValue.some((fi: { text: any; }) => fi.text == f.text)) {
-    //                 newFieldValue.push(f);
-    //             }
-    //         });
-    //         if (newFieldValue.length != value.length) {
-    //             props.onChange(newFieldValue);
-    //         }
-    //     }
-    // }, [])
-
     return (
         <Form.Item layout='vertical' label={label} field={fieldName} style={{ marginBottom: '0px' }}>
             {groupFieldName &&

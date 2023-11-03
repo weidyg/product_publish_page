@@ -283,13 +283,13 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
     const _label = label != parentLabel && <span title={label} style={{ marginTop: '10px' }}>
         {_labelArr.length == 2 ? _labelArr[0] : label}
     </span>;
-    const { form } = Form.useFormContext();
+    // const { form } = Form.useFormContext();
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
             {(values: any) => {
                 const _hide = isHide(values) === true;
                 if (_hide) {
-                    console.log('_fieldName',_fieldName);
+                    // console.log('_fieldName', _fieldName);
                     // form.setFieldValue(_fieldName!, undefined);
                     return;
                 }
@@ -411,8 +411,8 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                 ) : type == 'complex' ? (
                     <Form.Item label={_label} style={{ margin: '0' }}>
                         {_extra && <div style={{ fontSize: '12px', color: 'var(--color-text-3)', margin: '8px 0 4px' }}>{_extra}</div>}
-                        <FormItem {...formItemProps} noStyle>
-                            {FieldNames.cateProp(tags) ? (<>
+                        <FormItem {...formItemProps} field='' noStyle>
+                            {FieldNames.cateProp(tags) ? (
                                 <Card style={{ background: 'var(--color-fill-1)', margin: '0 0 18px 0' }}
                                     bodyStyle={{
                                         padding: '16px 16px 0',
@@ -444,7 +444,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                                         {/* </Grid> */}
                                     </Grid.Row>
                                 </Card>
-                            </>) : FieldNames.saleProp(tags) ? (
+                            ) : FieldNames.saleProp(tags) ? (
                                 <Card bordered={false} bodyStyle={{ padding: '6px 0 0', maxWidth: "950px", margin: 'auto' }}>
                                     {subItems?.map((m, i) => {
                                         return (m.type == 'multiCheck' || m.type == 'complex')
@@ -452,15 +452,15 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                                             : <div key={i}></div>
                                     })}
                                 </Card>
-                            ) : FieldNames.images(tags) ? (<>
+                            ) : FieldNames.images(tags) ? (
                                 <Space wrap={true}>
                                     {subItems?.map((sm: any, si: any) => {
                                         return (<ProFormItem key={si} {...sm} parentLabel={label} />)
                                     })}
                                 </Space>
-                            </>) : (<>
-                                {subItems?.map((sm: any, si: any) => {
-                                    return (<ProFormItem key={si} {...sm} parentLabel={label} />)
+                            ) : (<>
+                                {subItems?.map((m: any, i: any) => {
+                                    return (<ProFormItem key={i} {...m} parentLabel={label} />)
                                 })}
                             </>)
                             }

@@ -1,14 +1,15 @@
 import { useMemo, useState } from "react";
-import { Alert, Button, Card, Checkbox, Grid, Menu, Modal, Space } from "@arco-design/web-react";
-import { IconCheck } from "@arco-design/web-react/icon";
+import { Alert, Button, Card, Checkbox, Grid, Input, Menu, Modal, Space, Switch } from "@arco-design/web-react";
+import { IconCheck, IconSearch } from "@arco-design/web-react/icon";
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import { SalePropCardProps, SalePropGroupOption } from "./interface";
 import styles from './style/index.module.less';
+import classNames from "@arco-design/web-react/es/_util/classNames";
 
 const defaultProps: SalePropCardProps = {};
 function SalePropCard(baseProps: SalePropCardProps) {
     const props = useMergeProps<SalePropCardProps>(baseProps, defaultProps, {});
-    const { isGroup, options, value: propValue, values: propValues, group: propGroup, onOk, onCancel } = props;
+    const { isGroup, options: propOptions, values: propValues, group: propGroup, onOk, onCancel } = props;
     const groupOptions = useMemo(() => {
         if (!isGroup) { return []; }
         let gOpts: SalePropGroupOption[] = [];
@@ -27,10 +28,10 @@ function SalePropCard(baseProps: SalePropCardProps) {
     const [loading, setLoading] = useState(false);
     const [values, setValues] = useState(propValues);
     const [groupValue, setGroupValue] = useState(defalutGroup);
-    const checkOptions = useMemo(() => {
+    const options = useMemo(() => {
         return isGroup
-            ? options?.filter(f => f.group?.value == groupValue)?.sort()
-            : options?.map(m => m)?.sort();
+            ? propOptions?.filter(f => f.group?.value == groupValue)?.sort()
+            : propOptions?.map(m => m)?.sort();
     }, [isGroup, groupValue]);
 
     const handleGroupChange = (val: any) => {
@@ -71,33 +72,40 @@ function SalePropCard(baseProps: SalePropCardProps) {
     };
 
     const vaildDisabled = (val: any): boolean => {
-        let tempValues = propValues;
-        if (propValue && (values || []).length > 0) {
-            tempValues = tempValues?.filter(f => f != propValue);
-        }
-        return (groupValue == propGroup && tempValues?.includes(val)) || false;
+        return (groupValue == propGroup && propValues?.includes(val)) || false;
+    };
+
+    const vaildChecked = (val: any): boolean => {
+        return values?.includes(val) || false;
     };
 
     const selNum = useMemo(() => {
-        let tempValues = values;
-        if (!propValue) { return tempValues?.length || 0; }
-        const otherNum = values?.filter(e => !propValues?.includes(e))?.length || 0;
-        if (otherNum > 0) { tempValues = tempValues?.filter(f => f != propValue); }
-        return tempValues?.length || 0;
-    }, [JSON.stringify(values), propValue]);
+        return values?.length || 0;
+    }, [JSON.stringify(values)]);
 
+    const [showChecked, setShowChecked] = useState(false);
     return (
         <Card className={styles['trigger-popup']}
-            title={<Space>
-                <>已选 {selNum}个</>
-                <Button loading={loading} shape='round' type='primary' size='mini'
-                    onClick={handleOk}>
-                    确 认
-                </Button>
-                <Button shape='round' size='mini' onClick={onCancel}>
-                    取 消
-                </Button>
-            </Space>}
+            title={
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Space >
+                        <>已选 {selNum}个</>
+                        <Button loading={loading} shape='round' type='primary' size='mini'
+                            onClick={handleOk}>
+                            确 认
+                        </Button>
+                        <Button shape='round' size='mini' onClick={onCancel}>
+                            取 消
+                        </Button>
+                    </Space>
+                    <Space >
+                        <Switch checkedText='显示已选' uncheckedText='显示全部'
+                            checked={showChecked} onChange={(c) => { setShowChecked(c); }} />
+                    </Space>
+                    {/* <Input placeholder='请输入搜索' suffix={<IconSearch />} /> */}
+
+                </div>
+            }
             bodyStyle={{ padding: '0' }}
         >
             <Space size={0}>
@@ -123,32 +131,32 @@ function SalePropCard(baseProps: SalePropCardProps) {
                     <div className={styles['card-checkbox-content']}>
                         <Checkbox.Group value={values} onChange={handleValueChange}>
                             <Grid.Row>
-                                {checkOptions?.map((item: any, i: any) => {
+                                {options?.map((item: any, i: any) => {
                                     const { value: val, label: text } = item;
                                     const disabled = vaildDisabled(val);
-                                    return (
-                                        <Grid.Col key={i} span={6}>
-                                            <Checkbox value={val} disabled={disabled}>
-                                                {({ checked }) => {
-                                                    if (checked && val == propValue) {
-                                                        const otherNum = values?.filter(e => !propValues?.includes(e))?.length || 0;
-                                                        if (otherNum > 0) { checked = false; }
-                                                    }
-                                                    return (
-                                                        <Space align='center'
-                                                            className={`${styles['card-checkbox']} ${checked ? styles['card-checkbox-checked'] : ''} ${disabled ? styles['card-checkbox-disabled'] : ''}`}
-                                                        >
-                                                            <div className={styles['card-checkbox-mask']}>
-                                                                <IconCheck className={styles['card-checkbox-mask-icon']} />
-                                                            </div>
-                                                            <div className={styles['card-checkbox-title']}>
-                                                                {text}
-                                                            </div>
-                                                        </Space>
-                                                    );
-                                                }}
-                                            </Checkbox>
-                                        </Grid.Col>
+                                    const checked = vaildChecked(val);
+                                    const show = (showChecked && checked) || !showChecked;
+
+                                    return (show && <Grid.Col key={i} span={6}>
+                                        <Checkbox value={val} disabled={disabled}>
+                                            {({ checked: _checked }) => {
+                                                return (<Space align='center'
+                                                    className={classNames(styles['card-checkbox'], {
+                                                        [styles['card-checkbox-checked']]: checked,
+                                                        [styles['card-checkbox-disabled']]: disabled
+                                                    })}
+                                                >
+                                                    <div className={styles['card-checkbox-mask']}>
+                                                        <IconCheck className={styles['card-checkbox-mask-icon']} />
+                                                    </div>
+                                                    <div className={styles['card-checkbox-title']}>
+                                                        {text}
+                                                    </div>
+                                                </Space>
+                                                );
+                                            }}
+                                        </Checkbox>
+                                    </Grid.Col>
                                     );
                                 })}
                             </Grid.Row>
