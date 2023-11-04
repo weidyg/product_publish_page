@@ -107,13 +107,13 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   function ImgBlock(props: any) {
     const { src } = props;
     const imgRef = useRef<HTMLImageElement>(null);
-    const pix = useMemo(() => {
+    const [pix, setPix] = useState('');
+    useEffect(() => {
       if (imgRef?.current) {
-        return imgRef.current.naturalWidth + 'x' + imgRef.current.naturalHeight;
+        setPix(imgRef.current.naturalWidth + 'x' + imgRef.current.naturalHeight);
       }
-    }, [imgRef?.current]);
+    }, [])
 
-    console.log(imgRef.current);
     return <div className={classNames(styles['cover'], styles['list-item'])}>
       <img ref={imgRef} src={src} />
       <div className={styles['mask']}></div>
