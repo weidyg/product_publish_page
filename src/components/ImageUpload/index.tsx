@@ -6,6 +6,7 @@ import { ImageUploadProps, ImageUploadSize } from './interface';
 import styles from './style/index.module.less';
 import { UploadItem } from '@arco-design/web-react/es/Upload';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
+import ImageSpace from '../ImageSpace';
 
 const defaultProps: ImageUploadProps = {
   size: 'default',
@@ -63,6 +64,18 @@ function ImageUpload(baseProps: ImageUploadProps) {
       </Upload>
     </>
   }
+
+  function ShowUploadImage(props: { children?: ReactNode }) {
+    const { children } = props;
+    return <>
+      <ImageSpace pageSize={20} onItemClick={()=>{
+        if(imgFile?.url){
+          handleChange(undefined);
+        }
+      }}/>
+    </>
+  }
+
 
   function ShowImage(props: { size?: ImageUploadSize }) {
     const { size = 'default' } = props;

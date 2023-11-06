@@ -70,17 +70,19 @@
       return post(productEditUrls.getOptions, data);
     }
 
-    function getImagePageList(folderId, refType, sortName, sortAsc, pageNo, pageSize) {
-      const data = { FolderId: folderId, RefType: refType, SortName: sortName, SortAsc: sortAsc, Page: pageNo, PageSize: pageSize };
+    function getImagePageList(keyword, folderId, refType, sortName, sortAsc, pageNo, pageSize) {
+      const data = { Keyword: keyword, FolderId: folderId, RefType: refType, SortName: sortName, SortAsc: sortAsc, Page: pageNo, PageSize: pageSize };
       return post(productEditUrls.getImagePageList, data).then(function (data) {
         data = data || {};
         const total = data.TotalCount || {};
         const items = data.Items.map(m => {
           return {
+            id: m.Id,
             name: m.FileName,
             pix: '',
             size: m.FileSize,
             url: m.Url,
+            folderId: m.FolderId,
             time: m.CreationTime,
           }
         })

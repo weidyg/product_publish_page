@@ -23,7 +23,15 @@ export async function getRemoteOptions(shopId?: number, categoryId?: string, opt
     return await window.getRemoteOptions(shopId, categoryId, optionAction, forceUpdate);
 }
 
-export async function getImagePageList(folderId: number, refType: string, sortName: string, sortAsc: boolean, pageNo: number, pageSize: number)
-    : Promise<{ items: ImageInfo[], total: number }> {
-    return await window.getImagePageList(folderId, refType, sortName, sortAsc, pageNo, pageSize);
+export async function getImagePageList(input: {
+    pageNo: number,
+    pageSize: number,
+    refType: string,
+    keyword?: string,
+    sortName?: string,
+    sortAsc?: boolean,
+    folderId?: number
+}): Promise<{ items: ImageInfo[], total: number }> {
+    const { folderId, refType, sortName, sortAsc, pageNo, pageSize, keyword } = input;
+    return await window.getImagePageList(keyword, folderId, refType, sortName, sortAsc, pageNo, pageSize);
 }   

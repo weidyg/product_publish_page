@@ -108,7 +108,7 @@ export function getSkuItems(skuSaleProp: ObjVal, skuSalePropName: string, skuIte
             const dataItem: any = { ...skuItem, key, [skuSalePropName]: obj };
             newData.push(dataItem)
         }
-    }); 
+    });
     // console.log('newData', newData);
     return newData;
 }
@@ -372,4 +372,54 @@ export const duplicate = function (arr: string | any[]) {
         }
     }
     return false
-} 
+}
+
+
+const unitSizes = {
+    B: 1.0,
+    K: 1.0 * 1024,
+    M: 1.0 * 1024 * 1024,
+    G: 1.0 * 1024 * 1024 * 1024,
+    T: 1.0 * 1024 * 1024 * 1024 * 1024,
+    P: 1.0 * 1024 * 1024 * 1024 * 1024 * 1024,
+}
+export const convertTime = (timestamp?: number) => {
+    if (!timestamp) { return ''; }
+    var date = new Date(timestamp);
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+    var hour = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+    var formattedDate = `${year}-${`${month < 9 ? '0' : ''}${month + 1}`}-${`${month < 10 ? '0' : ''}${day}`} ${hour}:${minute}:${second}`;
+    return formattedDate;
+}
+export const convertByteUnit = (size?: number, precision: number = 2) => {
+    if (size === undefined) { return ''; }
+    if (size < unitSizes.K) { return `${size?.toFixed(precision)}B`; }
+    if (size < unitSizes.M) { return `${(size / unitSizes.M)?.toFixed(precision)}K`; }
+    if (size < unitSizes.G) { return `${(size / unitSizes.M)?.toFixed(precision)}M`; }
+    if (size < unitSizes.T) { return `${(size / unitSizes.G)?.toFixed(precision)}G`; }
+    if (size < unitSizes.P) { return `${(size / unitSizes.T)?.toFixed(precision)}T`; }
+}
+export const isAcceptFile = (file: File, accept: string) => {
+    if (accept && file) {
+        const accepts = Array.isArray(accept) ? accept : accept.split(',').map((x) => x.trim()).filter((x) => x);
+        const fileExtension = file.name.indexOf('.') > -1 ? file.name.split('.').pop() : '';
+        return accepts.some((type) => {
+            const text = type && type.toLowerCase();
+            const fileType = (file.type || '').toLowerCase();
+            if (text === fileType) { return true; }
+            if (new RegExp('\/\*').test(text)) {
+                const regExp = new RegExp('\/.*$')
+                return fileType.replace(regExp, '') === text.replace(regExp, '');
+            }
+            if (new RegExp('\..*').test(text)) {
+                return text === `.${fileExtension && fileExtension.toLowerCase()}`;
+            }
+            return false;
+        });
+    }
+    return !!file;
+}
