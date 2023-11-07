@@ -1,7 +1,7 @@
 import useMergeProps from "@arco-design/web-react/es/_util/hooks/useMergeProps";
 import { ImageInfo, ImageSpaceProps, ImageUploadInfo, SpaceInfo } from "./interface";
-import { Alert, Button, Divider, Input, Layout, Link, List, Message, Modal, Progress, Select, Space, Spin, Upload } from "@arco-design/web-react";
-import { IconApps, IconList, IconRefresh, IconSearch } from "@arco-design/web-react/icon";
+import { Button, Divider, Input, Layout, Link, List, Message, Modal, Progress, Select, Space, Spin, Tree, Upload } from "@arco-design/web-react";
+import { IconApps, IconList, IconLoading, IconRefresh, IconSearch } from "@arco-design/web-react/icon";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from './style/index.module.less';
 import classNames from "@arco-design/web-react/es/_util/classNames";
@@ -9,7 +9,9 @@ import { isNumber } from "@arco-design/web-react/es/_util/is";
 import { getImagePageList } from "../api";
 import { convertByteUnit, convertTime, isAcceptFile } from "../until";
 import { debounce, throttle } from "lodash";
-import { UploadItem, UploadStatus } from "@arco-design/web-react/es/Upload";
+import { RequestOptions, UploadItem } from "@arco-design/web-react/es/Upload";
+import { TreeDataType } from "@arco-design/web-react/es/Tree/interface";
+import uploadRequest from "./request";
 
 const defaultSort = "timeDes";
 const sortOptions = [
@@ -25,7 +27,12 @@ const sortMap: any = {
   nameDes: { name: 'FileName', asc: false },
 }
 
-
+const defaultFoldeData = [
+  {
+    key: '',
+    title: '我的图片',
+  }
+];
 
 const defaultProps: ImageSpaceProps = {
   pageSize: 20
@@ -33,18 +40,18 @@ const defaultProps: ImageSpaceProps = {
 
 function ImageSpace(baseProps: ImageSpaceProps) {
   const props = useMergeProps<ImageSpaceProps>(baseProps, defaultProps, {});
-  const { pageSize, onItemClick } = props;
+  const { style, className, pageSize, onItemClick } = props;
 
   const [sort, setSort] = useState<string>(defaultSort);
   const [keyword, setKeyword] = useState<string>();
   const [folderId, setFolderId] = useState<number>();
+  const [foldeData, setFoldeData] = useState<TreeDataType[]>(defaultFoldeData);
 
   const [showMode, setShowMode] = useState<'grid' | 'list'>('grid');
   const [showUpload, setShowUpload] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadMoreing, setLoadMoreing] = useState<boolean>(false);
   const [hasNextPage, setHasNextPage] = useState<boolean>(true);
-  // const [currentPage, setCurrentPage] = useState<number>();
 
   const [files, setFiles] = useState<ImageInfo[]>([]);
   const [spaceInfo, setSpaceInfo] = useState<SpaceInfo>({});
@@ -55,7 +62,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   }, [sort]);
 
   useEffect(() => {
-    if (uploadList?.length || 0 == 0) { return; }
+    if ((uploadList?.length || 0) == 0) { return; }
     if (uploadList.every(e => e.status == 'done')) {
       refreshData();
       setUploadList([]);
@@ -70,8 +77,10 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   const loadMoreData = debounce(function () {
     if (hasNextPage) {
       setLoadMoreing(true);
-      const pageNo = Math.floor((files?.length || 0) / pageSize);
-      fetchData(pageNo + 1);
+      setTimeout(() => {
+        const pageNo = Math.floor((files?.length || 0) / pageSize);
+        fetchData(pageNo + 1);
+      }, 100);
     }
   }, 500);
 
@@ -97,14 +106,17 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   function handlerItemClick(value: any) {
     onItemClick && onItemClick(value);
   }
+
   function chenckFile(file: any) {
-    if (!isAcceptFile(file, 'image/*')) {
-      Message.info('不接受的文件类型，请重新上传指定文件类型~');
+    const size = file?.originFile?.size || 0;
+    if (!isAcceptFile(file, 'image/*') || size > 3 * 1024 * 1024) {
+      Message.info('仅支持3MB以内jpg、jpeg、gif、png格式图片上传~');
       return false;
     }
     return true;
   }
-  const [percent, usedSize, totalSize] = useMemo(() => {
+
+  const [usedPercent, usedSize, totalSize] = useMemo(() => {
     const { used, total, free } = spaceInfo;
     const percent = isNumber(used) && isNumber(total) && total > 0 ? ((used / total) * 100) : 0;
     const usedSize = convertByteUnit(used) || '--';
@@ -115,27 +127,20 @@ function ImageSpace(baseProps: ImageSpaceProps) {
 
   const uploads = useMemo(() => {
     const uploadInfos: ImageUploadInfo[] = uploadList?.map((item, i) => {
-      const { uid, percent = 0, status, name, url, originFile, response } = item || {};
+      const { uid, percent: p = 0, status, name, url, originFile, response } = item || {};
       const { size, lastModified } = originFile || {};
-      const m = (response as any)?.Result;
-      const p = status == 'uploading' ? (percent < 20 ? 20 : percent == 100 ? 99 : percent) : percent;
+      const m = (response as ImageInfo) || {};
+      const time = convertTime(lastModified);
+      const percent = status == 'uploading' ? p == 100 ? 99 : p : p;
       return {
-        id: m?.Id,
-        folderId: m?.FolderId,
-        pix: '',
-        name: m?.FileName || name,
-        url: m?.Url || url,
-        size: m?.FileSize || size,
-        time: m?.CreationTime || convertTime(lastModified),
-        uid,
-        percent: p,
-        status,
+        name, url, size, time,
+        uid, percent, status,
+        ...m
       }
     }) || [];
     return uploadInfos;
   }, [JSON.stringify(uploadList)])
 
-  //'init' | 'uploading' | 'done' | 'error'
   function ImgListItem(props: any) {
     const { status, percent, name, url, pix, size, time } = props;
     const imgRef = useRef<HTMLImageElement>(null);
@@ -163,7 +168,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   }
 
   return (<>
-    <div className={styles["layout"]} style={{ padding: '0px' }}>
+    <div className={classNames(styles["layout"], className)} style={{ ...style, padding: '0px' }}>
       <div className={styles["topAlert"]} style={{ display: 'block' }}>欢迎使用图片空间</div>
       <div className={classNames(styles["container"], styles["hasTopAlert"])} >
         <div style={{ display: 'none' }}></div>
@@ -173,11 +178,13 @@ function ImageSpace(baseProps: ImageSpaceProps) {
           >
             <div className={styles["body"]} >
               <div className={styles["cates"]} >
-
+                <Tree defaultSelectedKeys={['']}
+                  treeData={foldeData}
+                  showLine={true} />
               </div>
               <div className={styles["list"]} >
                 <div className={styles["bar"]}>
-                  <Space>
+                  <Space style={{ marginBottom: '4px' }}>
                     <div className={classNames(styles['icon-btn'], { [styles['active']]: showMode == 'grid' })}>
                       <IconApps onClick={() => { setShowMode('grid'); }} />
                     </div>
@@ -204,17 +211,20 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                       刷新
                     </Link>
                   </Space>
-                  <Space style={{ float: 'right' }}>
+                  <Space style={{ float: 'right', marginBottom: '4px' }}>
                     <div>
                       <div>{`已用 ${usedSize} / ${totalSize}`}</div>
                       <Progress showText={false} animation width={200} style={{ display: 'block' }}
-                        status={percent > 90 ? 'error' : percent > 80 ? 'warning' : 'normal'}
-                        percent={percent} />
+                        status={usedPercent > 90 ? 'error' : usedPercent > 80 ? 'warning' : 'normal'}
+                        percent={usedPercent} />
                     </div>
-                    <Button onClick={() => {
-                      setShowUpload(true);
-                      setUploadList([]);
-                    }}>上传图片</Button>
+                    <Button
+                      onClick={() => {
+                        setShowUpload(true);
+                        setUploadList([]);
+                      }}
+                      style={{ zIndex: 100 }}
+                    >上传图片</Button>
                   </Space>
                 </div>
 
@@ -233,17 +243,20 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                   render={(item, index) => (
                     <ImgListItem key={index} {...item} />
                   )}
+                  offsetBottom={200}
                   scrollLoading={
-                    loadMoreing
-                      ? <Spin loading={loadMoreing} tip="加载中..." />
-                      : <Divider style={{ margin: '0' }}>{
-                        hasNextPage
-                          ? <Link onClick={() => { loadMoreData(); }}>加载更多...</Link>
-                          : <>没有更多数据</>
-                      }
-                      </Divider>
+                    <Divider style={{ marginTop: '0' }}>{
+                      hasNextPage
+                        ? <Button type='text'
+                          loading={loadMoreing}
+                          onClick={() => { loadMoreData(); }}>
+                          {loadMoreing ? '加载中...' : '加载更多...'}
+                        </Button>
+                        : <>没有更多数据</>
+                    }
+                    </Divider>
                   }
-                  onReachBottom={(currentPage) => {
+                  onReachBottom={() => {
                     loadMoreData();
                   }}
                 />
@@ -264,24 +277,28 @@ function ImageSpace(baseProps: ImageSpaceProps) {
               listType={'picture-list'}
               fileList={uploadList}
               showUploadList={false}
-              tip='只能上传图片'
+              tip='仅支持3MB以内jpg、jpeg、gif、png格式图片上传'
               accept='image/*'
-              action='http://localhost:60486/api/services/app/ProductPublish/UploadImages'
               name={'file'}
-              data={{ shopId: 1, productId: 1, }}
+              data={{}}
               beforeUpload={(file) => {
                 const chenck = chenckFile(file);
-                if (chenck) {
-                  setShowUpload(false);
-                }
+                if (chenck) { setShowUpload(false); }
                 return chenck;
               }}
+              customRequest={uploadRequest}
               onDrop={(e) => {
                 let file = e.dataTransfer.files[0];
                 return chenckFile(file);
               }}
+              onProgress={(file: UploadItem, e?: ProgressEvent) => {
+                setUploadList((v) => {
+                  return v.map((x) => {
+                    return x.uid === file.uid ? file : x;
+                  });
+                });
+              }}
               onChange={(fileList: UploadItem[], file: UploadItem) => {
-                console.log('fileList', fileList, file);
                 setUploadList(fileList);
               }}
             />

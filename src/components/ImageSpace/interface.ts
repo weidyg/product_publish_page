@@ -1,23 +1,26 @@
-import { UploadItem, UploadStatus } from "@arco-design/web-react/es/Upload";
+import {UploadStatus } from "@arco-design/web-react/es/Upload";
+import { CSSProperties } from "react";
 
 
 export interface ImageSpaceProps {
+    style?: CSSProperties;
+    className?: string | string[];
     pageSize: number,
     onItemClick?: (item: ImageInfo) => void,
 }
 
 export interface ImageInfo {
-    id: number;
+    id?: number;
     folderId?: number;
-    name: string;
-    pix: string;
-    size: number;
-    url: string;
-    time: string;
+    name?: string;
+    pix?: string;
+    size?: number;
+    url?: string;
+    time?: string;
 
-    uid?: string;
-    status?: UploadStatus;
-    percent?: number;
+    // uid?: string;
+    // status?: UploadStatus;
+    // percent?: number;
 }
 export interface SpaceInfo {
     used?: number,

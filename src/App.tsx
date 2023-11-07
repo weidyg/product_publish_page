@@ -14,8 +14,8 @@ function App() {
       }}
     >
       
-      <ImageSpace/>
-      {/* <ProductEditPage /> */}
+      {/* <ImageSpace/> */}
+      <ProductEditPage />
     </ConfigProvider >
   )
 }

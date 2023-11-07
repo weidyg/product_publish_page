@@ -1,3 +1,5 @@
+@import '@arco-design/web-react/es/style/theme/default.less';
+
 @picture-size: 120px;
 @picture-operate-size: 24px;
 
@@ -17,6 +19,21 @@
   text-align: center;
   vertical-align: top;
   background-color: var(--color-fill-2);
+  cursor: pointer;
+
+  &-modal {
+    :global {
+      .@{prefix}-modal {
+        &-content {
+          padding: 0px 20px;
+        }
+
+        &-header {
+          border-bottom: none;
+        }
+      }
+    }
+  }
 
   &-add {
     border: 1px dashed var(--color-border-3);
