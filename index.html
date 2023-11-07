@@ -97,13 +97,7 @@
         const e = response && response.Error;
         const m = response && response.Result;
 
-        const error = e && {
-          code: e.Code,
-          message: e.Message,
-          details: e.Details,
-        }
-
-        const result = s && m && {
+        const result = (s && m && {
           id: m.Id,
           name: m.FileName,
           pix: '',
@@ -111,9 +105,14 @@
           url: m.Url,
           folderId: m.FolderId,
           time: m.CreationTime,
-        }
-        return { error, ...result };
-        console.log("convertData", { error, ...result });
+        }) || {};
+
+        result.error = e && {
+          code: e.Code,
+          message: e.Message,
+          details: e.Details,
+        };
+        return result;
       };
       return { action, convertData };
     }

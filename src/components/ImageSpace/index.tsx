@@ -1,7 +1,7 @@
 import useMergeProps from "@arco-design/web-react/es/_util/hooks/useMergeProps";
 import { ImageInfo, ImageSpaceProps, ImageUploadInfo, SpaceInfo } from "./interface";
-import { Button, Divider, Input, Layout, Link, List, Message, Modal, Progress, Select, Space, Spin, Tree, Upload } from "@arco-design/web-react";
-import { IconApps, IconList, IconLoading, IconRefresh, IconSearch } from "@arco-design/web-react/icon";
+import { Button, Divider, Input, Link, List, Message, Modal, Progress, Select, Space, Tree, Typography, Upload } from "@arco-design/web-react";
+import { IconApps, IconList, IconRefresh, IconSearch } from "@arco-design/web-react/icon";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from './style/index.module.less';
 import classNames from "@arco-design/web-react/es/_util/classNames";
@@ -9,7 +9,7 @@ import { isNumber } from "@arco-design/web-react/es/_util/is";
 import { getImagePageList } from "../api";
 import { convertByteUnit, convertTime, isAcceptFile } from "../until";
 import { debounce, throttle } from "lodash";
-import { RequestOptions, UploadItem } from "@arco-design/web-react/es/Upload";
+import { UploadItem } from "@arco-design/web-react/es/Upload";
 import { TreeDataType } from "@arco-design/web-react/es/Tree/interface";
 import uploadRequest from "./request";
 
@@ -152,9 +152,10 @@ function ImageSpace(baseProps: ImageSpaceProps) {
         {(status && status != 'done')
           ? <Progress type='circle'
             percent={percent}
-            size={listOnly ? 'mini' : 'large'}
+            size={listOnly ? 'mini' : 'default'}
             status={status == 'error' ? 'error' : undefined}
-            className={classNames(styles['progress'])} />
+            className={classNames(styles['progress'])} 
+            />
           : <img ref={imgRef} alt={name} src={url} />
         }
         <div className={styles['mask']}></div>
@@ -244,15 +245,18 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                     <ImgListItem key={index} {...item} />
                   )}
                   offsetBottom={200}
-                  scrollLoading={
-                    <Divider style={{ marginTop: '0' }}>{
+                  scrollLoading={files?.length > 0
+                    && <Divider style={{ marginTop: '0', fontSize: '12px' }}>{
                       hasNextPage
                         ? <Button type='text'
                           loading={loadMoreing}
-                          onClick={() => { loadMoreData(); }}>
+                          onClick={() => { loadMoreData(); }}
+                          loadingFixedWidth={true}>
                           {loadMoreing ? '加载中...' : '加载更多...'}
                         </Button>
-                        : <>没有更多数据</>
+                        : <Typography.Text type='secondary' style={{ fontSize: '12px' }}>
+                          没有更多数据
+                        </Typography.Text>
                     }
                     </Divider>
                   }
