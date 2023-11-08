@@ -403,19 +403,25 @@ export const convertByteUnit = (size?: number, precision: number = 2) => {
     if (size < unitSizes.T) { return `${(size / unitSizes.G)?.toFixed(precision)}G`; }
     if (size < unitSizes.P) { return `${(size / unitSizes.T)?.toFixed(precision)}T`; }
 }
-export const isAcceptFile = (file: File, accept: string) => {
+export const isAcceptFile = (file: File, accept: string | string[]) => {
     if (accept && file) {
         const accepts = Array.isArray(accept) ? accept : accept.split(',').map((x) => x.trim()).filter((x) => x);
         const fileExtension = file.name.indexOf('.') > -1 ? file.name.split('.').pop() : '';
+        console.log('accepts', accepts);
+        console.log('fileExtension', fileExtension);
         return accepts.some((type) => {
             const text = type && type.toLowerCase();
             const fileType = (file.type || '').toLowerCase();
+            console.log('text', text);
+            console.log('fileType', fileType);
             if (text === fileType) { return true; }
-            if (new RegExp('\/\*').test(text)) {
+            if (/\/\*/.test(text)) {
                 const regExp = new RegExp('\/.*$')
+                console.log('RegExp1', fileType.replace(regExp, ''), text.replace(regExp, ''));
                 return fileType.replace(regExp, '') === text.replace(regExp, '');
             }
-            if (new RegExp('\..*').test(text)) {
+            if (/\..*/.test(text)) {
+                console.log('RegExp1', text, `.${fileExtension && fileExtension.toLowerCase()}`);
                 return text === `.${fileExtension && fileExtension.toLowerCase()}`;
             }
             return false;

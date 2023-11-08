@@ -72,19 +72,19 @@ export const uploadRequest: UploadRequest = function (options: RequestOptions) {
   const xhr = new XMLHttpRequest();
   if (onProgress && xhr.upload) {
     xhr.upload.onprogress = function (event: ProgressEvent) {
-      console.log('onprogress', xhr, event, event.loaded, event.total);
+      // console.log('onprogress', xhr, event, event.loaded, event.total);
       let percent;
       if (event.total > 0) { percent = (event.loaded / event.total) * 100; }
       onProgress(parseInt(`${percent}`, 10), event);
     };
   }
   xhr.onerror = function error(event: ProgressEvent) {
-    console.log('onerror', xhr, event);
+    // console.log('onerror', xhr, event);
     var response = getResponse(xhr, event, convertData);
     onError(response?.error)
   };
   xhr.onload = function onload(event: ProgressEvent) {
-    console.log('onload', xhr, event);
+    // console.log('onload', xhr, event);
     var response = getResponse(xhr, event, convertData);
     if (response?.error) {
       return onError(response.error);

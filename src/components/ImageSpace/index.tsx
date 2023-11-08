@@ -109,7 +109,9 @@ function ImageSpace(baseProps: ImageSpaceProps) {
 
   function chenckFile(file: any) {
     const size = file?.originFile?.size || 0;
-    if (!isAcceptFile(file, 'image/*') || size > 3 * 1024 * 1024) {
+    const isAccept = isAcceptFile(file, ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']);
+    console.log('isAccept',isAccept);
+    if (!isAccept || size > 3 * 1024 * 1024) {
       Message.info('仅支持3MB以内jpg、jpeg、gif、png格式图片上传~');
       return false;
     }
@@ -295,10 +297,10 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                 return chenck;
               }}
               customRequest={uploadRequest}
-              onDrop={(e) => {
-                let file = e.dataTransfer.files[0];
-                return chenckFile(file);
-              }}
+              // onDrop={(e) => {
+              //   let file = e.dataTransfer.files[0];
+              //   return chenckFile(file);
+              // }}
               onProgress={(file: UploadItem, e?: ProgressEvent) => {
                 setUploadList((v) => {
                   return v.map((x) => {
