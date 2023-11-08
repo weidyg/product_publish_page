@@ -38,6 +38,7 @@
       saveData: baseUrl + "SaveProductEditData",
       getOptions: baseUrl + "GetOptions",
       getImagePageList: baseUrl + "GetImagePageList",
+      uploadImages: baseUrl + "UploadImages",
     }
 
     function loadProductEditData(id) {
@@ -59,17 +60,14 @@
           }
         });
     }
-
     function saveProductEditData(id, dataJson, publish) {
       const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
       return post(productEditUrls.saveData, data);
     }
-
     function getRemoteOptions(shopId, categoryId, optionAction, forceUpdate) {
       const data = { ShopId: shopId, CategoryId: categoryId, Action: optionAction, ForceUpdate: forceUpdate };
       return post(productEditUrls.getOptions, data);
     }
-
     function getImagePageList(keyword, folderId, refType, sortName, sortAsc, pageNo, pageSize) {
       const data = { Keyword: keyword, FolderId: folderId, RefType: refType, SortName: sortName, SortAsc: sortAsc, Page: pageNo, PageSize: pageSize };
       return post(productEditUrls.getImagePageList, data).then(function (data) {
@@ -89,9 +87,8 @@
         return { total, items }
       });
     }
-
     function getImageUploadConfig() {
-      const action = 'http://localhost:60486/api/services/app/ProductPublish/UploadImages';
+      const action = productEditUrls.uploadImages
       const convertData = (response) => {
         const s = response && response.Success;
         const e = response && response.Error;
@@ -116,7 +113,7 @@
       };
       return { action, convertData };
     }
-
+   
     function post(url, data) {
       return fetch(url, {
         method: "POST",
