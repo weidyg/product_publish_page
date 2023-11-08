@@ -74,36 +74,27 @@
         data = data || {};
         const total = data.TotalCount || {};
         const items = data.Items.map(m => {
-          return {
-            id: m.Id,
-            name: m.FileName,
-            pix: '',
-            size: m.FileSize,
-            url: m.Url,
-            folderId: m.FolderId,
-            time: m.CreationTime,
-          }
+          return ConverImageInfo(m);
         })
         return { total, items }
       });
     }
     function getImageUploadConfig() {
-      const action = productEditUrls.uploadImages
-      const convertData = (response) => {
-        const s = response && response.Success;
-        const e = response && response.Error;
-        const m = response && response.Result;
-
-        const result = (s && m && {
-          id: m.Id,
-          name: m.FileName,
-          pix: '',
-          size: m.FileSize,
-          url: m.Url,
-          folderId: m.FolderId,
-          time: m.CreationTime,
-        }) || {};
-
+      const action = productEditUrls.uploadImages;
+      const convertRequest = (request) => {
+        if (!request) { return {}; }
+        const _request = {
+          FolderId: request.folderId,
+          ImgPix: request.pix,
+        }
+        return _request;
+      };
+      const convertResponse = (response) => {
+        if (!response) { return {}; }
+        const s = response.Success;
+        const e = response.Error;
+        const m = response.Result;
+        const result = (s && m && ConverImageInfo(m)) || {};
         result.error = e && {
           code: e.Code,
           message: e.Message,
@@ -111,9 +102,21 @@
         };
         return result;
       };
-      return { action, convertData };
+      return { action, convertRequest, convertResponse };
     }
-   
+
+    function ConverImageInfo(m) {
+      return {
+        id: m.Id,
+        name: m.FileName,
+        pix: m.ImagePix,
+        size: m.FileSize,
+        url: m.Url,
+        folderId: m.FolderId,
+        time: m.CreationTime,
+      }
+    }
+
     function post(url, data) {
       return fetch(url, {
         method: "POST",

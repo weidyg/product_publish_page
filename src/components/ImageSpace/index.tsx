@@ -9,7 +9,7 @@ import { isNumber } from "@arco-design/web-react/es/_util/is";
 import { getImagePageList } from "../api";
 import { convertByteUnit, convertTime, isAcceptFile } from "../until";
 import { debounce, throttle } from "lodash";
-import { UploadItem } from "@arco-design/web-react/es/Upload";
+import { RequestOptions, UploadItem } from "@arco-design/web-react/es/Upload";
 import { TreeDataType } from "@arco-design/web-react/es/Tree/interface";
 import uploadRequest from "./request";
 
@@ -45,6 +45,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   const [sort, setSort] = useState<string>(defaultSort);
   const [keyword, setKeyword] = useState<string>();
   const [folderId, setFolderId] = useState<number>();
+  const [uploadFolderId, setUploadFolderId] = useState<number>();
   const [foldeData, setFoldeData] = useState<TreeDataType[]>(defaultFoldeData);
 
   const [showMode, setShowMode] = useState<'grid' | 'list'>('grid');
@@ -107,8 +108,8 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     onItemClick && onItemClick(value);
   }
 
-  function chenckFile(file: any) {
-    const size = file?.originFile?.size || 0;
+  function chenckFile(file: File) {
+    const size = file?.size || 0;
     const isAccept = isAcceptFile(file, ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']);
     console.log('isAccept', isAccept);
     if (!isAccept || size > 3 * 1024 * 1024) {
@@ -294,13 +295,27 @@ function ImageSpace(baseProps: ImageSpaceProps) {
               tip='仅支持3MB以内jpg、jpeg、gif、png格式图片上传'
               accept='image/*'
               name={'file'}
-              data={{}}
-              beforeUpload={(file) => {
+              data={{
+                folderId: uploadFolderId
+              }}
+              beforeUpload={(file: File) => {
+                console.log('beforeUpload', file);
                 const chenck = chenckFile(file);
                 if (chenck) { setShowUpload(false); }
                 return chenck;
               }}
-              customRequest={uploadRequest}
+              customRequest={(options: RequestOptions) => {
+                const { file, data: originData = {}, ...rest } = options;
+                let img = new Image();
+                img.src = URL.createObjectURL(file);
+                img.onload = function () {
+                  const pix = img.width > 0 && img.height > 0
+                    ? `${img.width}x${img.height}`
+                    : undefined;
+                  const data = { ...originData, pix };
+                  return uploadRequest({ ...rest, file, data });
+                }
+              }}
               // onDrop={(e) => {
               //   let file = e.dataTransfer.files[0];
               //   return chenckFile(file);

@@ -62,6 +62,6 @@ export function getImageUploadConfig() {
     //     }
     //     return { error, ...result };
     // };
-    const { action, convertData } = window.getImageUploadConfig();
-    return { action, convertData };
+    const { action, convertRequest, convertResponse } = window.getImageUploadConfig();
+    return { action,convertRequest,  convertResponse };
 }   

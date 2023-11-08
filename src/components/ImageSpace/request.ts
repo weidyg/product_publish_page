@@ -44,7 +44,13 @@ function getResponse(xhr: XMLHttpRequest, ev: ProgressEvent, convertData: ((arg0
     return errorMessage(-1, text, `${e}`);
   }
 }
-
+function appendData(data: object, callback: any) {
+  for (const key in data) {
+    if (isValidKey(key, data) && data[key] != null) {
+      callback(key, data[key]);
+    }
+  }
+}
 function isValidKey(key: string | number | symbol, object: object): key is keyof typeof object {
   return key in object;
 }
@@ -61,8 +67,9 @@ export const uploadRequest: UploadRequest = function (options: RequestOptions) {
     data: originData = {},
     withCredentials = false,
   } = options;
+  // console.log('uploadRequest', options);
 
-  const { action, convertData } = getImageUploadConfig();
+  const { action, convertRequest, convertResponse } = getImageUploadConfig();
   function getValue(value: string | object | undefined) {
     if (typeof value === 'function') { return value(file); }
     return value;
@@ -80,12 +87,12 @@ export const uploadRequest: UploadRequest = function (options: RequestOptions) {
   }
   xhr.onerror = function error(event: ProgressEvent) {
     // console.log('onerror', xhr, event);
-    var response = getResponse(xhr, event, convertData);
+    var response = getResponse(xhr, event, convertResponse);
     onError(response)
   };
   xhr.onload = function onload(event: ProgressEvent) {
     // console.log('onload', xhr, event);
-    var response = getResponse(xhr, event, convertData);
+    var response = getResponse(xhr, event, convertResponse);
     if (response?.error) {
       return onError(response);
     } else {
@@ -94,21 +101,22 @@ export const uploadRequest: UploadRequest = function (options: RequestOptions) {
   };
 
   const formData = new FormData();
-  Object.keys(data || {}).forEach((key) => {
-    if (isValidKey(key, data) && data[key] != null) {
-      formData.append(key, data[key]);
-    }
+  const _data = convertRequest(data);
+  appendData(_data, (key: string, value: string) => {
+    formData.append(key, value);
   });
+
+  // console.log('uploadRequest _data', _data);
   formData.append(name || 'file', file);
   xhr.open('post', action!, true);
   if (withCredentials && 'withCredentials' in xhr) {
     xhr.withCredentials = true;
   }
-  for (const h in headers) {
-    if (isValidKey(h, headers) && headers[h] != null) {
-      xhr.setRequestHeader(h, headers[h]);
-    }
-  }
+  
+  appendData(headers, (key: string, value: string) => {
+    xhr.setRequestHeader(key, value);
+  });
+
   xhr.send(formData);
   return { abort() { xhr.abort(); }, };
 };
