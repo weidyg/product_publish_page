@@ -21,9 +21,9 @@ function RichTextEditor(props: any) {
     const toolbarConfig: Partial<IToolbarConfig> = {
         toolbarKeys: [
             'headerSelect', '|',
-            'bold', 'underline', 'italic', 'color', 'bgColor', '|',
+            'bold', 'underline',  /*'italic',*/ 'color', 'bgColor', '|',
             'fontSize', 'fontFamily', /*'lineHeight',*/ '|',
-            'bulletedList', 'numberedList', '|',
+            // 'bulletedList', 'numberedList', '|',
             // 'insertTable', 'divider', '|',
             'undo', 'redo', '|',
             'fullScreen',
@@ -31,6 +31,46 @@ function RichTextEditor(props: any) {
     }
     const editorConfig: Partial<IEditorConfig> = {
         placeholder: '请输入内容...',
+        MENU_CONF: {
+            'uploadImage': {
+                // // 用户自定义插入图片
+                // customInsert(res, insertFn) {
+                //     console.log('customInsert', res)
+                //     const imgInfo = res.data[0] || {}
+                //     const { url, alt, href } = imgInfo
+                //     if (!url) throw new Error(`Image url is empty`)
+
+                //     // 自己插入图片
+                //     console.log('自己插入图片', url)
+                //     insertFn(url, alt, href)
+                // },
+
+                // // 用户自定义上传图片
+                // customUpload(file, insertFn) {
+                //     console.log('customUpload', file)
+
+                //     return new Promise((resolve) => {
+                //         // 插入一张图片，模拟异步
+                //         setTimeout(() => {
+                //             const src = `https://www.baidu.com/img/flexible/logo/pc/result@2.png?r=${Math.random()}`
+                //             insertFn(src, '百度 logo', src)
+                //             resolve('ok')
+                //         }, 500)
+                //     })
+                // },
+
+                // // 自定义选择图片（如图床）
+                // customBrowseAndUpload(insertFn) {
+                //     alert('自定义选择图片，如弹出图床')
+
+                //     // 插入一张图片，模拟异步
+                //     setTimeout(() => {
+                //         const src = 'https://www.baidu.com/img/flexible/logo/pc/result@2.png'
+                //         insertFn(src, '百度 logo', src) // 插入图片
+                //     }, 500)
+                // },
+            }
+        }
     }
 
     useEffect(() => {

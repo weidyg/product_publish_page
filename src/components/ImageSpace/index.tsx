@@ -154,8 +154,8 @@ function ImageSpace(baseProps: ImageSpaceProps) {
             percent={percent}
             size={listOnly ? 'mini' : 'default'}
             status={status == 'error' ? 'error' : undefined}
-            className={classNames(styles['progress'])} 
-            />
+            className={classNames(styles['progress'])}
+          />
           : <img ref={imgRef} alt={name} src={url} />
         }
         <div className={styles['mask']}></div>
@@ -168,6 +168,24 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     </div>
   }
 
+  function LoadMoreDivider(props: any) {
+    const show = files?.length >= pageSize;
+    return <>
+      {show && <Divider style={{ marginTop: '0', fontSize: '12px' }}>{
+        hasNextPage
+          ? <Button type='text'
+            loading={loadMoreing}
+            onClick={() => { loadMoreData(); }}
+            loadingFixedWidth={true}>
+            {loadMoreing ? '加载中...' : '加载更多...'}
+          </Button>
+          : <Typography.Text type='secondary' style={{ fontSize: '12px' }}>
+            没有更多数据
+          </Typography.Text>
+      }
+      </Divider>}
+    </>
+  }
   return (<>
     <div className={classNames(styles["layout"], className)} style={{ ...style, padding: '0px' }}>
       <div className={styles["topAlert"]} style={{ display: 'block' }}>欢迎使用图片空间</div>
@@ -245,21 +263,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                     <ImgListItem key={index} {...item} />
                   )}
                   offsetBottom={200}
-                  scrollLoading={files?.length > 0
-                    && <Divider style={{ marginTop: '0', fontSize: '12px' }}>{
-                      hasNextPage
-                        ? <Button type='text'
-                          loading={loadMoreing}
-                          onClick={() => { loadMoreData(); }}
-                          loadingFixedWidth={true}>
-                          {loadMoreing ? '加载中...' : '加载更多...'}
-                        </Button>
-                        : <Typography.Text type='secondary' style={{ fontSize: '12px' }}>
-                          没有更多数据
-                        </Typography.Text>
-                    }
-                    </Divider>
-                  }
+                  scrollLoading={<LoadMoreDivider />}
                   onReachBottom={() => {
                     loadMoreData();
                   }}
