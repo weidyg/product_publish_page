@@ -81,13 +81,13 @@ export const uploadRequest: UploadRequest = function (options: RequestOptions) {
   xhr.onerror = function error(event: ProgressEvent) {
     // console.log('onerror', xhr, event);
     var response = getResponse(xhr, event, convertData);
-    onError(response?.error)
+    onError(response)
   };
   xhr.onload = function onload(event: ProgressEvent) {
     // console.log('onload', xhr, event);
     var response = getResponse(xhr, event, convertData);
     if (response?.error) {
-      return onError(response.error);
+      return onError(response);
     } else {
       onSuccess(response);
     }

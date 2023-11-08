@@ -110,9 +110,9 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   function chenckFile(file: any) {
     const size = file?.originFile?.size || 0;
     const isAccept = isAcceptFile(file, ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']);
-    console.log('isAccept',isAccept);
+    console.log('isAccept', isAccept);
     if (!isAccept || size > 3 * 1024 * 1024) {
-      Message.info('仅支持3MB以内jpg、jpeg、gif、png格式图片上传~');
+      Message.error('仅支持3MB以内jpg、jpeg、gif、png格式图片上传~');
       return false;
     }
     return true;
@@ -144,7 +144,8 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   }, [JSON.stringify(uploadList)])
 
   function ImgListItem(props: any) {
-    const { status, percent, name, url, pix, size, time } = props;
+    const { error, status, percent, name, url, pix, size, time } = props;
+    // console.log('ImgListItem', props);
     const imgRef = useRef<HTMLImageElement>(null);
     const listOnly = showMode == 'list';
     return <div className={classNames(styles['item'], styles['pic'])}
@@ -152,12 +153,15 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     >
       <div className={classNames(styles['cover'], styles['list-item'])}>
         {(status && status != 'done')
-          ? <Progress type='circle'
-            percent={percent}
-            size={listOnly ? 'mini' : 'default'}
-            status={status == 'error' ? 'error' : undefined}
-            className={classNames(styles['progress'])}
-          />
+          ? <div title={error?.message}>
+            <Progress
+              type='circle'
+              percent={percent}
+              size={listOnly ? 'mini' : 'default'}
+              status={status == 'error' ? 'error' : undefined}
+              className={classNames(styles['progress'])}
+            />
+          </div>
           : <img ref={imgRef} alt={name} src={url} />
         }
         <div className={styles['mask']}></div>
@@ -302,6 +306,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
               //   return chenckFile(file);
               // }}
               onProgress={(file: UploadItem, e?: ProgressEvent) => {
+                // console.log('onProgress', file);
                 setUploadList((v) => {
                   return v.map((x) => {
                     return x.uid === file.uid ? file : x;
@@ -309,6 +314,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                 });
               }}
               onChange={(fileList: UploadItem[], file: UploadItem) => {
+                // console.log('onChange',fileList, file);
                 setUploadList(fileList);
               }}
             />
