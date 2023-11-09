@@ -175,10 +175,10 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     </div>
   }
 
-  function LoadMoreDivider(props: any) {
+  function LoadMoreDivider() {
     const show = files?.length >= pageSize;
-    return <>
-      {show && <Divider style={{ marginTop: '0', fontSize: '12px' }}>{
+    return show
+      ? <Divider style={{ marginTop: '0', fontSize: '12px' }}>{
         hasNextPage
           ? <Button type='text'
             loading={loadMoreing}
@@ -190,8 +190,8 @@ function ImageSpace(baseProps: ImageSpaceProps) {
             没有更多数据
           </Typography.Text>
       }
-      </Divider>}
-    </>
+      </Divider>
+      : undefined
   }
   return (<>
     <div className={classNames(styles["layout"], className)} style={{ ...style, padding: '0px' }}>
@@ -270,7 +270,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                     <ImgListItem key={index} {...item} />
                   )}
                   offsetBottom={200}
-                  scrollLoading={<LoadMoreDivider />}
+                  scrollLoading={LoadMoreDivider()}
                   onReachBottom={() => {
                     loadMoreData();
                   }}
