@@ -63,34 +63,93 @@
         });
     }
 
-    const id = getQueryString('id');
-    const spuId = getQueryString('spuId');
+    function getId(id) {
+      id = id || getQueryString('id');
+      return id;
+    }
+    // const id = getQueryString('id');
 
-    const baseUrl = 'http://localhost:60486/api/services/app/NetShopProductRelation/';
-    const productRelationUrls = {
-      getProductInfo: baseUrl + "GetProductInfo",
-      SaveProductRelation: baseUrl + "SaveProductRelation",
-      SysSpuSearch: baseUrl + "SysSpuSearch",
-      GetSysSkus: baseUrl + "GetSysSkus",
+    const baseUrl = 'http://localhost:60486/api/services/app/ProductPublish/';
+    const productEditUrls = {
+      loadData: baseUrl + "GetProductEditData",
+      saveData: baseUrl + "SaveProductEditData",
+      getOptions: baseUrl + "GetOptions",
+      getImagePageList: baseUrl + "GetImagePageList",
+      uploadImages: baseUrl + "UploadImages",
     }
 
-    function loadProductInfo() {
-      const data = { Id: id, SpuId: spuId };
-      return post(productRelationUrls.getProductInfo, data);
+    function loadProductEditData(id) {
+      const data = { ItemId: getId(id) };
+      return post(productEditUrls.loadData, data)
+        .then(function (data) {
+          data = data || {};
+          return {
+            itemId: data.Id,
+            platformId: data.PlatformId,
+            shopId: data.ShopId,
+            platformName: data.PlatformName,
+            shopName: data.ShopName,
+            categoryId: data.CategoryId,
+            categoryNamePath: data.CategoryNamePath,
+            formSchema: JSON.parse(data.FormSchemaJson),
+            data: JSON.parse(data.FormDataJson),
+          }
+        });
     }
-
-    function sysSpuSearch(keyword) {
-      const data = { Keyword: keyword };
-      return post(productRelationUrls.SysSpuSearch, data);
+    function saveProductEditData(id, dataJson, publish) {
+      const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
+      return post(productEditUrls.saveData, data);
     }
-
-    function getSysSkus(sysSpuId) {
-      const data = { SysSpuId: sysSpuId };
-      return post(productRelationUrls.GetSysSkus, data);
+    function getRemoteOptions(shopId, categoryId, optionAction, forceUpdate) {
+      const data = { ShopId: shopId, CategoryId: categoryId, Action: optionAction, ForceUpdate: forceUpdate };
+      return post(productEditUrls.getOptions, data);
     }
-
-    function saveSpuInfo(data) {
-      return post(productRelationUrls.SaveProductRelation, data);
+    function getImagePageList(keyword, folderId, refType, sortName, sortAsc, pageNo, pageSize) {
+      const data = { Keyword: keyword, FolderId: folderId, RefType: refType, SortName: sortName, SortAsc: sortAsc, Page: pageNo, PageSize: pageSize };
+      return post(productEditUrls.getImagePageList, data).then(function (data) {
+        data = data || {};
+        const total = data.TotalCount || {};
+        const items = data.Items.map(m => {
+          return ConverImageInfo(m);
+        })
+        return { total, items }
+      });
+    }
+    function getImageUploadConfig() {
+      const action = productEditUrls.uploadImages;
+      const convertRequest = (request) => {
+        if (!request) { return {}; }
+        const _request = {
+          FolderId: request.folderId,
+          ImgPix: request.pix,
+        }
+        return _request;
+      };
+      const convertResponse = (response) => {
+        if (!response) { return {}; }
+        const s = response.Success;
+        const e = response.Error;
+        const m = response.Result;
+        const result = (s && m && ConverImageInfo(m)) || {};
+        result.error = e && {
+          code: e.Code,
+          message: e.Message,
+          details: e.Details,
+        };
+        return result;
+      };
+      return { action, convertRequest, convertResponse };
+    }
+    function ConverImageInfo(m) {
+      return {
+        id: m.Id,
+        name: m.FileName,
+        size: m.FileSize,
+        pix: m.ImgPix,
+        url: m.Url,
+        folderId: m.FolderId,
+        time: m.CreationTime,
+      }
     }
 
   </script>

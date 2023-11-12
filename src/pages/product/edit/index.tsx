@@ -95,36 +95,19 @@ function ProductEditPage() {
                     : !loading && <>
                         <PageHeader className={styles['product-header']} title={platformName} subTitle={shopName} />
                         <div className={styles['product-content']}>
-                            {loadErrMsg ?
-                                <div className={styles['product-content-loadError']}>
-                                    <Result
-                                        status='500'
-                                        subTitle={loadErrMsg}
-                                        extra={
-                                            <Button type='primary'
-                                                onClick={() => { location.reload(); }}
-                                            >
-                                                刷新
-                                            </Button>
-                                        }
-                                    />
-                                </div>
-                                : <>
-                                    <Card hoverable className={styles['product-cate']}>
-                                        {`当前类目：${categoryNamePath || '--'}`}
-                                    </Card>
-                                    <Card hoverable className={styles['product-form']}>
-                                        <ProductEditForm
-                                            form={form}
-                                            shopId={shopId}
-                                            platformId={platformId}
-                                            categoryId={categoryId}
-                                            formSchema={formSchema}
-                                            formData={data}
-                                        />
-                                    </Card>
-                                </>
-                            }
+                            <Card hoverable className={styles['product-cate']}>
+                                {`当前类目：${categoryNamePath || '--'}`}
+                            </Card>
+                            <Card hoverable className={styles['product-form']}>
+                                <ProductEditForm
+                                    form={form}
+                                    shopId={shopId}
+                                    platformId={platformId}
+                                    categoryId={categoryId}
+                                    formSchema={formSchema}
+                                    formData={data}
+                                />
+                            </Card>
                         </div>
                         <div className={styles['product-floor']}>
                             <Card>
@@ -137,8 +120,8 @@ function ProductEditPage() {
                                         disabled={saveLoading || publishLoading}
                                         onClick={() => { handleSave(itemId, true); }}>
                                         {publishLoading ? ' 保存并发布中...' : ' 保存并发布至平台'}
-                                    </Button>  
-                                     <Button
+                                    </Button>
+                                    <Button
                                         type='primary'
                                         size='large'
                                         loading={saveLoading}

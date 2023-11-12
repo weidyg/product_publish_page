@@ -1,0 +1,54 @@
+@import '@arco-design/web-react/es/style/theme/default.less';
+
+.body {
+  width: 100%;
+  min-width: calc(100vW - 8px);
+  min-height: calc(100vh - 8px);
+
+  &.flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.container {
+  justify-content: normal;
+  align-items: normal;
+}
+
+.secondary {
+  font-size: 12px;
+  color: var(--color-text-3) !important;
+  margin-bottom: 0 !important;
+}
+
+.right {
+  user-select: none;
+}
+
+.floor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed !important;
+  z-index: 100;
+}
+
+.operation-edit {
+  padding: 2px;
+  margin-left: 2px;
+  cursor: pointer;
+  color: var(--color-text-2);
+  background-color: transparent;
+  border-radius: 2px;
+  transition: background-color 0.1s cubic-bezier(0, 0, 1, 1);
+
+  &:hover {
+    color: var(--color-text-2);
+    background-color: var(--color-fill-2);
+  }
+}
