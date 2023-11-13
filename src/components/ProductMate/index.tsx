@@ -1,5 +1,5 @@
 import styles from './style/index.module.less';
-import { ProductMateProps, SkuProps, SpuProps } from './interface';
+import { ProductMateProps, SelectOption, SkuProps, SpuProps } from './interface';
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import React, { useState, useEffect, useContext } from 'react';
 import { Table, Grid, Button, Card, Spin, Message, Modal, Space, Skeleton, Result } from '@arco-design/web-react';
@@ -93,8 +93,8 @@ function ProductMate(baseProps: ProductMateProps) {
   const [sysSpuSearching, setSysSpuSearching] = useState(false);
   const [reload, setReload] = useState(false);
   const [loadErrMsg, setLoadErrMsg] = useState<string>();
-  const [sysSpuOptions, setSysSpuOptions] = useState<SelectProps['options']>([]);
-  const [sysSkuOptions, setSysSkuOptions] = useState<SelectProps['options']>([]);
+  const [sysSpuOptions, setSysSpuOptions] = useState<SelectOption[]>([]);
+  const [sysSkuOptions, setSysSkuOptions] = useState<SelectOption[]>([]);
   const [spu, setSpu] = useState<SpuProps>();
   const [skus, setSkus] = useState<SkuProps[]>([]);
 
@@ -159,7 +159,7 @@ function ProductMate(baseProps: ProductMateProps) {
       const sysSkus = await getSysSkus(sysSpuId);
       const options = sysSkus?.map(m => ({
         value: m.sysSkuId!,
-        label: m.sysSkuName
+        label: m.sysSkuName!,
       })) || [];
       setSysSkuOptions(options);
       setSkus((skus: SkuProps[]) => {
@@ -201,7 +201,7 @@ function ProductMate(baseProps: ProductMateProps) {
       if (!sysSpuOptions || sysSpuOptions.length == 0) {
         setSysSpuOptions([{
           value: spu.sysSpuId!,
-          label: spu.sysTitle,
+          label: spu.sysTitle!,
           extra: spu.sysImage,
         }]);
       }
@@ -238,7 +238,7 @@ function ProductMate(baseProps: ProductMateProps) {
       const sysSpus = await sysSpuSearch(keyword);
       const options = sysSpus?.map(m => ({
         value: m.sysSpuId!,
-        label: m.sysTitle,
+        label: m.sysTitle!,
         extra: m.sysImage,
       })) || [];
       setSysSpuOptions(options);

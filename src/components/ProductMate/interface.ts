@@ -50,11 +50,16 @@ export interface SearchProps {
     remoteSearch?: boolean,
     searching?: boolean,
     placeholder?: string,
-    options?: SelectProps['options'],
+    options?: SelectOption[],
     onChange?: SelectProps['onChange'];
     onSearch?: SelectProps['onSearch'];
 }
-
+export interface SelectOption {
+    value: string | number;
+    label: string;
+    disabled?: boolean;
+    extra?: any;
+}
 export interface SaveSpuInfoProps {
     id?: string | number,
     spuId?: string | number,

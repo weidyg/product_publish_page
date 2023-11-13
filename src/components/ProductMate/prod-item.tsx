@@ -4,14 +4,17 @@ import { Empty, Image, Select, Space, Spin, Typography } from "@arco-design/web-
 import { IconEdit } from "@arco-design/web-react/icon";
 import styles from './style/index.module.less';
 import { debounce } from "lodash";
+import { InputValueChangeReason } from "@arco-design/web-react/es/Select/interface";
 
 function ProdItem(props: ProdItemProps) {
     const { id, title, image, imageSize = 64, copyable, editable = false,
         idLable, remoteSearch, searching, placeholder, options, onSearch, onChange } = props;
     const [editing, setEditing] = useState(false);
     const showSearch = editable && (editing || !id);
-    const debouncedFetch = useCallback(debounce((value: any, reason: any) => {
-        onSearch && onSearch(value, reason);
+    const debouncedFetch = useCallback(debounce((value: string, reason: InputValueChangeReason) => {
+        if(reason=='manual'){
+            onSearch && onSearch(value, reason);
+        }
     }, 500), []);
 
     const handleChange = (value: any, option: any) => {
@@ -20,6 +23,8 @@ function ProdItem(props: ProdItemProps) {
     };
     const copy = typeof copyable === 'boolean' ? { id: copyable, title: copyable }
         : typeof copyable === 'object' ? copyable : { id: false, title: false };
+
+    const value = !id ? undefined : options?.find(f => f.value == id)?.value;
     return <>
         <Space size={0}>
             {imageSize > 0 &&
@@ -37,7 +42,7 @@ function ProdItem(props: ProdItemProps) {
                         options={options || []}
                         placeholder={placeholder}
                         filterOption={remoteSearch ? false : true}
-                        value={!id ? undefined : id}
+                        value={value}
                         onSearch={debouncedFetch}
                         onChange={handleChange}
                         notFoundContent={
