@@ -1,17 +1,13 @@
 import { createContext, useEffect, useState } from "react";
-import { Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
-import styles from './style/index.module.less'
-import { ProductEditDataProps } from "./interface";
-import { loadProductEditData, saveProductEditData } from "../../../components/api";
+import { Affix, Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
 import Paragraph from "@arco-design/web-react/es/Typography/paragraph";
+import { ProductEditDataProps } from "./interface";
+import styles from './style/index.module.less'
+import { loadProductEditData, saveProductEditData } from "../../../components/product-edit/api";
 import ProductEditForm from "../../../components/product-edit";
+import LeftProdInfo from "../../../components/product-edit/left-info";
+import { ProdInfo } from "../../../components/product-edit/left-info/interface";
 
-type ProductEditContextValue = {
-    platformId?: number,
-    shopId?: number,
-    categoryId?: string;
-};
-export const ProductEditContext = createContext<ProductEditContextValue>({});
 function ProductEditPage() {
     const [form] = Form.useForm();
     const [reload, setReload] = useState(false);
@@ -71,7 +67,72 @@ function ProductEditPage() {
         }, 100);
     }
 
-    return (
+    const prodInfo: ProdInfo = {
+        title: '逸凯服饰W03款式港风潮牌连帽套头纯棉卫衣男支持一件代发。',
+        image: 'https://pics.17qcc.com/2018/product/201808/08/20978773208319.jpg',
+        code: 'W031',
+        cateProp: [
+            { name: "适用对象", values: ["青少年"] },
+            { name: "制作工艺", values: ["其他"] },
+            { name: "风格", values: ["潮"] },
+            { name: "适用季节", values: ["秋季"] },
+            { name: "基础风格", values: ["其他"] },
+            { name: "服装版型", values: ["修身型"] },
+            { name: "图案", values: ["其他"] },
+            { name: "流行元素/工艺", values: ["其他"] },
+            { name: "面料", values: ["其他"] },
+            { name: "适用场景", values: ["休闲", "休闲", "休闲", "休闲"] },
+            { name: "领型", values: ["其他"] },
+            { name: "材质", values: ["其他"] },
+            { name: "厚薄", values: ["常规"] },
+            { name: "货号", values: ["w03"] },
+            { name: "袖型", values: ["常规"] },
+            { name: "材质成分", values: ["100%棉"] },
+            { name: "款式", values: ["套头"] },
+        ],
+        saleProp: [
+            {
+                name: '尺码',
+                values: ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL-185/96A']
+            }, {
+                name: '颜色分类',
+                values: ['白色', '红色', '黑色']
+            },
+        ],
+        skus: [
+            {
+                props: [{ name: '颜色分类', value: '白色' }, { name: '尺码', value: 'S' }],
+                id: 1, code: "2358707", price: 1000,
+            },
+            {
+                props: [{ name: '颜色分类', value: '白色' }, { name: '尺码', value: 'M' }],
+                id: 2, code: "2358707", price: 1000,
+            }, {
+                props: [{ name: '颜色分类', value: '黑色' }, { name: '尺码', value: 'XL' }],
+                id: 3, code: "2358707", price: 1000,
+            }, {
+                props: [{ name: '颜色分类', value: '白色' }, { name: '尺码', value: 'XL' }],
+                id: 4, code: "2358707", price: 1000,
+            }, {
+                props: [{ name: '颜色分类', value: '白色' }, { name: '尺码', value: '2XL' }],
+                id: 5, code: "2358707", price: 1000,
+            }, {
+                props: [{ name: '颜色分类', value: '白色' }, { name: '尺码', value: '2XL' }],
+                id: 51, code: "2358707", price: 1000,
+            }, {
+                props: [{ name: '颜色分类', value: '黑色' }, { name: '尺码', value: '3XL' }],
+                id: 6, code: "2358707", price: 1000,
+            }, {
+                props: [{ name: '颜色分类', value: '白色' }, { name: '尺码', value: '4XL-185/96A' }],
+                id: 7, code: "2358707", price: 1000,
+            },
+        ]
+    };
+
+    return (<>
+        <Affix offsetTop={50}>
+            <LeftProdInfo data={prodInfo} />
+        </Affix>
         <Spin loading={loading} tip='页面加载中，请稍后...' className={styles['product']}>
             <div className={styles['product-box']}>
                 {loadErrMsg ?
@@ -106,6 +167,7 @@ function ProductEditPage() {
                                     categoryId={categoryId}
                                     formSchema={formSchema}
                                     formData={data}
+                                    originalSaleProps={prodInfo?.saleProp}
                                 />
                             </Card>
                         </div>
@@ -136,7 +198,10 @@ function ProductEditPage() {
                 }
             </div>
         </Spin>
+    </>
+
     );
 }
 
 export default ProductEditPage;
+

@@ -6,12 +6,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styles from './style/index.module.less';
 import classNames from "@arco-design/web-react/es/_util/classNames";
 import { isNumber } from "@arco-design/web-react/es/_util/is";
-import { getImagePageList } from "../api";
-import { convertByteUnit, convertTime, isAcceptFile } from "../until";
+import { convertByteUnit, convertTime, isAcceptFile } from "../product-edit/until";
 import { debounce, throttle } from "lodash";
 import { RequestOptions, UploadItem } from "@arco-design/web-react/es/Upload";
 import { TreeDataType } from "@arco-design/web-react/es/Tree/interface";
 import uploadRequest from "./request";
+import { getImagePageList } from "./api";
 
 const defaultSort = "timeDes";
 const sortOptions = [

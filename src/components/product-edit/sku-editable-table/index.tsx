@@ -5,7 +5,7 @@ import { FieldNames, calcDescartes, getSkuItems, getSkuSaleProp, getTips, getUiT
 import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { isObject } from '@arco-design/web-react/es/_util/is';
-import { FieldUiType, MyFormItemProps } from '../product-edit/interface';
+import { FieldUiType, MyFormItemProps } from '../interface';
 
 const EditableContext = React.createContext<{
     getForm?: () => FormInstance | null,

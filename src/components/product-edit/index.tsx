@@ -1,18 +1,19 @@
 import { Ref, createContext, forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { Card, Form, Spin, } from "@arco-design/web-react";
-import { FieldNames } from "../until";
-import { ProFormItem } from "../pro-form";
+import { FieldNames } from "./until";
+import { ProFormItem } from "./pro-form";
 import { MyFormItemProps, ProductEditFormProps } from "./interface";
 
 type ProductEditContextValue = {
     platformId?: number,
     shopId?: number,
     categoryId?: string;
+    originalSaleProps?: { name: string, values: string[] }[]
 };
 export const ProductEditContext = createContext<ProductEditContextValue>({});
 
 function ProductEditForm(props: ProductEditFormProps, ref: Ref<any>) {
-    const { formSchema = [], formData = {}, platformId, shopId, categoryId, form } = props;
+    const { originalSaleProps = [], formSchema = [], formData = {}, platformId, shopId, categoryId, form } = props;
     const [skuFullName, skuStockName, quantityFullName, salePropFieldName] = useMemo(() => {
         const skuProp = formSchema.find((f: MyFormItemProps) => FieldNames.sku(f?.tags));
         const skuStockProp = skuProp?.subItems?.find((f: MyFormItemProps) => FieldNames.skuStock(f?.tags));
@@ -39,9 +40,10 @@ function ProductEditForm(props: ProductEditFormProps, ref: Ref<any>) {
 
     });
 
+
     return (
         <Spin loading={loading} style={{ display: 'block' }}>
-            <ProductEditContext.Provider value={{ platformId, shopId, categoryId }}>
+            <ProductEditContext.Provider value={{ platformId, shopId, categoryId, originalSaleProps }}>
                 <Form id='spuForm'
                     form={form}
                     labelCol={{ span: 3, offset: 0 }}
@@ -58,6 +60,8 @@ function ProductEditForm(props: ProductEditFormProps, ref: Ref<any>) {
                     //     console.log('onSubmitFailed', errors);
                     // }}
                     onValuesChange={(value, values) => {
+                        // console.log('onValuesChange', value, values);
+
                         if (form && skuFullName && skuStockName && quantityFullName) {
                             const skuChanged = Object.keys(value).some(s => s.endsWith(skuFullName!));
                             if (skuChanged) {

@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { isArray, isNumber, isString } from "@arco-design/web-react/es/_util/is";
 import { ReactNode } from "react";
-import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "./product-edit/interface";
+import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "./interface";
 
 export function isNumberOrStrNumber(obj: any) {
     return isNumber(obj) || !isNaN(Number(obj))
@@ -29,7 +29,6 @@ export function calcDescartes(obj: ObjVal, getValue?: (val: any) => any) {
     }
     return newObjs;
 }
-
 
 export function sortObj(obj: ObjVal): any {
     if (!obj) { return obj; }
@@ -429,3 +428,13 @@ export const isAcceptFile = (file: File, accept: string | string[]) => {
     }
     return !!file;
 }
+
+const valMap: { [x: string]: string } = {
+    '2XL': 'XXL', '3XL': 'XXXL', '4XL': 'XXXXL', '5XL': 'XXXXXL', '6XL': 'XXXXXXL',
+}
+export const sizeCompare = (t1: string, t2: string) => {
+    let [val1, val2] = [t1?.toUpperCase(), t2?.toUpperCase()];
+    val1 = (val1 && valMap[val1]) || val1;
+    val2 = (val2 && valMap[val2]) || val2;
+    return val1 == val2;
+};

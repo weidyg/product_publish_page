@@ -1,10 +1,9 @@
 
 import { ConfigProvider, Modal } from '@arco-design/web-react';
-import ProductEditPage from './pages/product/edit/index';
-import ImageSpace from './components/ImageSpace';
-import ProductMate from './components/ProductMate';
+import { ReactNode } from 'react';
 
-function App() {
+function App(props: { children?: ReactNode }) {
+  const { children } = props;
   Modal.config({ prefixCls: 'erp', })
   return (
     <ConfigProvider
@@ -14,9 +13,7 @@ function App() {
 
       }}
     >
-      <ProductMate />
-      {/* <ImageSpace/> */}
-      {/* <ProductEditPage /> */}
+      {children}
     </ConfigProvider >
   )
 }

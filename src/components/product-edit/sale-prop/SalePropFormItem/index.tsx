@@ -1,13 +1,15 @@
-import { Button, Form, FormItemProps, Input, Message, Space, Trigger } from "@arco-design/web-react";
-import { useEffect, useRef, useState } from "react";
+import { Alert, Button, Form, FormItemProps, Input, Message, Space, Tag, Trigger } from "@arco-design/web-react";
+import { useContext, useEffect, useRef, useState } from "react";
 import useMergeValue from "@arco-design/web-react/es/_util/hooks/useMergeValue";
 import SalePropCard from "../SalePropCard";
 import { SalePropOption } from "../SalePropCard/interface";
 import { IconDelete, IconPlus } from "@arco-design/web-react/icon";
-import ImageUpload from "../../ImageUpload";
 import { get, throttle } from "lodash";
-import { MyFormItemProps } from "../../product-edit/interface";
 import { RefInputType } from "@arco-design/web-react/es/Input";
+import { MyFormItemProps } from "../../interface";
+import ImageUpload from "../../../ImageUpload";
+import { sizeCompare } from "../../until";
+import { ProductEditContext } from "../..";
 
 export interface SalePropInputProps {
     isGroup?: boolean,
@@ -22,15 +24,7 @@ export interface SalePropInputProps {
     onChange?: (value: string) => void,
     allowCustom?: boolean;
 }
-const valMap: { [x: string]: string } = {
-    '2XL': 'XXL', '3XL': 'XXXL', '4XL': 'XXXXL', '5XL': 'XXXXXL', '6XL': 'XXXXXXL',
-}
-const compare = (t1: string, t2: string) => {
-    let [val1, val2] = [t1?.toUpperCase(), t2?.toUpperCase()];
-    val1 = (val1 && valMap[val1]) || val1;
-    val2 = (val2 && valMap[val2]) || val2;
-    return val1 == val2;
-};
+
 
 function SalePropInput(props: SalePropInputProps) {
     const { fieldKey, topValuesFieldName, topGropFieldName, valueFieldName,
@@ -95,10 +89,10 @@ function SalePropInput(props: SalePropInputProps) {
 
     const handleChange = (newValue: any) => {
         let option;
-        const old = fieldValue?.find((f: any) => compare(f?.text, newValue));
+        const old = fieldValue?.find((f: any) => sizeCompare(f?.text, newValue));
         if (old == null) {
             const options = (isGroup ? allOptions.filter(f => f.group?.value == group?.value) : allOptions) || [];
-            option = options.find(f => compare(f?.label, newValue)) || { label: newValue, value: newValue };
+            option = options.find(f => sizeCompare(f?.label, newValue)) || { label: newValue, value: newValue };
         }
         else if (old?.text) {
             Message.error(`已经存在值 “${old?.text}”，不允许重复设置！`);
@@ -201,7 +195,7 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps & UIFormItemPro
                     { required: true, },
                     {
                         validator(value, cb) {
-                            const length = fieldValue?.filter((f: any) => compare(f?.text, value))?.length;
+                            const length = fieldValue?.filter((f: any) => sizeCompare(f?.text, value))?.length;
                             if (length > 1) { return cb(`内容“${value}”不能重复，请检查`); }
                             return cb();
                         },
@@ -239,6 +233,7 @@ function SalePropInputFormItem(props: SalePropInputFormItemProps & UIFormItemPro
     )
 }
 
+
 function SalePropFormItem(props: MyFormItemProps) {
     const { label, nestItems, namePath, name, options, allowCustom
         , optionGroupUnique: isGroup, value = [] } = props;
@@ -246,8 +241,25 @@ function SalePropFormItem(props: MyFormItemProps) {
     const groupFieldName = isGroup ? `${fieldName}.group` : undefined;
     const valueFieldName = isGroup ? `${fieldName}.value` : fieldName;
     const { form } = Form.useFormContext();
+
+    const { originalSaleProps = [] } = useContext(ProductEditContext);
+    const originalValues = originalSaleProps?.find(f => f.name == label)?.values || [];
+    const fieldValue: any[] = valueFieldName && form.getFieldValue(valueFieldName);
+    const fieldValueText: any[] = fieldValue?.map((m: any) => m?.text) || [];
+    const notMateVals = originalValues.filter(m => !fieldValueText.some(s => sizeCompare(m, s)));
+
     return (
         <Form.Item layout='vertical' label={label} field={fieldName} style={{ marginBottom: '0px' }}>
+            {notMateVals?.length > 0 && <>
+                <Space style={{ marginBottom: '8px' }}>
+                    <span>未匹配规格：</span>
+                    {notMateVals.map((m, i) => {
+                        return <Tag key={i} color='red' size='small'>{m}</Tag>
+                    })}
+                </Space>
+                <br />
+            </>}
+
             {groupFieldName &&
                 <Form.Item field={groupFieldName} hidden>
                     <Input />

@@ -91,4 +91,8 @@ export interface ProductEditFormProps {
     formSchema: MyFormItemProps[];
     formData?: { [x: string]: any };
     form?: FormInstance<FormData, any, any>;
+    originalSaleProps?: Array<{
+        name: string;
+        values: Array<string>;
+    }>;
 }

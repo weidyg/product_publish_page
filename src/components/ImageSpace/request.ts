@@ -1,6 +1,6 @@
 import { RequestOptions, UploadRequest } from "@arco-design/web-react/es/Upload/interface";
 import { ImageInfo } from "./interface";
-import { getImageUploadConfig } from "../api";
+import { getImageUploadConfig } from "./api";
 
 // const action = 'http://localhost:60486/api/services/app/ProductPublish/UploadImages1';
 // const convertData = (response: { Success: any; Error: any; Result: any; }) => {

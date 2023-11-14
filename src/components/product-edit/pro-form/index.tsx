@@ -12,12 +12,12 @@ import { FieldNames, checkDependRules, getStringLength, getTips, getUiTypeOrDefa
 import SalePropFormItem from '../sale-prop/SalePropFormItem';
 import SkuEditableTable from '../sku-editable-table';
 import RichTextEditor from './RichTextEditor';
-import ImageUpload from '../ImageUpload';
+import ImageUpload from '../../ImageUpload';
 import { getRemoteOptions } from '../api';
 import { ConfigContext } from '@arco-design/web-react/es/ConfigProvider';
 import styles from './index.module.less'
-import { MyFormItemProps } from '../product-edit/interface';
-import { ProductEditContext } from '../product-edit';
+import { MyFormItemProps } from '../interface';
+import { ProductEditContext } from '..';
 
 function ProFormList(props: MyFormItemProps) {
     const { type, label, name, namePath, value,
