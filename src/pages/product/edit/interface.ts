@@ -1,4 +1,5 @@
 import { MyFormItemProps } from "../../../components/product-edit/interface";
+import { ProdInfo } from "../../../components/product-edit/left-info/interface";
 
 export interface ProductEditDataProps {
     itemId: number,
@@ -9,5 +10,6 @@ export interface ProductEditDataProps {
     categoryId: string;
     categoryNamePath: string;
     formSchema: MyFormItemProps[];
-    data: { [x: string]: any };
+    formData: { [x: string]: any };
+    origProdInfo:ProdInfo;
 }

@@ -71,6 +71,7 @@
     }
     // const id = getQueryString('id');
 
+    // var prodEditConfig = { btn: { publish: false } };
     const baseUrl = 'http://localhost:60486/api/services/app/ProductPublish/';
     const productEditUrls = {
       loadData: baseUrl + "GetProductEditData",
@@ -93,8 +94,9 @@
             shopName: data.ShopName,
             categoryId: data.CategoryId,
             categoryNamePath: data.CategoryNamePath,
-            formSchema: JSON.parse(data.FormSchemaJson),
-            data: JSON.parse(data.FormDataJson),
+            formSchema: data.FormSchemaJson ? JSON.parse(data.FormSchemaJson) : undefined,
+            formData: data.FormDataJson ? JSON.parse(data.FormDataJson) : undefined,
+            origProdInfo: data.OrigProdJson ? JSON.parse(data.OrigProdJson) : undefined,
           }
         });
     }

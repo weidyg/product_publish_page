@@ -7,6 +7,8 @@ export interface ProdInfo {
     title: string;
     image: string;
     code: string;
+    price: number;
+    marketPrice: number;
     cateProp: Array<{
         name: string;
         values: Array<string>;
@@ -20,7 +22,6 @@ export interface ProdInfo {
             name: string;
             value: string;
         }>;
-        id: any,
         code: string;
         price: number;
     }>;

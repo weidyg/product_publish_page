@@ -1,4 +1,4 @@
-import { Alert, Button, Form, FormItemProps, Input, Message, Space, Tag, Trigger } from "@arco-design/web-react";
+import { Button, Form, FormItemProps, Input, Message, Space, Tag, Trigger } from "@arco-design/web-react";
 import { useContext, useEffect, useRef, useState } from "react";
 import useMergeValue from "@arco-design/web-react/es/_util/hooks/useMergeValue";
 import SalePropCard from "../SalePropCard";
@@ -243,23 +243,33 @@ function SalePropFormItem(props: MyFormItemProps) {
     const { form } = Form.useFormContext();
 
     const { originalSaleProps = [] } = useContext(ProductEditContext);
-    const originalValues = originalSaleProps?.find(f => f.name == label)?.values || [];
+
+    const originalSaleProp = originalSaleProps?.find(f => f.name == label)
+        || originalSaleProps?.find(f => f.name?.replace('大小', '') == label?.replace('大小', ''))
+        || originalSaleProps?.find(f => f.name?.replace('分类', '') == label?.replace('分类', ''))
+        ;
+    const originalValues = originalSaleProp?.values || [];
     const fieldValue: any[] = valueFieldName && form.getFieldValue(valueFieldName);
     const fieldValueText: any[] = fieldValue?.map((m: any) => m?.text) || [];
     const notMateVals = originalValues.filter(m => !fieldValueText.some(s => sizeCompare(m, s)));
-
+    const _label = <>
+        <span>{label}</span>
+        {notMateVals?.length > 0 && <>
+            <span style={{
+                fontSize: '12px',
+                marginLeft: '8px',
+                color: 'var(--color-text-3)',
+            }}>未选：</span>
+            <Space wrap>
+                {notMateVals.map((m, i) => {
+                    return <Tag key={i} color='red' size='small'>{m}</Tag>
+                })}
+            </Space>
+        </>
+        }
+    </>
     return (
-        <Form.Item layout='vertical' label={label} field={fieldName} style={{ marginBottom: '0px' }}>
-            {notMateVals?.length > 0 && <>
-                <Space style={{ marginBottom: '8px' }}>
-                    <span>未匹配规格：</span>
-                    {notMateVals.map((m, i) => {
-                        return <Tag key={i} color='red' size='small'>{m}</Tag>
-                    })}
-                </Space>
-                <br />
-            </>}
-
+        <Form.Item layout='vertical' label={_label} field={fieldName} style={{ marginBottom: '0px' }}>
             {groupFieldName &&
                 <Form.Item field={groupFieldName} hidden>
                     <Input />
