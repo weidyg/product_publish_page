@@ -1,0 +1,84 @@
+@import '@arco-design/web-react/es/style/theme/default.less';
+
+// /deep/.el-scrollbar__wrap.default-scrollbar__wrap {
+//   overflow-x: auto !important;
+// }
+
+@cate-prefix-cls: ~'cate';
+
+.@{cate-prefix-cls} {
+  margin: 18px auto;
+  background: var(--color-neutral-1);
+  width: 1024px;
+  min-height: 32px;
+
+  &-box {
+    height: 320px;
+    width: 200px;
+    border: 1px solid @color-primary-6;
+    margin-right: 2px;
+    margin-bottom: 10px;
+    float: left;
+  }
+
+  &-seach {
+    position: relative;
+    top: 0;
+    padding: 2px;
+    width: 196px;
+  }
+
+  &-list {
+    height: 300px;
+    width: 198px;
+    overflow: hidden;
+
+    .gname {
+      color: @color-primary-6;
+      // background-color: #e9eaec;
+      padding: 2px 8px;
+      margin: 2px 0;
+    }
+
+    ul {
+      font-size: 14px;
+      display: block;
+      list-style-type: disc;
+      -webkit-margin-before: 0.5em;
+      -webkit-margin-after: 0.5em;
+      -webkit-margin-start: 0px;
+      -webkit-margin-end: 3px;
+      -webkit-padding-start: 3px;
+
+      li {
+        cursor: pointer;
+        padding: 0 8px;
+      }
+
+      li:hover {
+        background: var(--color-primary-light-1);
+      }
+
+      .active {
+        border-left: 2px solid @color-primary-6;
+        background: #f4f4f4;
+      }
+    }
+  }
+
+  &-bottom {
+    margin: 18px auto;
+    text-align: center;
+
+    // width: 1024px;
+    &-btn {
+      padding: 0;
+      width: 276px;
+      height: 37px;
+      background-image: none;
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      border-radius: 3px;
+    }
+  }
+}

@@ -78,10 +78,10 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   const loadMoreData = debounce(function () {
     if (hasNextPage) {
       setLoadMoreing(true);
-      setTimeout(() => {
-        const pageNo = Math.floor((files?.length || 0) / pageSize);
-        fetchData(pageNo + 1);
-      }, 100);
+      // setTimeout(() => {
+      const pageNo = Math.floor((files?.length || 0) / pageSize);
+      fetchData(pageNo + 1);
+      // }, 100);
     }
   }, 500);
 

@@ -1,5 +1,4 @@
 import { ProductEditDataProps } from "../../pages/product/edit/interface";
-import { ImageInfo } from "../ImageSpace/interface";
 import { MyFormItemOption } from "./interface";
 
 declare global {
