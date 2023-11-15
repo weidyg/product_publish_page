@@ -244,9 +244,9 @@ function SalePropFormItem(props: MyFormItemProps) {
 
     const { originalSaleProps = [] } = useContext(ProductEditContext);
 
-    const originalSaleProp = originalSaleProps?.find(f => f.name == label)
-        || originalSaleProps?.find(f => f.name?.replace('大小', '') == label?.replace('大小', ''))
-        || originalSaleProps?.find(f => f.name?.replace('分类', '') == label?.replace('分类', ''))
+    const originalSaleProp = originalSaleProps?.find(f => f?.name == label)
+        || originalSaleProps?.find(f => f?.name?.replace('大小', '') == label?.replace('大小', ''))
+        || originalSaleProps?.find(f => f?.name?.replace('分类', '') == label?.replace('分类', ''))
         ;
     const originalValues = originalSaleProp?.values || [];
     const fieldValue: any[] = valueFieldName && form.getFieldValue(valueFieldName);

@@ -19,11 +19,11 @@ export default defineConfig({
         productmate: '/src/pages/product/mate/index.html'
       },
       output: {
-        // manualChunks(id) {
-        //   if (id.includes('node_modules')) {
-        //     return 'vendor';
-        //   }
-        // }
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        }
       }
     }
   },
