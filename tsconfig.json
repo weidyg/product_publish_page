@@ -22,7 +22,7 @@
   },
   "include": [
     "src"
-  ],
+, "public/assets/js"  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

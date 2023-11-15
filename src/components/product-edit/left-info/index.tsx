@@ -1,7 +1,7 @@
 import useMergeProps from "@arco-design/web-react/es/_util/hooks/useMergeProps";
 import { LeftProdInfoProps } from "./interface";
 import styles from './style/index.module.less';
-import { Image, Grid, Table, Space, Typography, Tag } from "@arco-design/web-react";
+import { Image, Grid, Table, Space, Typography, Tag, Empty, Skeleton } from "@arco-design/web-react";
 import { useMemo, useState } from "react";
 import { IconDoubleLeft, IconDoubleRight } from "@arco-design/web-react/icon";
 import { ColumnProps } from "@arco-design/web-react/es/Table";
@@ -14,8 +14,6 @@ const defaultProps: LeftProdInfoProps = {
 function LeftProdInfo(baseProps: LeftProdInfoProps) {
     const props = useMergeProps<LeftProdInfoProps>(baseProps, defaultProps, {});
     const { data } = props;
-    if (!data) { return <></> }
-
     const [visible, setVisible] = useState(false);
     const saleProp = useMemo(() => {
         return data?.saleProp?.sort((a: any, b: any) => {
@@ -26,6 +24,7 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
     const [skus, skuPropNames] = useMemo(() => {
         const rowSpans: any[] = [];
         const _skus = data?.skus || [];
+        if (_skus.length == 0) { return [[], []]; }
         const skuSalePropNames = _skus.map(m => m.props.map(m => m.name));
         const skuPropNames = Array.from(new Set(flat(skuSalePropNames)));
         let tempSkus = [[..._skus]];
@@ -114,12 +113,12 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
                             <Typography.Text
                                 ellipsis={{ rows: 2 }}
                                 style={{ marginBottom: 0 }}>
-                                {data?.title || '--'}
+                                {data?.title || '- -'}
                             </Typography.Text>
                         </div>
                         <div>
                             <span className={styles.secondary}>货号：</span>
-                            <span>{data?.code || '--'}</span>
+                            <span>{data?.code || '- -'}</span>
                         </div>
                         <div>
                             {data?.marketPrice && <del className={styles.secondary}
@@ -128,52 +127,63 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
                                 {Number.parseFloat(data?.marketPrice + '').toFixed(2)}
                             </del>}
                             <span className={styles.secondary}>￥</span>
-                            {data?.price ? Number.parseFloat(data?.price + '').toFixed(2) : '--'}
+                            {data?.price ? Number.parseFloat(data?.price + '').toFixed(2) : '-.--'}
                         </div>
                     </div>
                 </Space>
             </div>
             <div className={styles[`${prefixCls}-group-title`]}>基础属性</div>
-            <Grid.Row>
-                {data?.cateProp?.map((item, index) => {
-                    return <Grid.Col key={index} span={8}>
-                        <span className={styles[`${prefixCls}-group-item`]}>
-                            <span className={styles.secondary}
-                                style={{ fontSize: '14px' }}>
-                                {item?.name}：
+            {(data?.cateProp?.length || 0) > 0
+                ? <Grid.Row>
+                    {data?.cateProp?.map((item, index) => {
+                        return <Grid.Col key={index} span={8}>
+                            <span className={styles[`${prefixCls}-group-item`]}>
+                                <span className={styles.secondary}
+                                    style={{ fontSize: '14px' }}>
+                                    {item?.name}：
+                                </span>
+                                <span> {item?.values?.join('、') || '---'}</span>
                             </span>
-                            <span> {item?.values?.join('、') || '---'}</span>
-                        </span>
-                    </Grid.Col>
-                })}
-            </Grid.Row>
+                        </Grid.Col>
+                    })}
+                </Grid.Row>
+                : <Empty />
+            }
             <div className={styles[`${prefixCls}-group-title`]}>销售属性</div>
-            <Grid.Row>
-                {saleProp?.map((item, index) => {
-                    return <Grid.Col key={index}>
-                        <span className={styles[`${prefixCls}-group-item`]}
-                            style={{ lineHeight: '24px' }}>
-                            <span className={styles.secondary}
-                                style={{ fontSize: '14px' }}>
-                                {`【${item?.name}】`}
+            {(saleProp?.length || 0) > 0
+                ? <Grid.Row>
+                    {saleProp?.map((item, index) => {
+                        return <Grid.Col key={index}>
+                            <span className={styles[`${prefixCls}-group-item`]}
+                                style={{ lineHeight: '24px' }}>
+                                <span className={styles.secondary}
+                                    style={{ fontSize: '14px' }}>
+                                    {`【${item?.name}】`}
+                                </span>
+                                <span>{item?.values?.map((m, i) => {
+                                    return <Tag key={i} bordered size='small'
+                                        style={{ marginRight: 5 }}>{m}</Tag>
+                                }) || '---'}</span>
                             </span>
-                            <span>{item?.values?.map((m, i) => {
-                                return <Tag key={i} bordered size='small'
-                                    style={{ marginRight: 5 }}>{m}</Tag>
-                            }) || '---'}</span>
-                        </span>
-                    </Grid.Col>
-                })}
-            </Grid.Row>
+                        </Grid.Col>
+                    })}
+                </Grid.Row>
+                : <Empty />
+            }
             <div className={styles[`${prefixCls}-group-title`]}>组合SKU</div>
-            <Table
-                size='small'
-                data={skus}
-                columns={columns}
-                borderCell={true}
-                pagination={false}
-                scroll={{ y: 320, x: true }}
-            />
+            {(saleProp?.length || 0) > 0 || skus.length > 0
+                ? <Table
+                    size='small'
+                    data={skus}
+                    columns={columns}
+                    borderCell={true}
+                    pagination={false}
+                    scroll={{ y: 320, x: true }}
+                />
+                : <Empty />
+            }
+
+
         </div>}
         <a className={styles[`${prefixCls}-btn`]}
             onClick={() => { setVisible(!visible); }}>
@@ -185,7 +195,7 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
                 }
             </span>
         </a>
-    </div>);
+    </div >);
 }
 
 export default LeftProdInfo;
