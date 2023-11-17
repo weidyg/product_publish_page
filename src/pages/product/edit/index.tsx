@@ -18,6 +18,7 @@ function ProductEditPage() {
     const [productEditData, setProductEditData] = useState<ProductEditDataProps>();
 
     const [showCategorySelect, setShowCategorySelect] = useState(false);
+    const [category, setCategory] = useState<{ pId: number, data: any }>();
 
     const { formSchema = [], formData = {}, origProdInfo,
         itemId, platformId, shopId, categoryId
@@ -25,16 +26,35 @@ function ProductEditPage() {
     } = productEditData || {};
 
     useEffect(() => {
-        loadingInitData();
+        setShowCategorySelect(false);
+        loadInitData();
     }, [])
 
-    const loadingInitData = async (categoryId?: string, shopId?: string) => {
+    useEffect(() => {
+        if (showCategorySelect) {
+            loadCategory();
+        }
+    }, [showCategorySelect])
+
+    const loadCategory = () => {
+        const { pId, data } = category || {};
+        if (!data || pId != platformId) {
+            setTimeout(() => {
+                setCategory({
+                    pId: platformId!,
+                    data: cateData
+                });
+            }, 2000);
+        }
+    }
+
+    const loadInitData = async (categoryId?: string, shopId?: string) => {
         setLoading(true);
+        setShowCategorySelect(false);
         try {
             const productEditData = await loadProductEditData(categoryId, shopId);
             setProductEditData(productEditData);
             form?.setFieldsValue(productEditData?.formData || {});
-            setShowCategorySelect(false);
         } catch (error: any) {
             if (error.code == -1000) {
                 Message.warning(error?.message);
@@ -42,7 +62,6 @@ function ProductEditPage() {
                 if (error.result) { setProductEditData(error.result); }
             } else {
                 setLoadErrMsg(error?.message);
-                setShowCategorySelect(false);
             }
         } finally {
             setLoading(false);
@@ -102,19 +121,20 @@ function ProductEditPage() {
                         />
                     </div>
                     : <>
-                        <PageHeader className={styles['product-header']} title={platformName} subTitle={shopName} />
-                        {showCategorySelect ?
-                            <div className={styles['product-content']}>
-                                <CategorySelect
+                        {!loading && (platformName || shopName) &&
+                            <PageHeader className={styles['product-header']} title={platformName} subTitle={shopName} />
+                        }
+                        {showCategorySelect
+                            ? <div className={styles['product-content']}>
+                                {category?.data && <CategorySelect
                                     title={<>{`选择商品类目`}{categoryNamePath ? <span style={{
                                         fontSize: '12px',
-                                        color:'var(--color-text-3)'
-                                    }}>{`（参考：${categoryNamePath}）`}</span> : ''}</>}
-                                    data={cateData}
-                                    submiting={loading}
+                                        color: 'var(--color-text-3)'
+                                    }}>{`（参考类目：${categoryNamePath}）`}</span> : ''}</>}
+                                    data={category?.data}
                                     onSubmit={(cate) => {
-                                        loadingInitData(`${cate[cate.length - 1].id}`);
-                                    }} />
+                                        loadInitData(`${cate[cate.length - 1].id}`);
+                                    }} />}
                             </div>
                             : !loading && <>
                                 <div className={styles['product-content']}>

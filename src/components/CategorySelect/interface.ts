@@ -13,7 +13,6 @@ export interface RemoteCategory extends Omit<Category, 'parentId'> {
 
 export interface CategorySelectProps {
     title?: ReactNode,
-    submiting?: boolean,
     onSubmit?: (categorys: Category[]) => any,
     data?: CategoryTree[],
     onGetChildrens?: (parentId?: string | number) => Promise<RemoteCategory[]>,
