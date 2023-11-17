@@ -1,195 +1,169 @@
-import { useEffect, useState } from "react";
-import { Alert, Button, Card, Input, Spin } from "@arco-design/web-react";
+import { useEffect, useMemo, useState } from "react";
+import { Alert, Button, Card, Input, Space, Spin, Typography } from "@arco-design/web-react";
 import useMergeProps from "@arco-design/web-react/es/_util/hooks/useMergeProps";
-import styles from './style/index.module.less';
-import { CategorySelectProps } from "./interface";
-import { IconSearch } from "@arco-design/web-react/icon";
+import { IconLoading, IconRight, IconSearch } from "@arco-design/web-react/icon";
 import classNames from "@arco-design/web-react/es/_util/classNames";
 import { debounce } from "lodash";
-import { getList } from "./api";
+import styles from './style/index.module.less';
+import { CateShowData, Category, CategoryItemProps, CategoryListProps, CategorySelectProps } from "./interface";
+import { flattenTree, groupShowData } from "./until";
 
-const defaultProps: CategorySelectProps = {
-
-};
-
-type CateShowData = {
-  lv: number,
-  name?: string,
-  value?: string,
-  seachValue?: string,
-  data?: { name?: string }[],
-  showData?: {
-    gName?: string,
-    vals?: any[],
-    name?: string
-  }[]
-};
+const defaultProps: CategorySelectProps = {};
 function CategorySelect(baseProps: CategorySelectProps) {
   const props = useMergeProps<CategorySelectProps>(baseProps, defaultProps, {});
-  const [loading, setLoading] = useState(false);
-  const [submiting, setSubmiting] = useState(false);
-  const [cateData, setCateData] = useState({ id: 0, path: [{ id: '', name: '' }] });
-  const [cateShowData, setCateShowData] = useState<CateShowData[]>([{ lv: 1, name: "", value: "", data: [] }]);
+  const { title, data, onGetChildrens, submiting, onSubmit } = props;
+  const [loading, setLoading] = useState(true);
+  const [loadingLevel, setLoadingLevel] = useState<number | undefined>(1);
+  const [cateShowData, setCateShowData] = useState<CateShowData[]>([{ level: 1 }]);
 
-  const cateNamePath = cateData.path.map(m => m.name).join(" > ");
+  const [cateDatas, cateNamePath, disSubmit] = useMemo(() => {
+    const cateDatas: Category[] = cateShowData?.sort((a, b) => a?.level - b?.level)?.filter(f => !!f.currCate)?.map(m => m.currCate!);
+    const disSubmit = !cateDatas || cateDatas.length == 0 || cateDatas[cateDatas.length - 1]?.hasChild;
+    const cateNamePath = cateDatas?.map(m => m?.name)?.join(" > ");
+    return [cateDatas, cateNamePath, disSubmit]
+  }, [JSON.stringify(cateShowData)])
 
   useEffect(() => {
+    setCateShowData([{ level: 1 }]);
     loadCateList(1, 0);
   }, [])
 
-  const loadCateList = debounce(async function (lv: number, parentId?: number) {
+  const flattenData = useMemo(() => {
+    return flattenTree(data, 0);
+  }, [JSON.stringify(data)])
+
+  const loadCateList = debounce(async function (level: number, parentId?: string | number) {
     setLoading(true);
+    setLoadingLevel(level);
     try {
-      const data = await getList({ parentId });
+      const data = onGetChildrens
+        ? await onGetChildrens(parentId)
+        : flattenData.filter(f => f.parentId == parentId);
+
       setCateShowData(value => {
-        const newData = value.filter(f => f.lv !== lv);
+        const newData = value.filter(f => f.level !== level);
         const showData = groupShowData(data);
-        newData.push({ lv: lv, showData, data });
+        newData.push({ level: level, showData, data });
         return newData;
       });
     } catch (error) {
 
     } finally {
       setLoading(false);
+      setLoadingLevel(undefined);
     }
   }, 500);
 
-  function groupShowData(data: any) {
-    let vals: any = []; //[{ gName: "", vals: [] }];
-    const tempData = data || [];
-    tempData.forEach((f: any) => {
-      const tempVal = vals.find((fi: any) => fi.gName == f.groupName);
-      if (tempVal) {
-        tempVal.vals.push(f);
-      } else {
-        vals.push({ gName: f.groupName, vals: [f] });
-      }
-    });
-    return vals;
-  }
-
   function handleSeach(seachValue: string, cate: CateShowData): void {
-    if (seachValue && cate.data) {
-      const tempShowData = cate.data.filter(
-        f => cate?.seachValue && f.name && f.name?.indexOf(cate?.seachValue) > -1
-      );
-      cate.showData = groupShowData(tempShowData);
-    } else {
-      cate.showData = groupShowData(cate.data);
-    }
+    if (!cate?.data) { return; }
+    setCateShowData(value => {
+      return value.map(m => {
+        if (m.level == cate.level) {
+          let tempData = m.data || [];
+          if (seachValue) {
+            tempData = tempData.filter(f => f.name?.indexOf(seachValue) > -1);
+          }
+          m.showData = groupShowData(tempData);
+        }
+        return m;
+      });
+    });
   }
 
-  async function handleCateClick(cate: CateShowData, item: any) {
-    const parentId = item.id;
-    const lv = cate.lv;
-
-    cate.value = item.id;
-    cate.name = item.name;
-
-    if (item.isParent) {
-      setCateShowData(value => {
-        return value.filter(f => f.lv <= lv);;
-      });
-      await loadCateList(lv + 1, parentId);
-      // item.loading = true;
-      // this.$api.category
-      //   .getSubList({ isActive: true, parentId: item.id })
-      //   .then(data => {
-      //     this.cateShowData.push({
-      //       lv: cate.lv + 1,
-      //       value: "",
-      //       showData: this.groupShowData(data),
-      //       data: data
-      //     });
-      //     item.loading = false;
-      //   })
-      //   .catch(() => {
-      //     item.loading = false;
-      //   });
-    }
-
-    cateData.id = item.isParent ? 0 : parentId
-    cateData.path = [];
-    cateShowData.forEach((f, index) => {
-      if (f.name) {
-        cateData.path.push({ id: f.value, name: f.name });
+  async function handleCateClick(showData: CateShowData, currCate: Category) {
+    const { level } = showData;
+    const { hasChild, id: parentId } = currCate;
+    setCateShowData(values => {
+      const newValues = [];
+      for (let index = 0; index < values?.length; index++) {
+        const value = values[index];
+        if (value.level < level) {
+          newValues.push({ ...value });
+        }
+        if (value.level == level) {
+          newValues.push({ ...value, currCate });
+        }
       }
+      return newValues;
     });
+    if (hasChild) {
+      await loadCateList(level + 1, parentId);
+    }
   }
 
   function handleOk(e: Event): void {
-    //   this.submiting = true;
-    //   const promise = new Promise((resolve, reject) => {
-    //     this.$emit("ok", this.cateData, resolve);
-    //   });
-    //   promise.then(data => {
-    //     this.submiting = false;
-    //   });
-
-    // setSubmiting(true);
-    // try {
-    //   const data = await getList(cateData);
-    // } catch (error) {
-
-    // } finally {
-    //   setSubmiting(false);
-    // }
+    onSubmit && onSubmit(cateDatas);
   }
 
-
-
-
-
-
-  function CateItem(props: any) {
-    const { isParent, name, id } = props;
-    return <li onClick={(() => { handleCateClick(cate, val); })}
-      className={classNames({ ['active']: id == cate.value })}>
-      <span className="el-cascader-node__label">{name}</span>
-      {isParent && <i className={classNames(
-        'el-cascader-node__postfix', {
-        ['el-icon-loading']: val?.loading,
-        ['el-icon-arrow-right']: !val?.loading,
-      })} />}
+  function CateItem(props: CategoryItemProps) {
+    const { id, name, hasChild, loading, active, onClick } = props;
+    function handleClick() {
+      onClick && onClick(id);
+    }
+    return <li onClick={handleClick}
+      className={classNames({ [styles['active']]: active })}>
+      <Space size={0} align={'center'} className={styles['item']}>
+        <span className={classNames(styles['label'], { [styles['hasChild']]: hasChild })}>{name}</span>
+        <span>{hasChild && (loading ? <IconLoading /> : <IconRight />)}</span>
+      </Space>
     </li>
   }
 
+  function CateList(props: CategoryListProps) {
+    const { level = -1, data = [], value, onItemClick } = props;
+
+    async function handleItemClick(cate: Category): Promise<void> {
+      onItemClick && await onItemClick(cate);
+    }
+    return <div className={styles[`${prefixCls}-list`]}>
+      <ul>
+        {data?.map((item, index) => {
+          const { groupName, cates } = item;
+          return <span key={index}>
+            {groupName && <div className={styles['gname']}>{groupName}</div >}
+            {cates?.map((cate, i) => {
+              const _active = cate.id == value?.id;
+              const _loading = _active && loading && loadingLevel == level + 1;
+              return <CateItem key={i} {...cate}
+                loading={_loading}
+                active={_active}
+                onClick={(id) => {
+                  handleItemClick(cate);
+                }}
+              />
+            })}
+          </span>
+        })}
+      </ul >
+    </div>
+  }
 
   const prefixCls = 'cate';
   return (<>
     <div>
-      <Card title={'选择商品类目'}>
-        {cateShowData?.map((cate, index) => {
-          return <Spin key={index} loading={loading} tip='拼命加载中...'
-            className={styles[`${prefixCls}-box`]}>
-            <Input allowClear
-              onChange={(value) => handleSeach(value, cate)}
-              placeholder="输入分类名搜索"
-              className={styles[`${prefixCls}-seach`]}
-              suffix={<IconSearch />}
-            />
-            <div className={styles[`${prefixCls}-list`]}>
-              <ul>
-                {cate?.showData?.map((item, index) => {
-                  return <span key={index}>
-                    {item?.gName && <div className={styles['gname']}>{item.gName}</div >}
-                    {item?.vals?.map((val, i) => {
-                      return <li key={i} onClick={(() => { handleCateClick(cate, val); })}
-                        className={classNames({ ['active']: val.id == cate.value })}>
-                        <span className="el-cascader-node__label">{val.name}</span>
-                        {val.isParent && <i className={classNames(
-                          'el-cascader-node__postfix', {
-                          ['el-icon-loading']: val?.loading,
-                          ['el-icon-arrow-right']: !val?.loading,
-                        })} />}
-                      </li>
-                    })}
-                  </span>
-                })}
-              </ul >
-            </div>
-          </Spin >
-        })}
+      <Card title={title !== undefined ? title : '选择商品类目'}>
+        <div className={styles[`${prefixCls}-boxs`]}>
+          {cateShowData?.map((item, index) => {
+            const { level, showData, currCate } = item;
+            return <Spin key={index} loading={loading && loadingLevel == level} tip='拼命加载中...'
+              className={styles[`${prefixCls}-box`]}>
+              <Input allowClear
+                onChange={(value) => handleSeach(value, item)}
+                placeholder="输入分类名搜索"
+                className={styles[`${prefixCls}-seach`]}
+                suffix={<IconSearch />}
+              />
+              <CateList
+                level={level}
+                data={showData}
+                value={currCate}
+                onItemClick={async (value) => {
+                  await handleCateClick(item, value);
+                }}
+              />
+            </Spin >
+          })}
+        </div>
         <div>
           <Alert content={`您当前选择的是：${cateNamePath}`} closable={false} />
         </div>
@@ -197,7 +171,7 @@ function CategorySelect(baseProps: CategorySelectProps) {
           <Button
             type='primary'
             loading={submiting}
-            disabled={cateData.id === 0}
+            disabled={disSubmit}
             className={styles[`${prefixCls}-bottom-btn`]}
             onClick={handleOk}
           >

@@ -252,6 +252,7 @@ function SalePropFormItem(props: MyFormItemProps) {
     const fieldValue: any[] = valueFieldName && form.getFieldValue(valueFieldName);
     const fieldValueText: any[] = fieldValue?.map((m: any) => m?.text) || [];
     const notMateVals = originalValues.filter(m => !fieldValueText.some(s => sizeCompare(m, s)));
+    
     const _label = <>
         <span>{label}</span>
         {notMateVals?.length > 0 && <>

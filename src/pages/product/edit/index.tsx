@@ -6,7 +6,8 @@ import styles from './style/index.module.less'
 import { loadProductEditData, saveProductEditData } from "../../../components/product-edit/api";
 import ProductEditForm from "../../../components/product-edit";
 import LeftProdInfo from "../../../components/product-edit/left-info";
-
+import CategorySelect from "../../../components/CategorySelect";
+import cateData from './data.json'
 function ProductEditPage() {
     const [form] = Form.useForm();
     const [reload, setReload] = useState(false);
@@ -15,6 +16,8 @@ function ProductEditPage() {
     const [publishLoading, setPublishLoading] = useState(false);
     const [loadErrMsg, setLoadErrMsg] = useState<string>();
     const [productEditData, setProductEditData] = useState<ProductEditDataProps>();
+
+    const [showCategorySelect, setShowCategorySelect] = useState(false);
 
     const { formSchema = [], formData = {}, origProdInfo,
         itemId, platformId, shopId, categoryId
@@ -25,14 +28,22 @@ function ProductEditPage() {
         loadingInitData();
     }, [])
 
-    const loadingInitData = async () => {
+    const loadingInitData = async (categoryId?: string, shopId?: string) => {
         setLoading(true);
         try {
-            const productEditData = await loadProductEditData();
+            const productEditData = await loadProductEditData(categoryId, shopId);
             setProductEditData(productEditData);
             form?.setFieldsValue(productEditData?.formData || {});
+            setShowCategorySelect(false);
         } catch (error: any) {
-            setLoadErrMsg(error?.message);
+            if (error.code == -1000) {
+                Message.warning(error?.message);
+                setShowCategorySelect(true);
+                if (error.result) { setProductEditData(error.result); }
+            } else {
+                setLoadErrMsg(error?.message);
+                setShowCategorySelect(false);
+            }
         } finally {
             setLoading(false);
         }
@@ -90,49 +101,64 @@ function ProductEditPage() {
                             }
                         />
                     </div>
-                    : !loading && <>
+                    : <>
                         <PageHeader className={styles['product-header']} title={platformName} subTitle={shopName} />
-                        <div className={styles['product-content']}>
-                            <Card hoverable className={styles['product-cate']}>
-                                {`当前类目：${categoryNamePath || '--'}`}
-                            </Card>
-                            <Card hoverable className={styles['product-form']}>
-                                <ProductEditForm
-                                    form={form}
-                                    shopId={shopId}
-                                    platformId={platformId}
-                                    categoryId={categoryId}
-                                    formSchema={formSchema}
-                                    formData={formData}
-                                    originalSaleProps={origProdInfo?.saleProp}
-                                />
-                            </Card>
-                        </div>
-                        <div className={styles['product-floor']}>
-                            <Card>
-                                <Space size={'large'}
-                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                    {config?.btn?.publish !== false
-                                        ? <Button
-                                            type='outline'
-                                            size='large'
-                                            loading={publishLoading}
-                                            disabled={saveLoading || publishLoading}
-                                            onClick={() => { handleSave(itemId, true); }}>
-                                            {publishLoading ? ' 保存并发布中...' : ' 保存并发布至平台'}
-                                        </Button>
-                                        : <></>}
-                                    <Button
-                                        type='primary'
-                                        size='large'
-                                        loading={saveLoading}
-                                        disabled={saveLoading || publishLoading}
-                                        onClick={() => { handleSave(itemId); }}>
-                                        {saveLoading ? '保存中...' : '保 存'}
-                                    </Button>
-                                </Space>
-                            </Card>
-                        </div>
+                        {showCategorySelect ?
+                            <div className={styles['product-content']}>
+                                <CategorySelect
+                                    title={<>{`选择商品类目`}{categoryNamePath ? <span style={{
+                                        fontSize: '12px',
+                                        color:'var(--color-text-3)'
+                                    }}>{`（参考：${categoryNamePath}）`}</span> : ''}</>}
+                                    data={cateData}
+                                    submiting={loading}
+                                    onSubmit={(cate) => {
+                                        loadingInitData(`${cate[cate.length - 1].id}`);
+                                    }} />
+                            </div>
+                            : !loading && <>
+                                <div className={styles['product-content']}>
+                                    <Card hoverable className={styles['product-cate']}>
+                                        {`当前类目：${categoryNamePath || '--'}`}
+                                    </Card>
+                                    <Card hoverable className={styles['product-form']}>
+                                        <ProductEditForm
+                                            form={form}
+                                            shopId={shopId}
+                                            platformId={platformId}
+                                            categoryId={categoryId}
+                                            formSchema={formSchema}
+                                            formData={formData}
+                                            originalSaleProps={origProdInfo?.saleProp}
+                                        />
+                                    </Card>
+                                </div>
+                                <div className={styles['product-floor']}>
+                                    <Card>
+                                        <Space size={'large'}
+                                            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                            {config?.btn?.publish !== false
+                                                ? <Button
+                                                    type='outline'
+                                                    size='large'
+                                                    loading={publishLoading}
+                                                    disabled={saveLoading || publishLoading}
+                                                    onClick={() => { handleSave(itemId, true); }}>
+                                                    {publishLoading ? ' 保存并发布中...' : ' 保存并发布至平台'}
+                                                </Button>
+                                                : <></>}
+                                            <Button
+                                                type='primary'
+                                                size='large'
+                                                loading={saveLoading}
+                                                disabled={saveLoading || publishLoading}
+                                                onClick={() => { handleSave(itemId); }}>
+                                                {saveLoading ? '保存中...' : '保 存'}
+                                            </Button>
+                                        </Space>
+                                    </Card>
+                                </div>
+                            </>}
                     </>
                 }
             </div>

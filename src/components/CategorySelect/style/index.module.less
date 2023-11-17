@@ -1,9 +1,5 @@
 @import '@arco-design/web-react/es/style/theme/default.less';
 
-// /deep/.el-scrollbar__wrap.default-scrollbar__wrap {
-//   overflow-x: auto !important;
-// }
-
 @cate-prefix-cls: ~'cate';
 
 .@{cate-prefix-cls} {
@@ -12,9 +8,12 @@
   width: 1024px;
   min-height: 32px;
 
+  &-boxs {
+    display: flex;
+    overflow: auto;
+  }
+
   &-box {
-    height: 320px;
-    width: 200px;
     border: 1px solid @color-primary-6;
     margin-right: 2px;
     margin-bottom: 10px;
@@ -31,11 +30,11 @@
   &-list {
     height: 300px;
     width: 198px;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
 
     .gname {
       color: @color-primary-6;
-      // background-color: #e9eaec;
       padding: 2px 8px;
       margin: 2px 0;
     }
@@ -52,7 +51,28 @@
 
       li {
         cursor: pointer;
-        padding: 0 8px;
+        padding: 4px 8px;
+        margin: 2px auto;
+
+        .item {
+          align-items: center;
+          display: flex;
+          justify-content: space-between;
+          align-content: center;
+          flex-wrap: nowrap;
+
+          .label {
+            display: block;
+            width: 175px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+
+            &.hasChild {
+              width: 150px;
+            }
+          }
+        }
       }
 
       li:hover {
@@ -70,7 +90,6 @@
     margin: 18px auto;
     text-align: center;
 
-    // width: 1024px;
     &-btn {
       padding: 0;
       width: 276px;

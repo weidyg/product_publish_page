@@ -20,7 +20,7 @@ function getQueryString(name) {
     return r[2];
 }
 
-function post(url, data) {
+function post(url, data, converData) {
     return fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", },
@@ -34,26 +34,39 @@ function post(url, data) {
             data = data || {};
             // console.log("data", JSON.stringify(data));
             if (data.Success) {
-                return data.Result || {};
+                if (typeof converData == 'function') {
+                    return converData(data.Result);
+                } else {
+                    return data.Result;
+                }
             } else {
                 data.Error = data.Error || {};
-                return Promise.reject({
+                var error = {
                     code: data.Error.Code,
                     message: data.Error.Message,
                     details: data.Error.Details,
-                });
+                }
+                if (data.Result) {
+                    if (typeof converData == 'function') {
+                        error.result = converData(data.Result);
+                    } else {
+                        error.result = data.Result;
+                    }
+                }
+                return Promise.reject(error);
             }
         })
         .catch(function (error) {
             console.log("error", error);
             error = error || {};
-            if (error.message = 'Failed to fetch') {
+            if (error.message == 'Failed to fetch') {
                 error.message = '请求数据失败，请检查网络！'
             }
             return Promise.reject({
                 code: error.code,
                 message: error.message || '请求错误!',
-                details: error.details || error,
+                details: error.details,
+                result: error.result,
             });
         });
 }

@@ -12,14 +12,19 @@
   <script src="/assets/js/post.js"> </script>
   <script>
 
-    function getId(id) {
+    function getDataInput(id, categoryId, shopId, origSpuId, type) {
       id = id || getQueryString('id');
-      return id;
+      origSpuId = origSpuId || getQueryString('origSpuId');
+      type = type || getQueryString('type');
+      shopId = shopId || getQueryString('shopId');
+      categoryId = categoryId || getQueryString('categoryId');
+      return { ItemId: id, OrigSpuId: origSpuId, Type: type, ShopId: shopId, CategoryId: categoryId, };
     }
 
     // var prodEditConfig = { btn: { publish: false } };
     const baseUrl = 'http://localhost:60486/api/services/app/ProductPublish/';
     const productEditUrls = {
+      loadDataWithoutUploadItem: baseUrl + "GetProductEditDataWithoutUploadItem",
       loadData: baseUrl + "GetProductEditData",
       saveData: baseUrl + "SaveProductEditData",
       getOptions: baseUrl + "GetOptions",
@@ -27,25 +32,33 @@
       uploadImages: baseUrl + "UploadImages",
     }
 
-    function loadProductEditData(id) {
-      const data = { ItemId: getId(id) };
-      return post(productEditUrls.loadData, data)
-        .then(function (data) {
-          data = data || {};
-          return {
-            itemId: data.Id,
-            platformId: data.PlatformId,
-            shopId: data.ShopId,
-            platformName: data.PlatformName,
-            shopName: data.ShopName,
-            categoryId: data.CategoryId,
-            categoryNamePath: data.CategoryNamePath,
-            formSchema: data.FormSchemaJson ? JSON.parse(data.FormSchemaJson) : undefined,
-            formData: data.FormDataJson ? JSON.parse(data.FormDataJson) : undefined,
-            origProdInfo: data.OrigProdJson ? JSON.parse(data.OrigProdJson) : undefined,
-          }
-        });
+    function ConverData(data) {
+      data = data || {};
+      return {
+        itemId: data.Id,
+        platformId: data.PlatformId,
+        shopId: data.ShopId,
+        platformName: data.PlatformName,
+        shopName: data.ShopName,
+        categoryId: data.CategoryId,
+        categoryNamePath: data.CategoryNamePath,
+        formSchema: data.FormSchemaJson ? JSON.parse(data.FormSchemaJson) : undefined,
+        formData: data.FormDataJson ? JSON.parse(data.FormDataJson) : undefined,
+        origProdInfo: data.OrigProdJson ? JSON.parse(data.OrigProdJson) : undefined,
+      }
     }
+
+    function loadProductEditData(categoryId, shopId) {
+      const input = getDataInput(undefined, categoryId, shopId, undefined, undefined);
+      if (input?.ItemId > 0) {
+        return post(productEditUrls.loadData, input, ConverData);
+      } else if (input?.OrigSpuId > 0 && input?.ShopId > 0) {
+        return post(productEditUrls.loadDataWithoutUploadItem, input, ConverData);
+      } else {
+        return Promise.reject({ code: 0, message: "参数错误", });
+      }
+    }
+
     function saveProductEditData(id, dataJson, publish) {
       const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
       return post(productEditUrls.saveData, data);

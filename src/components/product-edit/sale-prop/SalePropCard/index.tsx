@@ -9,14 +9,14 @@ import classNames from "@arco-design/web-react/es/_util/classNames";
 const defaultProps: SalePropCardProps = {};
 function SalePropCard(baseProps: SalePropCardProps) {
     const props = useMergeProps<SalePropCardProps>(baseProps, defaultProps, {});
-    const { isGroup, options: propOptions, values: propValues, group: propGroup, onOk, onCancel } = props;
+    const { isGroup, options: propOptions = [], values: propValues, group: propGroup, onOk, onCancel } = props;
     const groupOptions = useMemo(() => {
         if (!isGroup) { return []; }
         let gOpts: SalePropGroupOption[] = [];
-        options?.forEach(f => {
-            if (f.group) {
-                if (gOpts.every(s => s.value != f.group?.value)) {
-                    gOpts.push(f.group);
+        propOptions?.forEach(f => {
+            if (f?.group) {
+                if (gOpts?.every(s => s?.value != f?.group?.value)) {
+                    gOpts?.push(f?.group);
                 }
             }
         });

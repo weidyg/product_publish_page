@@ -9,8 +9,8 @@ declare global {
     }
 }
 
-export async function loadProductEditData(id?: string | number): Promise<ProductEditDataProps> {
-    return await window.loadProductEditData(id);
+export async function loadProductEditData(categoryId?:string, shopId?:string): Promise<ProductEditDataProps> {
+    return await window.loadProductEditData(categoryId, shopId);
 }
 
 export async function saveProductEditData(values: any, publish?: boolean, id?: string | number) {
