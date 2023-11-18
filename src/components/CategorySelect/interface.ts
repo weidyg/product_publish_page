@@ -1,28 +1,25 @@
 import { ReactNode } from "react";
 
 export interface CategoryTree {
-    label: string,
-    value: string,
+    id: string | number,
+    name: string,
+    groupName?: string,
     children: CategoryTree[]
 }
 
-
-export interface RemoteCategory extends Omit<Category, 'parentId'> {
-    groupName?: string,
-};
-
 export interface CategorySelectProps {
     title?: ReactNode,
-    onSubmit?: (categorys: Category[]) => any,
     data?: CategoryTree[],
-    onGetChildrens?: (parentId?: string | number) => Promise<RemoteCategory[]>,
+    onSubmit?: (categorys: Category[]) => any,
+    onGetChildrens?: (parentId?: string | number) => Promise<Category[] | undefined>,
 }
 
 export interface Category {
     id: string | number,
     name: string,
+    hasChild: boolean,
     parentId?: string | number,
-    hasChild?: boolean,
+    groupName?: string,
 };
 export interface CategoryGroup {
     groupName: string,

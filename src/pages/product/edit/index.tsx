@@ -7,7 +7,10 @@ import { loadProductEditData, saveProductEditData } from "../../../components/pr
 import ProductEditForm from "../../../components/product-edit";
 import LeftProdInfo from "../../../components/product-edit/left-info";
 import CategorySelect from "../../../components/CategorySelect";
-import cateData from './data.json'
+import { Category } from "../../../components/CategorySelect/interface";
+import { flattenTree } from "../../../components/CategorySelect/until";
+import { getCategoryTree } from "../../../components/CategorySelect/api";
+
 function ProductEditPage() {
     const [form] = Form.useForm();
     const [reload, setReload] = useState(false);
@@ -30,23 +33,22 @@ function ProductEditPage() {
         loadInitData();
     }, [])
 
-    useEffect(() => {
-        if (showCategorySelect) {
-            loadCategory();
-        }
-    }, [showCategorySelect])
+    const loadAllCategory = async (): Promise<Category[]> => {
+        const cateTreeData = await getCategoryTree(platformId!);
+        const flattenData = flattenTree(cateTreeData, 0);
+        return flattenData;
+    }
 
-    const loadCategory = () => {
+    const loadCateList = async function (parentId?: string | number): Promise<Category[] | undefined> {
         const { pId, data } = category || {};
         if (!data || pId != platformId) {
-            setTimeout(() => {
-                setCategory({
-                    pId: platformId!,
-                    data: cateData
-                });
-            }, 2000);
+            const flattenData = await loadAllCategory();
+            setCategory({ pId: platformId!, data: flattenData });
+            return flattenData?.filter((f: any) => f.parentId == parentId) || [];
+        } else {
+            return data?.filter((f: any) => f.parentId == parentId) || [];
         }
-    }
+    };
 
     const loadInitData = async (categoryId?: string, shopId?: string) => {
         setLoading(true);
@@ -57,7 +59,7 @@ function ProductEditPage() {
             form?.setFieldsValue(productEditData?.formData || {});
         } catch (error: any) {
             if (error.code == -1000) {
-                Message.warning(error?.message);
+                Message.info(error?.message);
                 setShowCategorySelect(true);
                 if (error.result) { setProductEditData(error.result); }
             } else {
@@ -126,12 +128,12 @@ function ProductEditPage() {
                         }
                         {showCategorySelect
                             ? <div className={styles['product-content']}>
-                                {category?.data && <CategorySelect
+                                {<CategorySelect
                                     title={<>{`选择商品类目`}{categoryNamePath ? <span style={{
                                         fontSize: '12px',
                                         color: 'var(--color-text-3)'
                                     }}>{`（参考类目：${categoryNamePath}）`}</span> : ''}</>}
-                                    data={category?.data}
+                                    onGetChildrens={loadCateList}
                                     onSubmit={(cate) => {
                                         loadInitData(`${cate[cate.length - 1].id}`);
                                     }} />}

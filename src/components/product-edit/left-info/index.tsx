@@ -70,6 +70,7 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
                 title: name,
                 dataIndex: `props${i}`,
                 align: 'center',
+                width: 120,
                 render(col: any, item: any, index: any) {
                     const prop = getSkuPropObj(item, name);
                     const value = prop?.value;
@@ -83,18 +84,21 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
                 title: 'No',
                 dataIndex: 'key',
                 align: 'center',
+                width: 60,
             },
             ...(propColumns || []),
             {
                 title: '价格(元)',
                 dataIndex: 'price',
                 align: 'right',
+                width: 92,
                 render(value: any, item: any, index: any) {
                     return Number.parseFloat(value).toFixed(2);
                 },
             },
             {
                 title: '商家编码',
+                width: 220,
                 dataIndex: 'code',
             }
         ];

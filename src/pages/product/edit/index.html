@@ -28,6 +28,7 @@
       loadData: baseUrl + "GetProductEditData",
       saveData: baseUrl + "SaveProductEditData",
       getOptions: baseUrl + "GetOptions",
+      getCategoryTree: baseUrl + "GetCategoryTree",
       getImagePageList: baseUrl + "GetImagePageList",
       uploadImages: baseUrl + "UploadImages",
     }
@@ -63,10 +64,17 @@
       const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
       return post(productEditUrls.saveData, data);
     }
+
+    function getCategoryTree(platformId) {
+      const data = { platformId };
+      return post(productEditUrls.getCategoryTree, data);
+    }
+
     function getRemoteOptions(shopId, categoryId, optionAction, forceUpdate) {
       const data = { ShopId: shopId, CategoryId: categoryId, Action: optionAction, ForceUpdate: forceUpdate };
       return post(productEditUrls.getOptions, data);
     }
+
     function getImagePageList(keyword, folderId, refType, sortName, sortAsc, pageNo, pageSize) {
       const data = { Keyword: keyword, FolderId: folderId, RefType: refType, SortName: sortName, SortAsc: sortAsc, Page: pageNo, PageSize: pageSize };
       return post(productEditUrls.getImagePageList, data).then(function (data) {

@@ -13,3 +13,11 @@ export interface ProductEditDataProps {
     formData: { [x: string]: any };
     origProdInfo:ProdInfo;
 }
+
+
+
+export interface CategoryTree {
+    label: string,
+    value: string,
+    children: CategoryTree[]
+}

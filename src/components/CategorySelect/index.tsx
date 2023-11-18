@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Button, Card, Input, Space, Spin, Typography } from "@arco-design/web-react";
+import { Alert, Button, Card, Empty, Input, Result, Space, Spin, Typography } from "@arco-design/web-react";
 import useMergeProps from "@arco-design/web-react/es/_util/hooks/useMergeProps";
 import { IconLoading, IconRight, IconSearch } from "@arco-design/web-react/icon";
 import classNames from "@arco-design/web-react/es/_util/classNames";
@@ -11,10 +11,11 @@ import { flattenTree, groupShowData } from "./until";
 const defaultProps: CategorySelectProps = {};
 function CategorySelect(baseProps: CategorySelectProps) {
   const props = useMergeProps<CategorySelectProps>(baseProps, defaultProps, {});
-  const { title, data, onGetChildrens, submiting, onSubmit } = props;
+  const { title, data, onGetChildrens, onSubmit } = props;
   const [loading, setLoading] = useState(true);
   const [loadingLevel, setLoadingLevel] = useState<number | undefined>(1);
   const [cateShowData, setCateShowData] = useState<CateShowData[]>([{ level: 1 }]);
+  const [loadErrMsg, setLoadErrMsg] = useState<string>();
 
   const [cateDatas, cateNamePath, disSubmit] = useMemo(() => {
     const cateDatas: Category[] = cateShowData?.sort((a, b) => a?.level - b?.level)?.filter(f => !!f.currCate)?.map(m => m.currCate!);
@@ -35,19 +36,22 @@ function CategorySelect(baseProps: CategorySelectProps) {
   const loadCateList = debounce(async function (level: number, parentId?: string | number) {
     setLoading(true);
     setLoadingLevel(level);
+    setLoadErrMsg(undefined);
     try {
       const data = onGetChildrens
         ? await onGetChildrens(parentId)
         : flattenData.filter(f => f.parentId == parentId);
-
-      setCateShowData(value => {
-        const newData = value.filter(f => f.level !== level);
-        const showData = groupShowData(data);
-        newData.push({ level: level, showData, data });
-        return newData;
-      });
-    } catch (error) {
-
+      if (data && data?.length > 0) {
+        setCateShowData(value => {
+          const newData = value.filter(f => f.level !== level);
+          const showData = groupShowData(data);
+          newData.push({ level: level, showData, data });
+          return newData;
+        });
+      }
+    } catch (error: any) {
+      console.log('loadCateList', error);
+      setLoadErrMsg(error?.message || error + '');
     } finally {
       setLoading(false);
       setLoadingLevel(undefined);
@@ -116,25 +120,27 @@ function CategorySelect(baseProps: CategorySelectProps) {
       onItemClick && await onItemClick(cate);
     }
     return <div className={styles[`${prefixCls}-list`]}>
-      <ul>
-        {data?.map((item, index) => {
-          const { groupName, cates } = item;
-          return <span key={index}>
-            {groupName && <div className={styles['gname']}>{groupName}</div >}
-            {cates?.map((cate, i) => {
-              const _active = cate.id == value?.id;
-              const _loading = _active && loading && loadingLevel == level + 1;
-              return <CateItem key={i} {...cate}
-                loading={_loading}
-                active={_active}
-                onClick={(id) => {
-                  handleItemClick(cate);
-                }}
-              />
-            })}
-          </span>
-        })}
-      </ul >
+      {(level == 1 && data?.length == 0 && !loading)
+        ? <div className={styles[`${prefixCls}-list-empty`]}><Empty /></div>
+        : <ul>
+          {data?.map((item, index) => {
+            const { groupName, cates } = item;
+            return <span key={index}>
+              {groupName && <div className={styles['gname']}>{groupName}</div >}
+              {cates?.map((cate, i) => {
+                const _active = cate.id == value?.id;
+                const _loading = _active && loading && loadingLevel == level + 1;
+                return <CateItem key={i} {...cate}
+                  loading={_loading}
+                  active={_active}
+                  onClick={(id) => {
+                    handleItemClick(cate);
+                  }}
+                />
+              })}
+            </span>
+          })}
+        </ul >}
     </div>
   }
 
@@ -142,35 +148,52 @@ function CategorySelect(baseProps: CategorySelectProps) {
   return (<>
     <div>
       <Card title={title !== undefined ? title : '选择商品类目'}>
-        <div className={styles[`${prefixCls}-boxs`]}>
-          {cateShowData?.map((item, index) => {
-            const { level, showData, currCate } = item;
-            return <Spin key={index} loading={loading && loadingLevel == level} tip='拼命加载中...'
-              className={styles[`${prefixCls}-box`]}>
-              <Input allowClear
-                onChange={(value) => handleSeach(value, item)}
-                placeholder="输入分类名搜索"
-                className={styles[`${prefixCls}-seach`]}
-                suffix={<IconSearch />}
-              />
-              <CateList
-                level={level}
-                data={showData}
-                value={currCate}
-                onItemClick={async (value) => {
-                  await handleCateClick(item, value);
-                }}
-              />
-            </Spin >
-          })}
-        </div>
+        {loadErrMsg
+          ? <div className={styles[`${prefixCls}-error`]}>
+            <Result
+              status='500'
+              title={'加载错误'}
+              subTitle={loadErrMsg}
+              extra={
+                <Button type='primary'
+                  loading={loading}
+                  onClick={() => {
+                    loadCateList(1, 0);
+                  }}>
+                  重试
+                </Button>
+              }
+            />
+          </div>
+          : <div className={styles[`${prefixCls}-boxs`]}>
+            {cateShowData?.map((item, index) => {
+              const { level, showData, currCate } = item;
+              return <Spin key={index} loading={loading && loadingLevel == level} tip='拼命加载中...'
+                className={styles[`${prefixCls}-box`]}>
+                <Input allowClear
+                  onChange={(value) => handleSeach(value, item)}
+                  placeholder="输入分类名搜索"
+                  className={styles[`${prefixCls}-seach`]}
+                  suffix={<IconSearch />}
+                />
+                <CateList
+                  level={level}
+                  data={showData}
+                  value={currCate}
+                  onItemClick={async (value) => {
+                    await handleCateClick(item, value);
+                  }}
+                />
+              </Spin >
+            })}
+          </div>}
         <div>
           <Alert content={`您当前选择的是：${cateNamePath}`} closable={false} />
         </div>
         <div className={styles[`${prefixCls}-bottom`]}>
           <Button
             type='primary'
-            loading={submiting}
+            // loading={submiting}
             disabled={disSubmit}
             className={styles[`${prefixCls}-bottom-btn`]}
             onClick={handleOk}
