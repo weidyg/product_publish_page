@@ -32,14 +32,20 @@ export interface CategoryItemProps extends Category {
 }
 export interface CategoryListProps {
     level?: number
-    data?: CategoryGroup[],
+    data?: Category[],
     value?: Category
     onItemClick?: (value: Category) => Promise<void>,
+
+    prefixCls?: string,
+    loading?: boolean
 }
 
-export type CateShowData = {
+export type CateSelectData = {
     level: number,
-    currCate?: Category,
+    category?: Category,
+};
+
+export type CateData = {
+    level: number,
     data?: Category[],
-    showData?: CategoryGroup[],
 };

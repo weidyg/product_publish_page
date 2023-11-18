@@ -74,7 +74,7 @@ function ImageUpload(baseProps: ImageUploadProps) {
   }) {
     const { size = 'default', onEditClick } = props;
     return <>
-      <div className={`${styles['upload-picture']} ${styles[size]}`} >
+      <div className={classNames(styles['upload-picture'], { [styles[size]]: size && size != 'default' })} >
         <img className={styles['upload-picture-image']} src={imgInfo?.url} />
         {size != 'mini' &&
           <div className={styles['upload-picture-mask']}>
@@ -138,7 +138,7 @@ function ImageUpload(baseProps: ImageUploadProps) {
           </div>
         </Trigger  >
       ) : (
-        <div className={classNames(styles['upload-picture'], styles['upload-picture-add'], styles[size!])}
+        <div className={classNames(styles['upload-picture'], styles['upload-picture-add'], { [styles[size!]]: size && size != 'default' })}
           onClick={() => { setVisible(true); }}>
           <div className={styles['placeholder']}>
             <IconPlus className={styles['icon']} />
@@ -155,7 +155,7 @@ function ImageUpload(baseProps: ImageUploadProps) {
         <ShowImage size={size} />
       ) : (
         <UploadImageTrigger>
-          <div className={classNames(styles['upload-picture'], styles['upload-picture-add'], styles[size!])}>
+          <div className={classNames(styles['upload-picture'], styles['upload-picture-add'], { [styles[size!]]: size && size != 'default' })}>
             {text && <div className={styles['label']}>{text}</div>}
             <div className={styles['placeholder']}>
               <IconPlus className={styles['icon']} />

@@ -11,12 +11,14 @@
   <div id="root"></div>
   <script src="/assets/js/post.js"> </script>
   <script>
+    var model = { id: null, shopId: null, origSpuId: null, type: null, publish: null };
+    var prodEditConfig = { btn: { publish: model.publish } };
 
     function getDataInput(id, categoryId, shopId, origSpuId, type) {
-      id = id || getQueryString('id');
-      origSpuId = origSpuId || getQueryString('origSpuId');
-      type = type || getQueryString('type');
-      shopId = shopId || getQueryString('shopId');
+      id = id || model.id || getQueryString('id');
+      origSpuId = origSpuId || model.origSpuId || getQueryString('origSpuId');
+      type = type || model.type || getQueryString('type');
+      shopId = shopId || model.shopId || getQueryString('shopId');
       categoryId = categoryId || getQueryString('categoryId');
       return { ItemId: id, OrigSpuId: origSpuId, Type: type, ShopId: shopId, CategoryId: categoryId, };
     }
