@@ -230,13 +230,6 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         }
     };
 
-    const handleSave = (row: any) => {
-        const newData = [...data];
-        const index = newData.findIndex((item) => row.key === item.key);
-        newData.splice(index, 1, { ...newData[index], ...row });
-        handleChange(newData);
-    };
-
     const getskuBatchFillKeys = () => {
         const skuBatchFillPropValueObjs = skuBatchFillValue[skuSalePropName] || {};
         const tempSkuBatchFillPropValueObjs: { [x: string]: string } = {};
@@ -280,6 +273,13 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         const newData = getSkuItems(skuSalePropValue, skuSalePropName, data);
         return [newData, skuSalePropValue];
     }, [JSON.stringify(salePropValues), JSON.stringify(data)]);
+
+    const handleSave = (row: any) => {
+        const newData = [...skuData];
+        const index = newData.findIndex((item) => row.key === item.key);
+        newData.splice(index, 1, { ...newData[index], ...row });
+        handleChange(newData);
+    };
 
     const maxNum = 4;
     return (

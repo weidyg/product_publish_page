@@ -6,4 +6,4 @@ import CategorySelect from './components/CategorySelect'
 
 ReactDOM
   .createRoot(document.getElementById('root') as HTMLElement)
-  .render(<App><CategorySelect/></App>)
+  .render(<App></App>)
