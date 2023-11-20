@@ -216,11 +216,27 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
             }
         })
     }, []);
-    // const [data, setData] = useState<any[]>([]);
+
     const [data, setData] = useMergeValue<any[]>([], {
         defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
         value: 'value' in props ? props.value : undefined,
     });
+
+    const [skuData, skuSalePropValue] = useMemo(() => {
+        const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
+        const skuSalePropValue = getSkuSaleProp(salePropNames, salePropValues);
+        const newData = getSkuItems(skuSalePropValue, skuSalePropName, data);
+        //handleChange(newData);
+        return [newData, skuSalePropValue];
+    }, [JSON.stringify(salePropValues), JSON.stringify(data)]);
+
+
+    const handleCellSave = (row: any) => {
+        const newData = [...skuData];
+        const index = newData.findIndex((item) => row.key === item.key);
+        newData.splice(index, 1, { ...newData[index], ...row });
+        handleChange(newData);
+    };
 
     const handleChange = (newData: any[]) => {
         newData = newData.filter(f => f.key);
@@ -262,24 +278,10 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         }, 10);
     }
     const skuFillChange = (name: string, value: any) => {
-        SetSkuBatchFillValue((data: any) => {
-            return { ...data, [name]: value }
+        SetSkuBatchFillValue((fillValue: any) => {
+            return { ...fillValue, [name]: value }
         });
     }
-
-    const [skuData, skuSalePropValue] = useMemo(() => {
-        const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
-        const skuSalePropValue = getSkuSaleProp(salePropNames, salePropValues);
-        const newData = getSkuItems(skuSalePropValue, skuSalePropName, data);
-        return [newData, skuSalePropValue];
-    }, [JSON.stringify(salePropValues), JSON.stringify(data)]);
-
-    const handleSave = (row: any) => {
-        const newData = [...skuData];
-        const index = newData.findIndex((item) => row.key === item.key);
-        newData.splice(index, 1, { ...newData[index], ...row });
-        handleChange(newData);
-    };
 
     const maxNum = 4;
     return (
@@ -405,7 +407,7 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
                     return {
                         ...column,
                         onCell: () => ({
-                            onHandleSave: handleSave
+                            onHandleSave: handleCellSave
                         })
                     }
                 })}
