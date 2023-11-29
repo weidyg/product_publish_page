@@ -93,6 +93,7 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
                 align: 'right',
                 width: 92,
                 render(value: any, item: any, index: any) {
+                    if (!value && value !== 0) { return ''; }
                     return Number.parseFloat(value).toFixed(2);
                 },
             },
