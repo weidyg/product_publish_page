@@ -397,7 +397,7 @@ export const convertTime = (timestamp?: number) => {
 export const convertByteUnit = (size?: number, precision: number = 2) => {
     if (size === undefined) { return ''; }
     if (size < unitSizes.K) { return `${size?.toFixed(precision)}B`; }
-    if (size < unitSizes.M) { return `${(size / unitSizes.M)?.toFixed(precision)}K`; }
+    if (size < unitSizes.M) { return `${(size / unitSizes.K)?.toFixed(precision)}K`; }
     if (size < unitSizes.G) { return `${(size / unitSizes.M)?.toFixed(precision)}M`; }
     if (size < unitSizes.T) { return `${(size / unitSizes.G)?.toFixed(precision)}G`; }
     if (size < unitSizes.P) { return `${(size / unitSizes.T)?.toFixed(precision)}T`; }

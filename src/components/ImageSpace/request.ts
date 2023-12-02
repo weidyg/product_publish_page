@@ -2,38 +2,19 @@ import { RequestOptions, UploadRequest } from "@arco-design/web-react/es/Upload/
 import { ImageInfo } from "./interface";
 import { getImageUploadConfig } from "./api";
 
-// const action = 'http://localhost:60486/api/services/app/ProductPublish/UploadImages1';
-// const convertData = (response: { Success: any; Error: any; Result: any; }) => {
-//   const s = response?.Success;
-//   const e = response?.Error;
-//   const m = response?.Result;
-
-//   const error = e && {
-//     code: e.Code,
-//     message: e.Message,
-//     details: e.Details,
-//   }
-
-//   const result = s && m && {
-//     id: m.Id,
-//     name: m.FileName,
-//     pix: '',
-//     size: m.FileSize,
-//     url: m.Url,
-//     folderId: m.FolderId,
-//     time: m.CreationTime,
-//   }
-//   return { error, ...result };
-// };
-
 const NOOP = () => { };
 const errorMessage = (code?: number, message?: string, details?: string) => {
   return { error: { code, message, details } };
 };
 
-type ImageInfoResponse = ImageInfo & { error?: { code?: number, message?: string, details?: string, } };
-function getResponse(xhr: XMLHttpRequest, ev: ProgressEvent, convertData: ((arg0: any) => ImageInfoResponse)): ImageInfoResponse {
-  if (xhr.status < 200 || xhr.status >= 300) { return errorMessage(xhr.status, xhr.statusText, xhr.responseText,); }
+export type AbpResponse = { [key: string]: any, error?: { code?: number, message?: string, details?: string, } };
+export type ImageInfoResponse = ImageInfo & AbpResponse;
+function getResponse(xhr: XMLHttpRequest, ev: ProgressEvent,
+  convertData: ((arg0: any) => ImageInfoResponse)
+): ImageInfoResponse {
+  if (xhr.status < 200 || xhr.status >= 300) {
+    return errorMessage(xhr.status, xhr.statusText || '请求错误', xhr.responseText,);
+  }
   const text = xhr.responseText || xhr.response;
   if (!text) { return errorMessage(-1, 'error', `${ev}`); }
   try {
@@ -69,34 +50,40 @@ export const uploadRequest: UploadRequest = function (options: RequestOptions) {
   } = options;
   // console.log('uploadRequest', options);
 
-  const { action, convertRequest, convertResponse } = getImageUploadConfig();
+  const { action, convertRequest, convertResponse, saveUploadFileInfo } = getImageUploadConfig();
   function getValue(value: string | object | undefined) {
     if (typeof value === 'function') { return value(file); }
     return value;
   }
   const name = getValue(originName) as string;
   const data = getValue(originData) as object;
+
   const xhr = new XMLHttpRequest();
   if (onProgress && xhr.upload) {
     xhr.upload.onprogress = function (event: ProgressEvent) {
-      // console.log('onprogress', xhr, event, event.loaded, event.total);
+      //  console.log('onprogress', xhr, event, event.loaded, event.total);
       let percent;
       if (event.total > 0) { percent = (event.loaded / event.total) * 100; }
       onProgress(parseInt(`${percent}`, 10), event);
     };
   }
   xhr.onerror = function error(event: ProgressEvent) {
-    // console.log('onerror', xhr, event);
     var response = getResponse(xhr, event, convertResponse);
     onError(response)
   };
-  xhr.onload = function onload(event: ProgressEvent) {
+  xhr.onload = async function onload(event: ProgressEvent) {
     // console.log('onload', xhr, event);
     var response = getResponse(xhr, event, convertResponse);
+    // console.log('onload response',response);
     if (response?.error) {
       return onError(response);
     } else {
-      onSuccess(response);
+      try {
+        const saveResponse = await saveUploadFileInfo(data, response);
+        onSuccess(saveResponse);
+      } catch (error) {
+        onError(error || {})
+      };
     }
   };
 
@@ -112,7 +99,7 @@ export const uploadRequest: UploadRequest = function (options: RequestOptions) {
   if (withCredentials && 'withCredentials' in xhr) {
     xhr.withCredentials = true;
   }
-  
+
   appendData(headers, (key: string, value: string) => {
     xhr.setRequestHeader(key, value);
   });

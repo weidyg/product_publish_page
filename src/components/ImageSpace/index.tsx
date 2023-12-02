@@ -111,7 +111,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   function chenckFile(file: File) {
     const size = file?.size || 0;
     const isAccept = isAcceptFile(file, ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']);
-    console.log('isAccept', isAccept);
+    // console.log('isAccept', isAccept);
     if (!isAccept || size > 3 * 1024 * 1024) {
       Message.error('仅支持3MB以内jpg、jpeg、gif、png格式图片上传~');
       return false;
@@ -150,7 +150,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     const imgRef = useRef<HTMLImageElement>(null);
     const listOnly = showMode == 'list';
     return <div className={classNames(styles['item'], styles['pic'])}
-      onClick={() => { handlerItemClick(props); }}
+      onClick={() => { url && handlerItemClick(props); }}
     >
       <div className={classNames(styles['cover'], styles['list-item'])}>
         {(status && status != 'done')
@@ -299,7 +299,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                 folderId: uploadFolderId
               }}
               beforeUpload={(file: File) => {
-                console.log('beforeUpload', file);
+                // console.log('beforeUpload', file);
                 const chenck = chenckFile(file);
                 if (chenck) { setShowUpload(false); }
                 return chenck;

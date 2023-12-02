@@ -11,7 +11,8 @@
   <div id="root"></div>
   <script src="/assets/js/post.js"> </script>
   <script>
-    var model = { id: null, shopId: null, origSpuId: null, type: null, publish: null };
+    var model = { id: null, shopId: null, origSpuId: null, type: null, publish: null, tenantId: 0, encAuthToken: null };
+    //model.encAuthToken = "wNYmO41/48SHNstaLVXxHCCre29BZQl1NhC6NM3R3rzpXtPQxVzH6jEzA/QhXFN5tu6Fk7pO53uppm1mVXMZgxbyRVz26dnepi/FyB6axBY+6gq1GL+uRQgoiFUCjRN2p8w6LevViwKlHyWZZJZO1DGVSjAi1m2U+og9pkHw9/QS8262ijSox6246WlMmqH+jzjkY9YAE1u0rCshwLiHjLZRYER3g6up6TBgX2W1t0lIpoTcFbAU4Haohb1snNa2+fQM/qmrgl9UnflrCqHWkymB9w+IkVTRKUOOava9w/sFkiojesclfXqvNdp11dHFM+WqXT58KHUFDyShiLCShQMQrd3dhUSaTBML98Fev3cjAfGvHPCL+ZrIM7PLBuZxRqBO+x7uUqmLSeimMerAv50F2rtEjn0ceSHUVtE3rkTmUzbCvAO8mlADbjLcsfKCnJreUfLkL1UN50Weny1vzatv3+F86b/JrbNlQnZQnuwy5Hb4GQpe5Igm4KLlnsetDb+sNJLfCo9hHXnhJIEy7MujExZwEXuf4qEqHklU0loQPpYvRgziJSIzJDbFMidBPes9cjBjhGS7PUNVLoFx74qKXTBC1mkW+L+g1VXDAno=";
     var prodEditConfig = { btn: { publish: model.publish } };
 
     function getDataInput(id, categoryId, shopId, origSpuId, type) {
@@ -24,7 +25,7 @@
     }
 
     // var prodEditConfig = { btn: { publish: false } };
-    const baseUrl = 'http://localhost:60486/api/services/app/ProductPublish/';
+    const baseUrl = 'http://localhost:52647/api/services/app/ProductPublish/';
     const productEditUrls = {
       loadDataWithoutUploadItem: baseUrl + "GetProductEditDataWithoutUploadItem",
       loadData: baseUrl + "GetProductEditData",
@@ -32,7 +33,8 @@
       getOptions: baseUrl + "GetOptions",
       getCategoryTree: baseUrl + "GetCategoryTree",
       getImagePageList: baseUrl + "GetImagePageList",
-      uploadImages: baseUrl + "UploadImages",
+      saveUploadFileInfo: baseUrl + "SaveUploadFileInfo",
+      uploadImages: "https://img.17qcc.com/picture/AsyncUpload",
     }
 
     function ConverData(data) {
@@ -88,22 +90,25 @@
         return { total, items }
       });
     }
+
     function getImageUploadConfig() {
       const action = productEditUrls.uploadImages;
+
       const convertRequest = (request) => {
         if (!request) { return {}; }
         const _request = {
-          FolderId: request.folderId,
-          ImgPix: request.pix,
+          enc_auth_token: model?.encAuthToken,
+          directory: model?.tenantId > 0 ? `t${model?.tenantId}/p` : undefined,
         }
         return _request;
       };
+
       const convertResponse = (response) => {
         if (!response) { return {}; }
         const s = response.Success;
         const e = response.Error;
-        const m = response.Result;
-        const result = (s && m && ConverImageInfo(m)) || {};
+        const result = response.Result || {};
+        // const result = (s && m && ConverImageInfo(m)) || {};
         result.error = e && {
           code: e.Code,
           message: e.Message,
@@ -111,8 +116,26 @@
         };
         return result;
       };
-      return { action, convertRequest, convertResponse };
+
+      const saveUploadFileInfo = (request, result) => {
+        const data = {
+          FolderId: request?.folderId,
+          ImgPix: request?.pix,
+          ContentType: `image/${result?.MimeType}`,
+          FileSize: (result?.FileSize || 0),
+          FileName: result?.OriginFileName,
+          FilePath: result?.FileFullPath,
+          Thumbnail: result?.Thumbnail,
+        };
+        return post(productEditUrls.saveUploadFileInfo, data)
+          .then(function (data) {
+            return ConverImageInfo(data || {});
+          });
+      };
+
+      return { action, convertRequest, convertResponse, saveUploadFileInfo };
     }
+
     function ConverImageInfo(m) {
       return {
         id: m.Id,
@@ -124,6 +147,7 @@
         time: m.CreationTime,
       }
     }
+
   </script>
   <script type="module" src="main.tsx"></script>
 </body>

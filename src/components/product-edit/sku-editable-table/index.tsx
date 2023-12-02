@@ -226,10 +226,13 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         const salePropNames = skuSaleProp?.subItems?.map(m => m.name!) || [];
         const skuSalePropValue = getSkuSaleProp(salePropNames, salePropValues);
         const newData = getSkuItems(skuSalePropValue, skuSalePropName, data);
-        //handleChange(newData);
+        // handleChange(newData);
         return [newData, skuSalePropValue];
     }, [JSON.stringify(salePropValues), JSON.stringify(data)]);
 
+    useEffect(() => {
+        handleChange(skuData);
+    }, [JSON.stringify(skuData)]);
 
     const handleCellSave = (row: any) => {
         const newData = [...skuData];

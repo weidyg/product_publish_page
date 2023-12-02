@@ -1,9 +1,11 @@
 import { ImageInfo } from "./interface";
+import { AbpResponse, ImageInfoResponse } from "./request";
 
 declare global {
     interface Window {
         getImagePageList: any,
         getImageUploadConfig: any,
+        saveProductEditData: any,
     }
 }
 
@@ -19,31 +21,24 @@ export async function getImagePageList(input: {
     const { folderId, refType, sortName, sortAsc, pageNo, pageSize, keyword } = input;
     return await window.getImagePageList(keyword, folderId, refType, sortName, sortAsc, pageNo, pageSize);
 }
-
-export function getImageUploadConfig() {
-    // const _action = 'http://localhost:60486/api/services/app/ProductPublish/UploadImages';
-    // const _convertData = (response: { Success: any; Error: any; Result: any; }) => {
-    //     const s = response?.Success;
-    //     const e = response?.Error;
-    //     const m = response?.Result;
-
-    //     const error = e && {
-    //         code: e.Code,
-    //         message: e.Message,
-    //         details: e.Details,
-    //     }
-
-    //     const result = s && m && {
-    //         id: m.Id,
-    //         name: m.FileName,
-    //         pix: '',
-    //         size: m.FileSize,
-    //         url: m.Url,
-    //         folderId: m.FolderId,
-    //         time: m.CreationTime,
-    //     }
-    //     return { error, ...result };
-    // };
-    const { action, convertRequest, convertResponse } = window.getImageUploadConfig();
-    return { action,convertRequest,  convertResponse };
+export async function saveProductEditData(input: {
+    folderId: string,
+    imgPix: string,
+    contentType: string,
+    fileSize: string,
+    fileName: string,
+    filePath: string,
+    thumbnail: string
+}): Promise<ImageInfo> {
+    const { folderId, imgPix, contentType, fileSize, fileName, filePath, thumbnail } = input;
+    return await window.saveProductEditData(folderId, imgPix, contentType, fileSize, fileName, filePath, thumbnail);
+}
+export function getImageUploadConfig(): {
+    action: string,
+    convertRequest: (request: Object) => any,
+    convertResponse: (response: Object) => AbpResponse,
+    saveUploadFileInfo: (request: Object, response: Object) => Promise<ImageInfoResponse>,
+} {
+    const { action, convertRequest, convertResponse, saveUploadFileInfo } = window.getImageUploadConfig();
+    return { action, convertRequest, convertResponse, saveUploadFileInfo };
 }   
