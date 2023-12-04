@@ -252,10 +252,10 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
                             callback(`值范围应为 ${minValue} ~ ${maxValue} 之间`);
                         }
                     }
-                    else if (hasMaxValue && value > maxValue!) {
+                    else if (hasMaxValue && _value > maxValue!) {
                         callback(`最大值为 ${maxValue}`);
                     }
-                    else if (hasMinValue && value < minValue!) {
+                    else if (hasMinValue && _value < minValue!) {
                         callback(`最小值为 ${minValue}`);
                     }
                 }
