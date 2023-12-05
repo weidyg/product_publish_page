@@ -8,6 +8,7 @@ import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import ImageSpace from '../ImageSpace';
 import { ImageInfo } from '../ImageSpace/interface';
 import classNames from '@arco-design/web-react/es/_util/classNames';
+import { thumbnail } from '../product-edit/until';
 
 const defaultProps: ImageUploadProps = {
   size: 'default',
@@ -73,9 +74,10 @@ function ImageUpload(baseProps: ImageUploadProps) {
     onEditClick?: () => void,
   }) {
     const { size = 'default', onEditClick } = props;
+    const imgSize = size == 'large' ? 220 : size == 'mini' ? 32 : 120;
     return <>
       <div className={classNames(styles['upload-picture'], { [styles[size]]: size && size != 'default' })} >
-        <img className={styles['upload-picture-image']} src={imgInfo?.url} />
+        <img className={styles['upload-picture-image']} src={thumbnail(imgInfo?.url || '', imgSize)} />
         {size != 'mini' &&
           <div className={styles['upload-picture-mask']}>
             <Space size={'medium'}>

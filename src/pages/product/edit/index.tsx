@@ -83,7 +83,9 @@ function ProductEditPage() {
                     Modal.error({
                         maskClosable: false,
                         title: `保存${publish ? '并发布' : ''}失败`,
-                        content: <Paragraph>{error?.message}</Paragraph>
+                        content: <Paragraph>
+                            {error?.message}
+                        </Paragraph>
                     });
                 }
             } catch (error: any) {

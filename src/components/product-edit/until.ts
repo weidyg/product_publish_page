@@ -438,3 +438,8 @@ export const sizeCompare = (t1: string, t2: string) => {
     val2 = (val2 && valMap[val2]) || val2;
     return val1 == val2;
 };
+
+export const thumbnail = (url: string, size: number) => {
+    if (!url) { return url; }
+    return `${url}?x-oss-process=image/resize,m_lfit,h_${size},w_${size}`
+}

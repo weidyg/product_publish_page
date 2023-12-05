@@ -6,7 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import styles from './style/index.module.less';
 import classNames from "@arco-design/web-react/es/_util/classNames";
 import { isNumber } from "@arco-design/web-react/es/_util/is";
-import { convertByteUnit, convertTime, isAcceptFile } from "../product-edit/until";
+import { convertByteUnit, convertTime, isAcceptFile, thumbnail } from "../product-edit/until";
 import { debounce, throttle } from "lodash";
 import { RequestOptions, UploadItem } from "@arco-design/web-react/es/Upload";
 import { TreeDataType } from "@arco-design/web-react/es/Tree/interface";
@@ -149,10 +149,13 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     // console.log('ImgListItem', props);
     const imgRef = useRef<HTMLImageElement>(null);
     const listOnly = showMode == 'list';
+
+    const coverSize = listOnly ? 40 : 100;
     return <div className={classNames(styles['item'], styles['pic'])}
       onClick={() => { url && handlerItemClick(props); }}
     >
-      <div className={classNames(styles['cover'], styles['list-item'])}>
+      <div className={classNames(styles['cover'], styles['list-item'])}
+        style={{ height: `${coverSize}px`, width: `${coverSize}px`, lineHeight: `${coverSize}px` }}>
         {(status && status != 'done')
           ? <div title={error?.message}>
             <Progress
@@ -161,9 +164,10 @@ function ImageSpace(baseProps: ImageSpaceProps) {
               size={listOnly ? 'mini' : 'default'}
               status={status == 'error' ? 'error' : undefined}
               className={classNames(styles['progress'])}
+              style={{ height: `${coverSize}px`, width: `${coverSize}px` }}
             />
           </div>
-          : <img ref={imgRef} alt={name} src={url} />
+          : <img ref={imgRef} alt={name} src={thumbnail(url, coverSize)} />
         }
         <div className={styles['mask']}></div>
         {pix && <div className={classNames(styles['pix'], styles['block-only'])}>{pix}</div>}
