@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { IconDoubleLeft, IconDoubleRight } from "@arco-design/web-react/icon";
 import { ColumnProps } from "@arco-design/web-react/es/Table";
 import { flat, getSkuGroupObj, getSkuPropObj } from "./until";
+import { thumbnail } from "../until";
 
 
 const defaultProps: LeftProdInfoProps = {
@@ -111,8 +112,9 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
         {visible && <div className={styles[`${prefixCls}-info`]}>
             <div>
                 <Space size={0}>
-                    <Image alt="" src={data?.image} width={80} height={80}
-                        style={{ marginRight: 10 }} />
+                    <div className={styles['prod-img']} >
+                        <img alt="" src={thumbnail(data?.image || '', 80)} />
+                    </div>
                     <div>
                         <div className={styles['prod-title']}>
                             <Typography.Text
