@@ -6,6 +6,7 @@ import { IconQuestionCircle } from '@arco-design/web-react/icon';
 import styles from './index.module.less'
 import { isObject } from '@arco-design/web-react/es/_util/is';
 import { FieldUiType, MyFormItemProps } from '../interface';
+import { forEach } from 'lodash';
 
 const EditableContext = React.createContext<{
     getForm?: () => FormInstance | null,
@@ -264,7 +265,18 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
     const handleFillSkuData = () => {
         const fillData = Object.assign({}, skuBatchFillValue);
         delete fillData[skuSalePropName];
-        if (Object.keys(fillData).length == 0) { return; }
+        const keys = Object.keys(fillData);
+        if (keys.length == 0) { return; }
+        for (let index = 0; index < keys.length; index++) {
+            const key = keys[index];
+            const val = fillData[key];
+            const formItem = subItems.find(f => f.name == key);
+            const { minValue, maxValue } = formItem?.rules || {};
+            if (isNumError(val, maxValue, minValue)) {
+                Message.error(`${formItem?.label}值不符合规范,请重新编辑！`);
+                return;
+            }
+        }
         SetFillDataLoading(true);
         setTimeout(() => {
             let updateCount = 0;
@@ -286,12 +298,20 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
         });
     }
 
+    function isNumError(num: number, maxValue?: number, minValue?: number): boolean {
+        if (!num || (!minValue && !maxValue)) { return false; }
+        if (minValue && num < minValue) { return true; }
+        if (maxValue && num > maxValue) { return true; }
+        return false;
+    }
+
     const maxNum = 4;
     return (
         <div>
             <Space wrap>
                 {subItems.map((m, i) => {
-                    const { label, name, options = [] } = m;
+                    const { label, name, options = [], rules } = m;
+                    const { minValue, maxValue } = rules || {};
                     if (!name) { return; }
                     const uiType = getUiTypeOrDefault(m);
                     const isSkuProps = FieldNames.skuProps(m?.tags);
@@ -354,19 +374,27 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
                             </div>
                         </Select>
                     }
+                    const isNumErrorFun = () => isNumError(skuBatchFillValue[name], maxValue, minValue)
                     return (i < maxNum || showMoreBatch) && <div key={i}>
                         {uiType == 'input' ? (
                             <Input allowClear
                                 placeholder={label}
                                 style={{ width: '120px' }}
                                 value={skuBatchFillValue[name]}
-                                onChange={value => { skuFillChange(name, value); }}
+                                onChange={value => {
+                                    skuFillChange(name, value);
+                                }}
                             />
                         ) : uiType == 'inputNumber' ? (
                             <InputNumber placeholder={label}
                                 style={{ width: '120px' }}
+                                error={isNumErrorFun()}
+                                // min={minValue}
+                                // max={maxValue}
                                 value={skuBatchFillValue[name]}
-                                onChange={value => { skuFillChange(name, value); }}
+                                onChange={value => {
+                                    skuFillChange(name, value);
+                                }}
                             />
                         ) : uiType == 'select' ? (
                             <Select allowClear
@@ -379,7 +407,9 @@ function SkuEditableTable(props: SkuFormItemProps, ref: Ref<any>) {
                                 }}
                                 style={{ width: '120px' }}
                                 value={skuBatchFillValue[name]}
-                                onChange={value => { skuFillChange(name, value); }}
+                                onChange={value => {
+                                    skuFillChange(name, value);
+                                }}
                             />
                         ) : (
                             <>_</>
