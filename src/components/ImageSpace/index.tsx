@@ -96,8 +96,8 @@ function ImageSpace(baseProps: ImageSpaceProps) {
       });
       setHasNextPage((pageNo * pageSize) < total);
       setFiles((files) => pageNo == 1 ? items : files.concat(...items));
-    } catch (error) {
-
+    } catch (error: any) {
+      Message.info(error?.message);
     } finally {
       setLoading(false);
       setLoadMoreing(false);

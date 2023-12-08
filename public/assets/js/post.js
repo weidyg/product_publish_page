@@ -27,8 +27,20 @@ function post(url, data, converData) {
         body: JSON.stringify(data),
     })
         .then(function (response) {
-            // console.log("response", JSON.stringify(response));
-            return response.json();
+            // console.log("response", response);
+            if (response.redirected && response.url) {
+                if (response.url.toLocaleLowerCase().indexOf("login")) {
+                    return Promise.reject({
+                        code:-1,
+                        message: "当前登录已过期，请重新登录！",
+                        details: response.url,
+                    });
+                } else {
+                    window.location.url = response.url;
+                }
+            } else {
+                return response.json();
+            }
         })
         .then(function (data) {
             data = data || {};
