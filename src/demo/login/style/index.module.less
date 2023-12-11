@@ -1,0 +1,69 @@
+.header {
+    padding: 22px 0;
+    height: 88px;
+    box-sizing: border-box;
+}
+
+.content {
+    width: 100%;
+    position: relative;
+
+    &-layout {
+        height: 600px;
+        width: 1200px;
+
+        margin: 0 auto;
+        overflow: hidden;
+        position: relative;
+        z-index: 999;
+
+        .login-box {
+            &-warp {
+                position: absolute;
+                top: 120px;
+                right: 60px;
+                width: 350px;
+            }
+            background-color: hsla(0,0%,100%,.9);
+            position: relative
+        }
+    }
+
+    .login {
+        &-newbg {
+            position: absolute;
+            z-index: 9;
+            top: 0;
+            left: 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            height: 600px;
+            width: 100%;
+        }
+
+        &-adlink {
+            width: 1200px;
+            position: relative;
+            margin: 0 auto;
+            z-index: 1000;
+
+            a {
+                width: 630px;
+                height: 440px;
+                position: absolute;
+                left: 80px;
+                top: 80px
+            }
+        }
+    }
+
+}
+
+.footer {
+    position: relative;
+    margin: 60px auto 0;
+    padding: 7px 0 9px;
+    border-top: 1px solid #ddd;
+    width: 1200px;
+}
