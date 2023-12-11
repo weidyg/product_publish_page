@@ -117,7 +117,7 @@ function RemoteSelect(props: any) {
         onChange && onChange(value);
     }
 
-    return <div>
+    return <>
         <Select
             value={value}
             onChange={handleChange}
@@ -155,7 +155,7 @@ function RemoteSelect(props: any) {
                 {`同步`}
             </Button>
         }
-    </div>
+    </>
 }
 
 function fallbackRender(props: any) {
