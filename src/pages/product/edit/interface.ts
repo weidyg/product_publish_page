@@ -11,7 +11,8 @@ export interface ProductEditDataProps {
     categoryNamePath: string;
     formSchema: MyFormItemProps[];
     formData: { [x: string]: any };
-    origProdInfo:ProdInfo;
+    origProdInfo: ProdInfo;
+    lastModificationTime: string
 }
 
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Affix, Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
+import { Affix, Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin, Typography } from "@arco-design/web-react";
 import Paragraph from "@arco-design/web-react/es/Typography/paragraph";
 import { ProductEditDataProps } from "./interface";
 import styles from './style/index.module.less'
@@ -25,7 +25,8 @@ function ProductEditPage() {
 
     const { formSchema = [], formData = {}, origProdInfo,
         itemId, platformId, shopId, categoryId
-        , platformName, shopName, categoryNamePath
+        , platformName, shopName, lastModificationTime
+        , categoryNamePath
     } = productEditData || {};
 
     useEffect(() => {
@@ -126,7 +127,18 @@ function ProductEditPage() {
                     </div>
                     : <>
                         {!loading && (platformName || shopName) &&
-                            <PageHeader className={styles['product-header']} title={platformName} subTitle={shopName} />
+                            <PageHeader className={styles['product-header']}
+                                title={platformName} subTitle={shopName}
+                                extra={lastModificationTime && <>
+                                    <Typography.Text type='secondary'>
+                                        更新时间：
+                                    </Typography.Text>
+                                    <Typography.Text type='secondary'
+                                        style={{ color: 'var(--color-text-3)' }}
+                                    >
+                                        {lastModificationTime}
+                                    </Typography.Text>
+                                </>} />
                         }
                         {showCategorySelect
                             ? <div className={styles['product-content']}>
