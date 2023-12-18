@@ -141,7 +141,7 @@ function EditableCell(props: any) {
                     value={rowData[dataIndex]}
                     onChange={cellValueChangeHandler}
                     max={isNumberOrStrNumber(rules?.maxValue) ? rules.maxValue : undefined}
-                    min={isNumberOrStrNumber(rules?.minValue) ? rules.minValue : isPrice ? 0.01 : 1}
+                    min={isNumberOrStrNumber(rules?.minValue) ? rules.minValue : isPrice ? 0.01 : 0}
                     precision={isPrice ? 2 : undefined}
                     step={isPrice ? 0.01 : undefined}
                 />

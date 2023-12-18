@@ -84,6 +84,7 @@ function SalePropCard(baseProps: SalePropCardProps) {
     }, [JSON.stringify(values)]);
 
     const [showChecked, setShowChecked] = useState(false);
+    const [showKeyword, setShowKeyword] = useState<string>();
     return (
         <Card className={styles['trigger-popup']}
             title={
@@ -97,12 +98,17 @@ function SalePropCard(baseProps: SalePropCardProps) {
                         <Button shape='round' size='mini' onClick={onCancel}>
                             取 消
                         </Button>
+                        <Input placeholder='请输入搜索' size='small' style={{ width: '180px' }}
+                            allowClear suffix={<IconSearch />} value={showKeyword}
+                            onChange={(value) => { setShowKeyword(value); }}
+                        />
                     </Space>
                     <Space >
                         <Switch checkedText='已选' uncheckedText='全部'
-                            checked={showChecked} onChange={(c) => { setShowChecked(c); }} />
+                            checked={showChecked}
+                            onChange={(c) => { setShowChecked(c); }}
+                        />
                     </Space>
-                    {/* <Input placeholder='请输入搜索' suffix={<IconSearch />} /> */}
                 </div>
             }
             bodyStyle={{ padding: '0' }}
@@ -133,16 +139,19 @@ function SalePropCard(baseProps: SalePropCardProps) {
                                 const { value: val, label: text } = item;
                                 const disabled = vaildDisabled(val);
                                 const checked = vaildChecked(val);
-                                const show = (showChecked && checked) || !showChecked;
-                                return (show && <Checkbox key={i} value={val} disabled={disabled}>
+                                const sk = !showKeyword || text.indexOf(showKeyword) != -1;
+                                const sc = (showChecked && checked) || !showChecked;
+                                return (<Checkbox key={i} value={val} disabled={disabled}
+                                    className={classNames({
+                                        [styles['card-checkbox-hidden']]: !(sk && sc)
+                                    })}>
                                     {({ checked: _checked }) => {
                                         return (
                                             <Space align='center'
                                                 className={classNames(styles['card-checkbox'], {
                                                     [styles['card-checkbox-checked']]: checked,
                                                     [styles['card-checkbox-disabled']]: disabled
-                                                })}
-                                            >
+                                                })}>
                                                 <div className={styles['card-checkbox-mask']}>
                                                     <IconCheck className={styles['card-checkbox-mask-icon']} />
                                                 </div>
