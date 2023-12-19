@@ -74,15 +74,21 @@
       font-size: 16px;
       float: inherit;
     }
-
+    
     cursor: pointer;
-    writing-mode:vertical-lr;
     float: right;
     padding: 8px;
     color: #fff;
     user-select: none;
-    background-color: @color-primary-6;
-    box-shadow: 0 1px 8px 0 @color-primary-6;
-    border: 1px solid @color-primary-6;
+    background-color: rgb(var(--primary-6));
+    box-shadow: 0 1px 8px 0 rgb(var(--primary-6));
+    border: 1px solid rgb(var(--primary-6));
+    margin-top: auto;
+    margin-bottom: auto;
+    writing-mode: lr-tb;
+    -webkit-writing-mode: horizontal-tb;
+    writing-mode: horizontal-tb;
+    width: 32px;
+    text-align: center;
   }
 }

@@ -1,5 +1,5 @@
 import { Ref, createContext, forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
-import { Card, Form, Spin, } from "@arco-design/web-react";
+import { Form, Spin, } from "@arco-design/web-react";
 import { FieldNames } from "./until";
 import { ProFormItem } from "./pro-form";
 import { MyFormItemProps, ProductEditFormProps } from "./interface";
