@@ -18,6 +18,7 @@ import { ConfigContext } from '@arco-design/web-react/es/ConfigProvider';
 import styles from './index.module.less'
 import { MyFormItemProps } from '../interface';
 import { ProductEditContext } from '..';
+import ImagesEditor from './ImagesEditor';
 
 function ProFormList(props: MyFormItemProps) {
     const { type, label, name, namePath, value,
@@ -406,7 +407,12 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     </FormItem >
                 ) : _uiType == 'richTextEditor' ? (
                     <FormItem {...formItemProps}>
-                        <RichTextEditor />
+                        <ImagesEditor />
+                        {/* <RichTextEditor /> */}
+                    </FormItem>
+                ) : _uiType == 'imagesEditor' ? (
+                    <FormItem {...formItemProps}>
+                        <ImagesEditor />
                     </FormItem>
                 ) : type == 'complex' ? (
                     <Form.Item label={_label} style={{ margin: '0' }}>

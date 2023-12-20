@@ -113,7 +113,7 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
             <div>
                 <Space size={0}>
                     <div className={styles['prod-img']} >
-                        <img alt="" src={thumbnail(data?.image || '', 80)} />
+                        <img alt="" src={thumbnail(data?.image || '', 80, 80)} />
                     </div>
                     <div>
                         <div className={styles['prod-title']}>

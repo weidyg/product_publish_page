@@ -167,7 +167,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
               style={{ height: `${coverSize}px`, width: `${coverSize}px` }}
             />
           </div>
-          : <img ref={imgRef} alt={name} src={thumbnail(url, coverSize)} />
+          : <img ref={imgRef} alt={name} src={thumbnail(url, coverSize, coverSize)} />
         }
         <div className={styles['mask']}></div>
         {pix && <div className={classNames(styles['pix'], styles['block-only'])}>{pix}</div>}

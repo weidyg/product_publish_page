@@ -40,62 +40,6 @@ function ImageUpload(baseProps: ImageUploadProps) {
     handleChange(undefined);
   }
 
-  function UploadImageTrigger(props: { children?: ReactNode }) {
-    const { children } = props;
-    const _children = <div onClick={() => setVisible(true)}> {children}</div>;
-    const [visible, setVisible] = useState(false);
-    return <> <Trigger
-      popupVisible={visible}
-      popup={() => <Card>
-        <ImageSpace
-          pageSize={20}
-          onItemClick={(file) => {
-            if (file?.url) { handleChange(file); }
-            setVisible(false);
-          }}
-          style={{ width: '750px', height: '450px', padding: '10px 0 0 0' }}
-        />
-      </Card>
-      }
-      trigger='click'
-      classNames='zoomInTop'
-      popupAlign={{ top: 8, bottom: 8 }}
-      onVisibleChange={(visible) => {
-        setVisible(visible);
-      }}
-    >
-      {_children}
-    </Trigger>
-    </>
-  }
-
-  function ShowImage(props: {
-    size?: ImageUploadSize,
-    onEditClick?: () => void,
-  }) {
-    const { size = 'default', onEditClick } = props;
-    const imgSize = size == 'large' ? 220 : size == 'mini' ? 32 : 120;
-    return <>
-      <div className={classNames(styles['upload-picture'], { [styles[size]]: size && size != 'default' })} >
-        <img className={styles['upload-picture-image']} src={thumbnail(imgInfo?.url || '', imgSize)} />
-        {size != 'mini' &&
-          <div className={styles['upload-picture-mask']}>
-            <Space size={'medium'}>
-              {onEditClick
-                ? <IconEdit style={{ cursor: 'pointer' }} onClick={onEditClick} />
-                : <UploadImageTrigger>
-                  <IconEdit style={{ cursor: 'pointer' }} />
-                </UploadImageTrigger>}
-              <IconDelete
-                style={{ cursor: 'pointer' }}
-                onClick={handleDelete}
-              />
-            </Space>
-          </div>
-        }
-      </div>
-    </>
-  }
 
   function MiniUploadImage(props: {}) {
     const [visible, setVisible] = useState(false);
@@ -130,13 +74,19 @@ function ImageUpload(baseProps: ImageUploadProps) {
             <Card style={{ borderRadius: '6px' }}
               bodyStyle={{ padding: '4px', }}
             >
-              <ShowImage size={'large'} onEditClick={() => {
-                setVisible(true);
-              }} />
+              <ShowImage
+                url={imgInfo.url!}
+                size={'large'}
+                onDeleteClick={handleDelete}
+                onEditClick={() => {
+                  setVisible(true);
+                }} />
             </Card>
           } >
           <div style={{ cursor: 'pointer' }}>
-            <ShowImage size={size} />
+            <ShowImage
+              url={imgInfo?.url}
+              size={size} />
           </div>
         </Trigger  >
       ) : (
@@ -154,9 +104,14 @@ function ImageUpload(baseProps: ImageUploadProps) {
   function UploadImage(props: {}) {
     return <>
       {imgInfo?.url ? (
-        <ShowImage size={size} />
+        <ShowImage
+          url={imgInfo?.url}
+          size={size}
+          onDeleteClick={handleDelete}
+          onChange={handleChange}
+        />
       ) : (
-        <UploadImageTrigger>
+        <UploadImageTrigger onChange={handleChange}>
           <div className={classNames(styles['upload-picture'], styles['upload-picture-add'], { [styles[size!]]: size && size != 'default' })}>
             {text && <div className={styles['label']}>{text}</div>}
             <div className={styles['placeholder']}>
@@ -180,5 +135,80 @@ function ImageUpload(baseProps: ImageUploadProps) {
   );
 }
 
+function UploadImageTrigger(props: {
+  onChange?: (file?: ImageInfo) => void,
+  children?: ReactNode
+}) {
+  const { onChange, children } = props;
+  const _children = <div onClick={() => setVisible(true)}> {children}</div>;
+  const [visible, setVisible] = useState(false);
+  const handleChange = (file?: ImageInfo) => {
+    onChange && onChange(file);
+  }
+
+  return <> <Trigger
+    popupVisible={visible}
+    popup={() => <Card>
+      <ImageSpace
+        pageSize={20}
+        onItemClick={(file) => {
+          if (file?.url) { handleChange(file); }
+          setVisible(false);
+        }}
+        style={{ width: '750px', height: '450px', padding: '10px 0 0 0' }}
+      />
+    </Card>
+    }
+    trigger='click'
+    classNames='zoomInTop'
+    popupAlign={{ top: 8, bottom: 8 }}
+    onVisibleChange={(visible) => {
+      setVisible(visible);
+    }}
+  >
+    {_children}
+  </Trigger>
+  </>
+}
+
+function ShowImage(props: {
+  url: string,
+  size?: ImageUploadSize,
+  onChange?: (file?: ImageInfo) => void,
+  onEditClick?: () => void,
+  onDeleteClick?: () => void,
+}) {
+  const { url, size = 'default', onEditClick, onDeleteClick, onChange } = props;
+  const imgSize = size == 'large' ? 220 : size == 'mini' ? 32 : 120;
+
+  const handleChange = (file?: ImageInfo) => {
+    onChange && onChange(file);
+  }
+  const handleDelete = () => {
+    onDeleteClick && onDeleteClick();
+  }
+
+  return <>
+    <div className={classNames(styles['upload-picture'], { [styles[size]]: size && size != 'default' })} >
+      <img className={styles['upload-picture-image']} src={thumbnail(url || '', imgSize, imgSize)} />
+      {size != 'mini' &&
+        <div className={styles['upload-picture-mask']}>
+          <Space size={'medium'}>
+            {onEditClick
+              ? <IconEdit style={{ cursor: 'pointer' }} onClick={onEditClick} />
+              : <UploadImageTrigger onChange={handleChange}>
+                <IconEdit style={{ cursor: 'pointer' }} />
+              </UploadImageTrigger>}
+            <IconDelete
+              style={{ cursor: 'pointer' }}
+              onClick={handleDelete}
+            />
+          </Space>
+        </div>
+      }
+    </div>
+  </>
+}
 
 export default ImageUpload;
+export { ShowImage };

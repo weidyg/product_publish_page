@@ -10,6 +10,7 @@ import CategorySelect from "../../../components/CategorySelect";
 import { Category } from "../../../components/CategorySelect/interface";
 import { flattenTree } from "../../../components/CategorySelect/until";
 import { getCategoryTree } from "../../../components/CategorySelect/api";
+import { IconFaceFrownFill, IconFaceMehFill, IconFaceSmileFill, IconSound } from "@arco-design/web-react/icon";
 
 function ProductEditPage() {
     const [form] = Form.useForm();
@@ -110,7 +111,8 @@ function ProductEditPage() {
                 {loadErrMsg ?
                     <div className={styles['product-loadError']}>
                         <Result
-                            status='500'
+                            status={null}
+                            icon={<IconFaceFrownFill  style={{ color: 'rgb(var(--arcoblue-6))' }} />}
                             subTitle={loadErrMsg}
                             extra={
                                 <Button type='primary'
