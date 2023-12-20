@@ -218,7 +218,7 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
                                 if (isArrVal) {
                                     callback(`范围应为 ${minLength} ~ ${maxLength} 条之间`);
                                 } else {
-                                    callback(`范围应为 ${minLength! / 2} ~ ${maxLength! / 2} 个汉字（${minLength} ~ ${maxLength}字符）之间`);
+                                    callback(`范围应为 ${Math.ceil(minLength! / 2)} ~ ${Math.ceil(maxLength! / 2)} 个汉字（${minLength} ~ ${maxLength}字符）之间`);
                                 }
                             }
                         }
@@ -226,14 +226,14 @@ export function getValiRules(rp?: MyFormRules, isPrice?: boolean) {
                             if (isArrVal) {
                                 callback(`不能超过 ${maxLength} 条`);
                             } else {
-                                callback(`最多允许输入 ${maxLength! / 2} 个汉字（${maxLength}字符）`);
+                                callback(`最多允许输入 ${Math.ceil(maxLength! / 2)} 个汉字（${maxLength}字符）`);
                             }
                         }
                         else if (hasMinLength && length < minLength!) {
                             if (isArrVal) {
-                                callback(`至少需要 ${maxLength} 条`);
+                                callback(`至少需要 ${minLength} 条`);
                             } else {
-                                callback(`至少输入 ${maxLength! / 2} 个汉字（${maxLength}字符）`);
+                                callback(`至少输入 ${Math.ceil(minLength! / 2)} 个汉字（${minLength}字符）`);
                             }
                         }
                     }

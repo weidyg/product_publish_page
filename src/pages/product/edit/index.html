@@ -38,117 +38,116 @@
     }
 
     function ConverData(data) {
-      data = data || {};
-      return {
-        itemId: data.Id,
-        platformId: data.PlatformId,
-        shopId: data.ShopId,
-        platformName: data.PlatformName,
-        shopName: data.ShopName,
-        categoryId: data.CategoryId,
-        categoryNamePath: data.CategoryNamePath,
-        formSchema: data.FormSchemaJson ? JSON.parse(data.FormSchemaJson) : undefined,
-        formData: data.FormDataJson ? JSON.parse(data.FormDataJson) : undefined,
-        origProdInfo: data.OrigProdJson ? JSON.parse(data.OrigProdJson) : undefined,
-        lastModificationTime: data.LastModificationTime 
-      }
+        data = data || {};
+        return {
+            itemId: data.Id,
+            platformId: data.PlatformId,
+            shopId: data.ShopId,
+            platformName: data.PlatformName,
+            shopName: data.ShopName,
+            categoryId: data.CategoryId,
+            categoryNamePath: data.CategoryNamePath,
+            formSchema: data.FormSchemaJson ? JSON.parse(data.FormSchemaJson) : undefined,
+            formData: data.FormDataJson ? JSON.parse(data.FormDataJson) : undefined,
+            origProdInfo: data.OrigProdJson ? JSON.parse(data.OrigProdJson) : undefined,
+            lastModificationTime: data.LastModificationTime
+        }
     }
-
     function loadProductEditData(categoryId, shopId) {
-      const input = getDataInput(undefined, categoryId, shopId, undefined, undefined);
-      if (input?.ItemId > 0) {
-        return post(productEditUrls.loadData, input, ConverData);
-      } else if (input?.OrigSpuId > 0 && input?.ShopId > 0) {
-        return post(productEditUrls.loadDataWithoutUploadItem, input, ConverData);
-      } else {
-        return Promise.reject({ code: 0, message: "参数错误", });
-      }
+        const input = getDataInput(undefined, categoryId, shopId, undefined, undefined) || {};
+        if (input.ItemId > 0) {
+            return post(productEditUrls.loadData, input, ConverData);
+        } else if (input.OrigSpuId > 0 && input.ShopId > 0) {
+            return post(productEditUrls.loadDataWithoutUploadItem, input, ConverData);
+        } else {
+            return Promise.reject({ code: 0, message: "参数错误", });
+        }
     }
 
     function saveProductEditData(id, dataJson, publish) {
-      const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
-      return post(productEditUrls.saveData, data);
+        const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
+        return post(productEditUrls.saveData, data);
     }
 
     function getCategoryTree(platformId) {
-      const data = { platformId };
-      return post(productEditUrls.getCategoryTree, data);
+        const data = { platformId };
+        return post(productEditUrls.getCategoryTree, data);
     }
 
     function getRemoteOptions(shopId, categoryId, optionAction, forceUpdate) {
-      const data = { ShopId: shopId, CategoryId: categoryId, Action: optionAction, ForceUpdate: forceUpdate };
-      return post(productEditUrls.getOptions, data);
+        const data = { ShopId: shopId, CategoryId: categoryId, Action: optionAction, ForceUpdate: forceUpdate };
+        return post(productEditUrls.getOptions, data);
     }
 
     function getImagePageList(keyword, folderId, refType, sortName, sortAsc, pageNo, pageSize) {
-      const data = { Keyword: keyword, FolderId: folderId, RefType: refType, SortName: sortName, SortAsc: sortAsc, Page: pageNo, PageSize: pageSize };
-      return post(productEditUrls.getImagePageList, data).then(function (data) {
-        data = data || {};
-        const total = data.TotalCount || {};
-        const items = data.Items.map(m => {
-          return ConverImageInfo(m);
-        })
-        return { total, items }
-      });
+        const data = { Keyword: keyword, FolderId: folderId, RefType: refType, SortName: sortName, SortAsc: sortAsc, Page: pageNo, PageSize: pageSize };
+        return post(productEditUrls.getImagePageList, data).then(function (data) {
+            data = data || {};
+            const total = data.TotalCount || {};
+            const items = data.Items.map(m => {
+                return ConverImageInfo(m);
+            })
+            return { total, items }
+        });
     }
 
     function getImageUploadConfig() {
-      const action = productEditUrls.uploadImages;
+        const action = productEditUrls.uploadImages;
 
-      const convertRequest = (request) => {
-        if (!request) { return {}; }
-        const _request = {
-          enc_auth_token: model?.encAuthToken,
-          directory: model?.tenantId > 0 ? `t${model?.tenantId}/p` : undefined,
-        }
-        return _request;
-      };
-
-      const convertResponse = (response) => {
-        if (!response) { return {}; }
-        const s = response.Success;
-        const e = response.Error;
-        const result = response.Result || {};
-        // const result = (s && m && ConverImageInfo(m)) || {};
-        result.error = e && {
-          code: e.Code,
-          message: e.Message,
-          details: e.Details,
+        const convertRequest = (request) => {
+            if (!request) { return {}; }
+            const _request = {
+                enc_auth_token: model && model.encAuthToken,
+                directory: (model && model.tenantId) > 0 ? `t${model.tenantId}/p` : undefined,
+            }
+            return _request;
         };
-        return result;
-      };
 
-      const saveUploadFileInfo = (request, result) => {
-        const data = {
-          FolderId: request?.folderId,
-          ImgPix: request?.pix,
-          ContentType: `image/${result?.MimeType}`,
-          FileSize: (result?.FileSize || 0),
-          FileName: result?.OriginFileName,
-          FilePath: result?.FileFullPath,
-          Thumbnail: result?.Thumbnail,
+        const convertResponse = (response) => {
+            if (!response) { return {}; }
+            const s = response.Success;
+            const e = response.Error;
+            const result = response.Result || {};
+            // const result = (s && m && ConverImageInfo(m)) || {};
+            result.error = e && {
+                code: e.Code,
+                message: e.Message,
+                details: e.Details,
+            };
+            return result;
         };
-        return post(productEditUrls.saveUploadFileInfo, data)
-          .then(function (data) {
-            return ConverImageInfo(data || {});
-          });
-      };
 
-      return { action, convertRequest, convertResponse, saveUploadFileInfo };
+        const saveUploadFileInfo = (request, result) => {
+            request = request || {};
+            const data = {
+                FolderId: request.folderId,
+                ImgPix: request.pix,
+                ContentType: 'image/'+ result.MimeType,
+                FileSize: (result.FileSize || 0),
+                FileName: result.OriginFileName,
+                FilePath: result.FileFullPath,
+                Thumbnail: result.Thumbnail,
+            };
+            return post(productEditUrls.saveUploadFileInfo, data)
+                .then(function (data) {
+                    return ConverImageInfo(data || {});
+                });
+        };
+
+        return { action, convertRequest, convertResponse, saveUploadFileInfo };
     }
 
     function ConverImageInfo(m) {
-      return {
-        id: m.Id,
-        name: m.FileName,
-        size: m.FileSize,
-        pix: m.ImgPix,
-        url: m.Url,
-        folderId: m.FolderId,
-        time: m.CreationTime,
-      }
+        return {
+            id: m.Id,
+            name: m.FileName,
+            size: m.FileSize,
+            pix: m.ImgPix,
+            url: m.Url,
+            folderId: m.FolderId,
+            time: m.CreationTime,
+        }
     }
-
   </script>
   <script type="module" src="main.tsx"></script>
 </body>

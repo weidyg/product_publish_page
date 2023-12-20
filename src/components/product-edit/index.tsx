@@ -60,7 +60,7 @@ function ProductEditForm(props: ProductEditFormProps, ref: Ref<any>) {
                     //     console.log('onSubmitFailed', errors);
                     // }}
                     onValuesChange={(value, values) => {
-                        // console.log('onValuesChange', value, values);
+                        console.log('onValuesChange', value, values);
                         if (form && skuFullName && skuStockName && quantityFullName) {
                             const skuChanged = Object.keys(value).some(s => s.endsWith(skuFullName!));
                             if (skuChanged) {
