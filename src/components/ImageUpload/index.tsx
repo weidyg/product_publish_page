@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { CSSProperties, ReactNode, useState } from 'react';
 import { Card, Modal, Popconfirm, Space, Trigger } from '@arco-design/web-react';
 import { IconDelete, IconEdit, IconPlus } from '@arco-design/web-react/icon';
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
@@ -10,11 +10,7 @@ import { ImageInfo } from '../ImageSpace/interface';
 import classNames from '@arco-design/web-react/es/_util/classNames';
 import { thumbnail } from '../product-edit/until';
 
-const defaultProps: ImageUploadProps = {
-  size: 'default',
-  text: '',
-  value: ''
-};
+const defaultProps: ImageUploadProps = { text: '', value: '' };
 
 const createFile = (value?: string) => {
   return value ? { url: value } : undefined;
@@ -90,7 +86,8 @@ function ImageUpload(baseProps: ImageUploadProps) {
           </div>
         </Trigger  >
       ) : (
-        <div className={classNames(styles['upload-picture'], styles['upload-picture-add'], { [styles[size!]]: size && size != 'default' })}
+        <div className={classNames(styles['upload-picture'], styles['upload-picture-add'])}
+          style={{ width: `32px`, height: `32px`, }}
           onClick={() => { setVisible(true); }}>
           <div className={styles['placeholder']}>
             <IconPlus className={styles['icon']} />
@@ -102,6 +99,7 @@ function ImageUpload(baseProps: ImageUploadProps) {
   }
 
   function UploadImage(props: {}) {
+    const imgSize = size == 'large' ? 220 : size == 'mini' ? 32 : size;
     return <>
       {imgInfo?.url ? (
         <ShowImage
@@ -112,7 +110,9 @@ function ImageUpload(baseProps: ImageUploadProps) {
         />
       ) : (
         <UploadImageTrigger onChange={handleChange}>
-          <div className={classNames(styles['upload-picture'], styles['upload-picture-add'], { [styles[size!]]: size && size != 'default' })}>
+          <div className={classNames(styles['upload-picture'], styles['upload-picture-add'])}
+            style={{ width: `${imgSize}px`, height: `${imgSize}px`, }}
+          >
             {text && <div className={styles['label']}>{text}</div>}
             <div className={styles['placeholder']}>
               <IconPlus className={styles['icon']} />
@@ -172,14 +172,17 @@ function UploadImageTrigger(props: {
 }
 
 function ShowImage(props: {
+  index?: number,
   url: string,
-  size?: ImageUploadSize,
+  size?: ImageUploadSize | number,
   onChange?: (file?: ImageInfo) => void,
   onEditClick?: () => void,
   onDeleteClick?: () => void,
+  className?: string | undefined,
+  style?: CSSProperties | undefined,
 }) {
-  const { url, size = 'default', onEditClick, onDeleteClick, onChange } = props;
-  const imgSize = size == 'large' ? 220 : size == 'mini' ? 32 : 120;
+  const { index, url, size = 120, onEditClick, onDeleteClick, onChange, className, style = {} } = props;
+  const imgSize = size == 'large' ? 220 : size == 'mini' ? 32 : size;
 
   const handleChange = (file?: ImageInfo) => {
     onChange && onChange(file);
@@ -188,11 +191,16 @@ function ShowImage(props: {
     onDeleteClick && onDeleteClick();
   }
 
-  return <>
-    <div className={classNames(styles['upload-picture'], { [styles[size]]: size && size != 'default' })} >
-      <img className={styles['upload-picture-image']} src={thumbnail(url || '', imgSize, imgSize)} />
-      {size != 'mini' &&
-        <div className={styles['upload-picture-mask']}>
+  return (
+    <div className={classNames(styles['upload-picture'], className)}
+      style={{ width: `${imgSize}px`, height: `${imgSize}px`, ...style }}
+    >
+      <img draggable={false} className={styles['upload-picture-image']} src={thumbnail(url || '', imgSize, imgSize)} />
+      {size != 'mini' && <>
+        {(index && index >= 0) ? <div className={styles['numberLabel']}>{index}</div> : <></>}
+        <div className={styles['upload-picture-mask']}
+          style={imgSize >= 220 ? { fontSize: `18px`, height: `32px`, padding: '4px' } : undefined}
+        >
           <Space size={'medium'}>
             {onEditClick
               ? <IconEdit style={{ cursor: 'pointer' }} onClick={onEditClick} />
@@ -205,9 +213,9 @@ function ShowImage(props: {
             />
           </Space>
         </div>
-      }
+      </>}
     </div>
-  </>
+  )
 }
 
 export default ImageUpload;

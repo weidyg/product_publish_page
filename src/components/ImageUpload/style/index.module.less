@@ -2,10 +2,8 @@
 
 @picture-size: 120px;
 @picture-operate-size: 24px;
-
 @picture-large-size: 220px;
 @picture-operate-large-size: 32px;
-
 @picture-mini-size: 32px;
 
 .upload-picture {
@@ -62,8 +60,7 @@
     color: var(--color-white);
     transition: opacity 0.1s cubic-bezier(0, 0, 1, 1);
     font-size: 16px;
-    height: @picture-operate-size;
-    opacity: 1;
+    opacity: 0;
   }
 
   &-progress {
@@ -94,6 +91,7 @@
   }
 
   .label {
+    top: 0;
     height: 17px;
     width: 119px;
     font-size: 12px;
@@ -103,30 +101,27 @@
     opacity: .5;
     border-radius: 6px 6px 0 0;
     position: absolute;
-    top: 0;
     line-height: 1.5;
   }
 
-  &.mini {
-    width: @picture-mini-size;
-    height: @picture-mini-size;
-
-    .upload-picture {
-      &-mask {
-        opacity: 0;
-      }
+  &:hover {
+    .upload-picture-mask {
+      opacity: 1;
     }
   }
+}
 
-  &.large {
-    width: @picture-large-size;
-    height: @picture-large-size;
-
-    .upload-picture {
-      &-mask {
-        font-size: 18px;
-        height: @picture-operate-large-size;
-      }
-    }
-  }
+.numberLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  width: 24px;
+  height: 24px;
+  border-radius: 0 0 6px 0;
+  color: rgb(var(--primary-6));
+  background-color: rgb(var(--primary-6),.2);
+  text-align: center;
+  font-size: 14px;
+  line-height: 24px;
 }

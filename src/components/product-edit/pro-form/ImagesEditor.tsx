@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { DragEvent, useState, useMemo } from 'react'
+import { Space } from '@arco-design/web-react';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import { thumbnail } from '../until';
 import { ShowImage } from '../../ImageUpload';
-import { Space } from '@arco-design/web-react';
-
 
 function ImagesEditor(props: any) {
     const [value, setValue] = useMergeValue<string | string[]>([], {
@@ -29,16 +28,40 @@ function ImagesEditor(props: any) {
         return getImgSrc(value);
     }, [value])
 
+
+    const [imgList, setImgList] = useState(imgs);
+
+    const handleDragStart = (e: DragEvent<HTMLSpanElement>, index: number) => {
+        e.dataTransfer.setData("index", `${index}`);
+    };
+    const handleDragOver = (e: DragEvent<HTMLSpanElement>, index: number) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'move';
+    };
+    const handleDrop = (e: DragEvent<HTMLSpanElement>, index: number) => {
+        const droppedIndex = e.dataTransfer.getData("index") as any;
+        if (droppedIndex !== undefined) {
+            const newImageList = [...imgList];
+            const imageToMove = newImageList.splice(droppedIndex, 1)[0];
+            newImageList.splice(index, 0, imageToMove);
+            setImgList(newImageList);
+        }
+    };
+
+
+
     return (
         <div style={{
-            backgroundColor: '#f7f8fa',
-            borderRadius: '12px',
-            padding:'12px',
+            width: '802px',
+            padding: '12px',
             display: 'flex',
-            justifyContent: 'space-between'
+            borderRadius: '12px',
+            justifyContent: 'space-between',
+            backgroundColor: 'var(--color-fill-2)',
         }}>
             <div style={{
-                width: '390px',
+                width: '380px',
                 height: '672px',
                 backgroundColor: '#ffffff',
                 borderRadius: '18px',
@@ -53,12 +76,11 @@ function ImagesEditor(props: any) {
                     />
                 </div>
                 <div style={{
-                    width: '390px',
-                    height: '573px',
+                    height: '612px',
                     overflow: 'auto',
                     border: 'none'
                 }}>
-                    {imgs.map((m, i) => {
+                    {imgList.map((m, i) => {
                         return <img key={i}
                             style={{ maxWidth: '360px' }}
                             src={thumbnail(m, 360)}
@@ -67,31 +89,36 @@ function ImagesEditor(props: any) {
                 </div>
             </div>
             <div style={{
-                width: '390px',
+                width: '388px',
                 height: '672px',
                 borderRadius: '18px',
-                textAlign: 'center'
+                textAlign: 'center',
+                paddingLeft: '6px',
             }}>
                 <div style={{
-                    width: '390px',
-                    height: '573px',
+                    height: '612px',
                     overflow: 'auto',
                     border: 'none',
-                    padding:'8px 0'
+                    padding: '8px 0'
                 }}>
-                    <Space wrap>
-                        {imgs.map((imgurl, i) => {
-                            return <ShowImage key={i} url={imgurl} />
-
-                            // return <img key={i}
-                            //     style={{ maxWidth: '90px' }}
-                            //     src={thumbnail(m, 90, 90)}
-                            // />
-                        })}
+                    <Space wrap size={6} >
+                        {imgList.map((imgurl, index) => (
+                            <span
+                                key={index}
+                                draggable={true}
+                                onDragStart={(e) => handleDragStart(e, index)}
+                                onDragOver={(e) => handleDragOver(e, index)}
+                                onDrop={(e) => handleDrop(e, index)}
+                            >
+                                <ShowImage index={index + 1} size={88} url={imgurl}
+                                    style={{ backgroundColor: 'var(--color-bg-1)' }}
+                                />
+                            </span>
+                        ))}
                     </Space>
                 </div>
             </div>
-        </div >
+        </div>
     )
 }
 
