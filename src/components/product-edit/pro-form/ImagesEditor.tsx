@@ -1,8 +1,10 @@
 import React, { DragEvent, useState, useMemo } from 'react'
-import { Space } from '@arco-design/web-react';
+import { Button, Space, Typography } from '@arco-design/web-react';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import { thumbnail } from '../until';
 import { ShowImage } from '../../ImageUpload';
+import styles from './images-editor.module.less'
+import { IconImage } from '@arco-design/web-react/icon';
 
 function ImagesEditor(props: any) {
     const [value, setValue] = useMergeValue<string | string[]>([], {
@@ -49,58 +51,56 @@ function ImagesEditor(props: any) {
         }
     };
 
-
+    const prefixCls = 'images-editor';
 
     return (
-        <div style={{
-            width: '802px',
-            padding: '12px',
-            display: 'flex',
-            borderRadius: '12px',
-            justifyContent: 'space-between',
-            backgroundColor: 'var(--color-fill-2)',
-        }}>
-            <div style={{
-                width: '380px',
-                height: '672px',
-                backgroundColor: '#ffffff',
-                borderRadius: '18px',
-                textAlign: 'center'
-            }}>
-                <div style={{
-                    width: '390px',
-                    boxSizing: 'border-box'
-                }}>
-                    <img style={{ width: '210px', height: '38px' }}
-                        src="//img.alicdn.com/imgextra/i1/O1CN01bV5l3h23Wxh6jS4yK_!!6000000007264-2-tps-378-68.png"
-                    />
+        <div className={styles[`${prefixCls}`]}>
+            <div className={styles[`${prefixCls}-container`]}>
+                <div className={styles[`header`]}>
+                    <div className={styles[`leftWrapper`]}>
+                        <div className={styles[`title`]}>
+                            预览
+                        </div>
+                        <div className={styles[`description`]}>
+                            当前为示意，真实效果发布后查看
+                        </div>
+                    </div>
                 </div>
-                <div style={{
-                    height: '612px',
-                    overflow: 'auto',
-                    border: 'none'
-                }}>
-                    {imgList.map((m, i) => {
-                        return <img key={i}
-                            style={{ maxWidth: '360px' }}
-                            src={thumbnail(m, 360)}
-                        />
-                    })}
+                <div className={styles[`content`]}>
+                    <div className={styles[`banner`]}>
+                        <img src="//img.alicdn.com/imgextra/i1/O1CN01bV5l3h23Wxh6jS4yK_!!6000000007264-2-tps-378-68.png" />
+                    </div>
+                    <div style={{
+                        height: '612px',
+                        overflow: 'auto',
+                        border: 'none'
+                    }}>
+                        {imgList.map((m, i) => {
+                            return <img key={i}
+                                style={{ maxWidth: '360px' }}
+                                src={thumbnail(m, 360)}
+                            />
+                        })}
+                    </div>
                 </div>
             </div>
-            <div style={{
-                width: '388px',
-                height: '672px',
-                borderRadius: '18px',
-                textAlign: 'center',
-                paddingLeft: '6px',
-            }}>
-                <div style={{
-                    height: '612px',
-                    overflow: 'auto',
-                    border: 'none',
-                    padding: '8px 0'
-                }}>
+            <div className={styles[`${prefixCls}-editPanel`]}>
+                <div className={styles[`editHeader`]}>
+                    <div className={styles[`leftWrapper`]}>
+                        <div className={styles[`title`]}>
+                            操作
+                        </div>
+                        <div className={styles[`description`]}>
+                            拖动图片可以调整顺序。
+                        </div>
+                    </div>
+                    <Button icon={<IconImage />}
+                        shape='round'
+                        type='primary'>
+                        添加图片
+                    </Button>
+                </div>
+                <div className={styles[`sidePadding`]}>
                     <Space wrap size={6} >
                         {imgList.map((imgurl, index) => (
                             <span
