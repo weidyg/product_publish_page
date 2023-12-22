@@ -1,5 +1,5 @@
 import { CSSProperties, ReactNode, useState } from 'react';
-import { Card, Modal, Popconfirm, Space, Trigger } from '@arco-design/web-react';
+import { Card, Space, Trigger } from '@arco-design/web-react';
 import { IconDelete, IconEdit, IconPlus } from '@arco-design/web-react/icon';
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import { ImageUploadProps, ImageUploadSize } from './interface';
@@ -9,6 +9,7 @@ import ImageSpace from '../ImageSpace';
 import { ImageInfo } from '../ImageSpace/interface';
 import classNames from '@arco-design/web-react/es/_util/classNames';
 import { thumbnail } from '../product-edit/until';
+import ImageSpaceModal from '../ImageSpace/modal';
 
 const defaultProps: ImageUploadProps = { text: '', value: '' };
 
@@ -40,23 +41,16 @@ function ImageUpload(baseProps: ImageUploadProps) {
   function MiniUploadImage(props: {}) {
     const [visible, setVisible] = useState(false);
     return <>
-      <Modal maskClosable={false}
-        title={<div style={{ textAlign: 'left' }}>上传图片</div>}
+      <ImageSpaceModal
         visible={visible}
-        onCancel={() => { setVisible(false); }}
-        footer={null}
-        className={styles['upload-picture-modal']}
-        style={{ width: '800px', height: '500px', padding: '0' }}
-      >
-        <ImageSpace
-          pageSize={20}
-          onItemClick={(file) => {
-            if (file?.url) { handleChange(file); }
-            setVisible(false);
-          }}
-          style={{ width: '750px', height: '450px', padding: '10px 0 0 0' }}
-        />
-      </Modal>
+        onVisibleChange={(v) => { setVisible(v); }}
+        multiSelect={false}
+        onChange={(files) => {
+          const file = files?.[0];
+          handleChange(file);
+          setVisible(false);
+        }}
+      />
       {imgInfo?.url ? (
         <Trigger showArrow
           arrowProps={{
@@ -142,8 +136,11 @@ function UploadImageTrigger(props: {
   const { onChange, children } = props;
   const _children = <div onClick={() => setVisible(true)}> {children}</div>;
   const [visible, setVisible] = useState(false);
-  const handleChange = (file?: ImageInfo) => {
+  const handleChange = (files?: ImageInfo[]) => {
+    const file = files?.[0];
+    if (!file?.url) { return; }
     onChange && onChange(file);
+    setVisible(false);
   }
 
   return <> <Trigger
@@ -151,10 +148,7 @@ function UploadImageTrigger(props: {
     popup={() => <Card>
       <ImageSpace
         pageSize={20}
-        onItemClick={(file) => {
-          if (file?.url) { handleChange(file); }
-          setVisible(false);
-        }}
+        onItemClick={(files) => { handleChange(files); }}
         style={{ width: '750px', height: '450px', padding: '10px 0 0 0' }}
       />
     </Card>

@@ -40,7 +40,7 @@ const defaultProps: ImageSpaceProps = {
 
 function ImageSpace(baseProps: ImageSpaceProps) {
   const props = useMergeProps<ImageSpaceProps>(baseProps, defaultProps, {});
-  const { style, className, pageSize, onItemClick } = props;
+  const { style, className, pageSize, multiSelect, onItemClick } = props;
 
   const [sort, setSort] = useState<string>(defaultSort);
   const [keyword, setKeyword] = useState<string>();
@@ -57,6 +57,17 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   const [files, setFiles] = useState<ImageInfo[]>([]);
   const [spaceInfo, setSpaceInfo] = useState<SpaceInfo>({});
   const [uploadList, setUploadList] = useState<UploadItem[]>([]);
+
+
+  const [selectFiles, setSelectFiles] = useState<ImageInfo[]>([]);
+
+  function handlerItemClick(value: ImageInfo) {
+    if (multiSelect) {
+      setSelectFiles([...selectFiles, value])
+    } else {
+      onItemClick && onItemClick([value]);
+    }
+  }
 
   useEffect(() => {
     refreshData();
@@ -104,10 +115,6 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     }
   };
 
-  function handlerItemClick(value: any) {
-    onItemClick && onItemClick(value);
-  }
-
   function chenckFile(file: File) {
     const size = file?.size || 0;
     const isAccept = isAcceptFile(file, ['image/jpg', 'image/jpeg', 'image/gif', 'image/png']);
@@ -144,8 +151,8 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     return uploadInfos;
   }, [JSON.stringify(uploadList)])
 
-  function ImgListItem(props: any) {
-    const { error, status, percent, name, url, pix, size, time } = props;
+  function ImgListItem(props: ImageUploadInfo & { error?: any }) {
+    const { error, status, percent = 0, name, url, pix, size, time } = props;
     // console.log('ImgListItem', props);
     const imgRef = useRef<HTMLImageElement>(null);
     const listOnly = showMode == 'list';

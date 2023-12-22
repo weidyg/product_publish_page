@@ -439,7 +439,7 @@ export const sizeCompare = (t1: string, t2: string) => {
     return val1 == val2;
 };
 
-export const thumbnail = (url: string, width?: number, height?: number) => {
+export const thumbnail = (url?: string, width?: number, height?: number) => {
     if (!url || (!width && !height)) { return url; }
     return `${url}?x-oss-process=image/resize,m_lfit${height ? `,h_${height}` : ''}${width ? `,w_${width}` : ''}`
 }

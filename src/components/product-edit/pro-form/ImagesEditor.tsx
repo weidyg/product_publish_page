@@ -1,16 +1,19 @@
-import React, { DragEvent, useState, useMemo } from 'react'
+import React, { DragEvent, useState, useMemo, useEffect } from 'react'
 import { Button, Space, Typography } from '@arco-design/web-react';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import { thumbnail } from '../until';
 import { ShowImage } from '../../ImageUpload';
 import styles from './images-editor.module.less'
 import { IconImage } from '@arco-design/web-react/icon';
+import ImageSpaceModal from '../../ImageSpace/modal';
+import { ImageInfo } from '../../ImageSpace/interface';
 
 function ImagesEditor(props: any) {
     const [value, setValue] = useMergeValue<string | string[]>([], {
         defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
         value: 'value' in props ? props.value : undefined,
     });
+
 
     const handleChange = (newValue: any) => {
         if (!('value' in props)) { setValue(value); }
@@ -31,7 +34,29 @@ function ImagesEditor(props: any) {
     }, [value])
 
 
+    const [visible, setVisible] = useState(false);
     const [imgList, setImgList] = useState(imgs);
+
+    useEffect(() => {
+        handleChange(imgList);
+    }, [JSON.stringify(imgList)])
+
+    function handleAddImgs(files: ImageInfo[]) {
+        if (files.length) {
+            const newImageList: string[] = files.map(m => m.url).filter(f => !!f) as string[];
+            setImgList([...imgList, ...newImageList]);
+        }
+    }
+    function handleEditImg(index: number, newImgUrl: string) {
+        const newImgList = [...imgList];
+        newImgList[index] = newImgUrl;
+        setImgList(newImgList);
+    }
+    function handleDelImg(index: number) {
+        const newImgList = [...imgList];
+        newImgList.splice(index, 1);
+        setImgList(newImgList);
+    }
 
     const handleDragStart = (e: DragEvent<HTMLSpanElement>, index: number) => {
         e.dataTransfer.setData("index", `${index}`);
@@ -53,7 +78,16 @@ function ImagesEditor(props: any) {
 
     const prefixCls = 'images-editor';
 
-    return (
+    return (<>
+        <ImageSpaceModal
+            visible={visible}
+            onVisibleChange={(v) => { setVisible(v); }}
+            multiSelect={false}
+            onChange={(files) => {
+                handleAddImgs(files);
+                setVisible(false);
+            }}
+        />
         <div className={styles[`${prefixCls}`]}>
             <div className={styles[`${prefixCls}-container`]}>
                 <div className={styles[`header`]}>
@@ -96,7 +130,8 @@ function ImagesEditor(props: any) {
                     </div>
                     <Button icon={<IconImage />}
                         shape='round'
-                        type='primary'>
+                        type='primary'
+                        onClick={() => { setVisible(true); }}>
                         添加图片
                     </Button>
                 </div>
@@ -112,6 +147,14 @@ function ImagesEditor(props: any) {
                             >
                                 <ShowImage index={index + 1} size={88} url={imgurl}
                                     style={{ backgroundColor: 'var(--color-bg-1)' }}
+                                    onChange={(file) => {
+                                        if (file?.url) {
+                                            handleEditImg(index, file.url);
+                                        }
+                                    }}
+                                    onDeleteClick={() => {
+                                        handleDelImg(index);
+                                    }}
                                 />
                             </span>
                         ))}
@@ -119,6 +162,7 @@ function ImagesEditor(props: any) {
                 </div>
             </div>
         </div>
+    </>
     )
 }
 

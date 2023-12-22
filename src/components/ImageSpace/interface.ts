@@ -6,7 +6,8 @@ export interface ImageSpaceProps {
     style?: CSSProperties;
     className?: string | string[];
     pageSize: number,
-    onItemClick?: (item: ImageInfo) => void,
+    multiSelect?: boolean,
+    onItemClick?: (item: ImageInfo[]) => void,
 }
 
 export interface ImageInfo {
