@@ -10,7 +10,7 @@ import CategorySelect from "../../../components/CategorySelect";
 import { Category } from "../../../components/CategorySelect/interface";
 import { flattenTree } from "../../../components/CategorySelect/until";
 import { getCategoryTree } from "../../../components/CategorySelect/api";
-import { IconFaceFrownFill, IconFaceMehFill, IconFaceSmileFill, IconSound } from "@arco-design/web-react/icon";
+import { IconCheckCircleFill, IconFaceFrownFill, IconFaceMehFill, IconFaceSmileFill, IconSound } from "@arco-design/web-react/icon";
 
 function ProductEditPage() {
     const [form] = Form.useForm();
@@ -112,7 +112,7 @@ function ProductEditPage() {
                     <div className={styles['product-loadError']}>
                         <Result
                             status={null}
-                            icon={<IconFaceFrownFill  style={{ color: 'rgb(var(--arcoblue-6))' }} />}
+                            icon={<IconFaceFrownFill style={{ color: 'rgb(var(--arcoblue-6))' }} />}
                             subTitle={loadErrMsg}
                             extra={
                                 <Button type='primary'
@@ -130,17 +130,7 @@ function ProductEditPage() {
                     : <>
                         {!loading && (platformName || shopName) &&
                             <PageHeader className={styles['product-header']}
-                                title={platformName} subTitle={shopName}
-                                extra={lastModificationTime && <>
-                                    <Typography.Text type='secondary'>
-                                        更新时间：
-                                    </Typography.Text>
-                                    <Typography.Text type='secondary'
-                                        style={{ color: 'var(--color-text-3)' }}
-                                    >
-                                        {lastModificationTime}
-                                    </Typography.Text>
-                                </>} />
+                                title={platformName} subTitle={shopName} />
                         }
                         {showCategorySelect
                             ? <div className={styles['product-content']}>
@@ -193,6 +183,11 @@ function ProductEditPage() {
                                                 onClick={() => { handleSave(itemId); }}>
                                                 {saveLoading ? '保存中...' : '保 存'}
                                             </Button>
+                                            {lastModificationTime && <div>
+                                                <IconCheckCircleFill style={{ color: 'rgb(var(--success-6))', marginRight: '4px' }} />
+                                                <span style={{ fontSize: '12px', color: 'var(--color-text-2)' }}>最后保存于</span>
+                                                <span style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>{lastModificationTime}</span>
+                                            </div>}
                                         </Space>
                                     </Card>
                                 </div>

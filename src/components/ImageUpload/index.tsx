@@ -2,13 +2,13 @@ import { CSSProperties, ReactNode, useState } from 'react';
 import { Card, Space, Trigger } from '@arco-design/web-react';
 import { IconDelete, IconEdit, IconPlus } from '@arco-design/web-react/icon';
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
+import classNames from '@arco-design/web-react/es/_util/classNames';
 import { ImageUploadProps, ImageUploadSize } from './interface';
 import styles from './style/index.module.less';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
-import ImageSpace from '../ImageSpace';
 import { ImageInfo } from '../ImageSpace/interface';
-import classNames from '@arco-design/web-react/es/_util/classNames';
 import { thumbnail } from '../product-edit/until';
+import ImageSpace from '../ImageSpace';
 import ImageSpaceModal from '../ImageSpace/modal';
 
 const defaultProps: ImageUploadProps = { text: '', value: '' };
@@ -148,7 +148,7 @@ function UploadImageTrigger(props: {
     popup={() => <Card>
       <ImageSpace
         pageSize={20}
-        onItemClick={(files) => { handleChange(files); }}
+        onChange={(files) => { handleChange(files); }}
         style={{ width: '750px', height: '450px', padding: '10px 0 0 0' }}
       />
     </Card>

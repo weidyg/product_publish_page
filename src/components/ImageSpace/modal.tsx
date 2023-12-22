@@ -43,7 +43,7 @@ function ImageSpaceModal(props: {
             <ImageSpace
                 pageSize={20}
                 multiSelect={multiSelect}
-                onItemClick={handleChange}
+                onChange={handleChange}
                 style={{ width: '750px', height: '450px', padding: '10px 0 0 0' }}
             />
         </Modal>

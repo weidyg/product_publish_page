@@ -1,7 +1,7 @@
 import useMergeProps from "@arco-design/web-react/es/_util/hooks/useMergeProps";
 import { ImageInfo, ImageSpaceProps, ImageUploadInfo, SpaceInfo } from "./interface";
 import { Button, Divider, Input, Link, List, Message, Modal, Progress, Select, Space, Tree, Typography, Upload } from "@arco-design/web-react";
-import { IconApps, IconList, IconRefresh, IconSearch } from "@arco-design/web-react/icon";
+import { IconApps, IconCheck, IconList, IconRefresh, IconSearch } from "@arco-design/web-react/icon";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from './style/index.module.less';
 import classNames from "@arco-design/web-react/es/_util/classNames";
@@ -40,7 +40,7 @@ const defaultProps: ImageSpaceProps = {
 
 function ImageSpace(baseProps: ImageSpaceProps) {
   const props = useMergeProps<ImageSpaceProps>(baseProps, defaultProps, {});
-  const { style, className, pageSize, multiSelect, onItemClick } = props;
+  const { style, className, pageSize, multiSelect, onChange } = props;
 
   const [sort, setSort] = useState<string>(defaultSort);
   const [keyword, setKeyword] = useState<string>();
@@ -61,12 +61,26 @@ function ImageSpace(baseProps: ImageSpaceProps) {
 
   const [selectFiles, setSelectFiles] = useState<ImageInfo[]>([]);
 
+  const selectConfirm = multiSelect;
+
   function handlerItemClick(value: ImageInfo) {
-    if (multiSelect) {
-      setSelectFiles([...selectFiles, value])
+    if (selectConfirm) {
+      let newSelectFiles = [...selectFiles];
+      if (newSelectFiles.some(e => e.id == value.id)) {
+        newSelectFiles = newSelectFiles.filter(e => e.id != value.id);
+      } else {
+        newSelectFiles.push(value);
+      }
+      setSelectFiles(newSelectFiles)
     } else {
-      onItemClick && onItemClick([value]);
+      handleChange([value]);
     }
+  }
+
+  function handleChange(values: ImageInfo[]) {
+    // console.log('handleChange',values,onChange);
+    onChange && onChange(values);
+    setSelectFiles([]);
   }
 
   useEffect(() => {
@@ -142,11 +156,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
       const m = (response as ImageInfo) || {};
       const time = convertTime(lastModified);
       const percent = status == 'uploading' ? p == 100 ? 99 : p : p;
-      return {
-        name, url, size, time,
-        uid, percent, status,
-        ...m
-      }
+      return { name, url, size, time, uid, percent, status, ...m }
     }) || [];
     return uploadInfos;
   }, [JSON.stringify(uploadList)])
@@ -161,6 +171,12 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     return <div className={classNames(styles['item'], styles['pic'])}
       onClick={() => { url && handlerItemClick(props); }}
     >
+      <div className={classNames(styles['select-icon'], styles['list-item'], {
+        [styles['angle']]: multiSelect,
+        [styles['active']]: selectFiles.some(e => e.id == props.id)
+      })}>
+        <IconCheck fontSize={14} />
+      </div>
       <div className={classNames(styles['cover'], styles['list-item'])}
         style={{ height: `${coverSize}px`, width: `${coverSize}px`, lineHeight: `${coverSize}px` }}>
         {(status && status != 'done')
@@ -269,8 +285,12 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                   loading={loading}
                   bordered={false}
                   dataSource={uploads.concat(...files)}
-                  wrapperClassName={classNames(styles['list-items'], { [styles['lists']]: showMode == 'list' })}
+                  wrapperClassName={classNames(styles['list-items'], {
+                    [styles['lists']]: showMode == 'list',
+                    [styles['show-select']]: selectConfirm
+                  })}
                   header={showMode == 'list' && <div className={classNames(styles['item'], styles['item-title'])}>
+                    <div className={classNames(styles['list-item'], styles['no-select'])}></div>
                     <div className={classNames(styles['list-item'], styles['cover'])} style={{ height: '32px' }}></div>
                     <div className={classNames(styles['list-item'], styles['name'])}>名称</div>
                     <div className={classNames(styles['list-item'], styles['size'])}>分辨率</div>
@@ -290,7 +310,14 @@ function ImageSpace(baseProps: ImageSpaceProps) {
             </div>
             <div className={styles["footer"]}>
               <Space></Space>
-              <Space style={{ float: 'right' }}></Space>
+              <Space style={{ float: 'right' }}>
+                {selectConfirm && <Button
+                  type='primary'
+                  onClick={() => { handleChange(selectFiles); }}
+                  style={{ width: '98px' }} >
+                  确认
+                </Button>}
+              </Space>
             </div>
           </div>
           <Modal
@@ -344,56 +371,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                 setUploadList(fileList);
               }}
             />
-
           </Modal>
-          {/* <div className={styles["uploader"]} style={{ display: showUpload ? 'block' : 'none' }}>
-            <div className={styles["pre-upload"]} >
-              <div className={styles["drop-zoom"]} style={{ position: 'relative' }}>
-                <div className={styles["bar"]}>
-
-                </div>
-                <div className={styles["drop-inner"]}>
-
-                  <Upload drag multiple
-                    listType={'picture-list'}
-                    fileList={uploadList}
-                    showUploadList={false}
-                    tip='只能上传图片'
-                    accept='image/*'
-                    action='http://localhost:60486/api/services/app/ProductPublish/UploadImages'
-                    name={'file'}
-                    data={{ shopId: 1, productId: 1, }}
-                    beforeUpload={(file) => {
-                      const chenck = chenckFile(file);
-                      if (chenck) {
-                        setShowUpload(false);
-                      }
-                      return chenck;
-                    }}
-                    onDrop={(e) => {
-                      let file = e.dataTransfer.files[0];
-                      return chenckFile(file);
-                    }}
-                    onChange={(fileList: UploadItem[], file: UploadItem) => {
-                      console.log('fileList', fileList, file);
-                      setUploadList(fileList);
-                    }}
-                  />
-
-                </div>
-              </div>
-              <div className={styles["footer"]}>
-                <Space></Space>
-                <Space style={{ float: 'right' }}>
-                  <Button type='outline' onClick={() => {
-                    setUploadList([]);
-                    setShowUpload(false);
-                  }
-                  }>取消</Button>
-                </Space>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
     </div >

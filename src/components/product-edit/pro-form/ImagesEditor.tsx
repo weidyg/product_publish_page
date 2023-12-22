@@ -82,8 +82,9 @@ function ImagesEditor(props: any) {
         <ImageSpaceModal
             visible={visible}
             onVisibleChange={(v) => { setVisible(v); }}
-            multiSelect={false}
+            multiSelect={true}
             onChange={(files) => {
+                // console.log('images-editor',files);
                 handleAddImgs(files);
                 setVisible(false);
             }}
