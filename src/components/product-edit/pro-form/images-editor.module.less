@@ -27,7 +27,7 @@
         .content {
             width: 380px;
             height: 672px;
-            background-color: #ffffff;
+            background-color: var(--color-bg-1);
             border-radius: 18px;
             text-align: center;
 
@@ -78,17 +78,28 @@
         align-items: center;
 
         .title {
-            color: #111;
-            color: var(--color-text1-4, #111);
+            color: var(--color-text-2);
             font-size: 14px;
             line-height: 20px;
         }
 
         .description {
-            margin-left: 7px;
-            color: #999;
-            color: var(--color-text1-2, #999);
+            color: var(--color-text-3);
             font-size: 12px;
+            margin-left: 7px;
+        }
+    }
+}
+
+body[arco-theme='dark'] {
+    .images-editor {
+        &-container {
+            .content {
+                .banner {
+                    -webkit-filter: invert(1);
+                    filter: invert(1);
+                }
+            }
         }
     }
 }
