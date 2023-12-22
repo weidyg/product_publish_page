@@ -11,6 +11,8 @@ import { Category } from "../../../components/CategorySelect/interface";
 import { flattenTree } from "../../../components/CategorySelect/until";
 import { getCategoryTree } from "../../../components/CategorySelect/api";
 import { IconCheckCircleFill, IconFaceFrownFill, IconFaceMehFill, IconFaceSmileFill, IconSound } from "@arco-design/web-react/icon";
+import { now } from "lodash";
+import { formatDate } from "../../../components/product-edit/until";
 
 function ProductEditPage() {
     const [form] = Form.useForm();
@@ -26,10 +28,10 @@ function ProductEditPage() {
 
     const { formSchema = [], formData = {}, origProdInfo,
         itemId, platformId, shopId, categoryId
-        , platformName, shopName, lastModificationTime
-        , categoryNamePath
+        , platformName, shopName, categoryNamePath
     } = productEditData || {};
 
+    const [lastModificationTime, setLastModificationTime] = useState<string>();
     useEffect(() => {
         setShowCategorySelect(false);
         loadInitData();
@@ -58,6 +60,7 @@ function ProductEditPage() {
         try {
             const productEditData = await loadProductEditData(categoryId, shopId);
             setProductEditData(productEditData);
+            setLastModificationTime(productEditData?.lastModificationTime);
             form?.setFieldsValue(productEditData?.formData || {});
         } catch (error: any) {
             if (error.code == -1000) {
@@ -81,6 +84,7 @@ function ProductEditPage() {
                     await saveProductEditData(values, publish, id);
                     console.log('values success', values);
                     Message.success(`保存${publish ? '并发布' : ''}成功！`);
+                    setLastModificationTime(formatDate(new Date()));
                 } catch (error: any) {
                     Modal.error({
                         maskClosable: false,
