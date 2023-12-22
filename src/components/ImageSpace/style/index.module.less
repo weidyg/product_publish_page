@@ -24,32 +24,17 @@
   background-color: var(--color-bg-2);
 }
 
-// .header {
-//   line-height: 50px;
-//   position: relative;
-//   .close {
-//     position: absolute;
-//     right: 0;
-//     bottom: 0;
-//     cursor: pointer
-//   }
-//   &:before {
-//     font-size: 17px;
-//     color: #333
-//   }
-// }
-
 .topAlert {
   height: 28px;
   line-height: 28px;
-  background: #fdedd3;
+  background: rgb(var(--warning-2), .6);
   border-radius: 2px;
   text-align: center;
   margin-bottom: 5px;
-  color: #8b572a;
+  color: rgb(var(--warning-8));
 
   a {
-    color: #8b572a;
+    color: rgb(var(--warning-8));
     text-decoration: underline;
   }
 }
@@ -93,7 +78,7 @@
     .cates {
       height: 100%;
       width: 160px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--color-border);
       border-radius: 2px;
     }
 
@@ -103,7 +88,7 @@
       top: 0;
       width: calc(100% - 160px - 20px);
       height: 100%;
-      border-bottom: 1px solid var(--color-neutral-3);
+      border-bottom: 1px solid var(--color-border);
 
       .bar {
         height: 28px;
@@ -196,7 +181,7 @@
             line-height: 20px;
             text-align: center;
             position: absolute;
-            color: #fff
+            color: var(--color-white);
           }
 
           .pix {
@@ -213,18 +198,18 @@
             z-index: 2;
             height: 20px;
             width: 20px;
-            border: 1px solid #e4e4e4;
-            background: #fff;
+            color: var(--color-fill-1);
+            border: 1px solid var(--color-border);
             line-height: 20px;
             text-align: center;
-            color: #fff;
             border-radius: 20px;
             display: none;
             cursor: pointer;
 
             &.active {
               display: block;
-              background: #3089dc
+              color: var(--color-white);
+              background: rgb(var(--primary-6))
             }
 
             &.angle {
@@ -254,9 +239,9 @@
               top: 0;
               left: 0;
               background: hsla(0, 0%, 100%, .85);
-              border: 1px solid #f0f0f0;
+              border: 1px solid var(--color-border);
               text-align: center;
-              color: #5c5c5c;
+              color: var(--color-text-2);
               width: 100%;
               height: 100%;
               line-height: normal;
@@ -268,9 +253,15 @@
 
               .lk {
                 display: block;
-                color: #5c5c5c;
+                color: var(--color-text-2);
                 text-decoration: underline
               }
+            }
+          }
+
+          &:hover {
+            .pix {
+              bottom: -20px
             }
           }
         }
@@ -284,6 +275,8 @@
             }
           }
         }
+
+
 
         &.lists {
           .item {
@@ -327,10 +320,10 @@
             }
 
             .select-icon {
-              margin-left: 5px;
-              margin-right: 5px;
               top: 0;
               left: 0;
+              margin-left: 5px;
+              margin-right: 5px;
               display: none;
             }
 
@@ -351,12 +344,12 @@
             }
 
             &:hover {
-              background: #f6f6f6
+              background: var(--color-neutral-1);
             }
 
             &.active,
             &.active:hover {
-              background: #e4f0fd
+              background: var(--color-neutral-2);
             }
 
             &.pic {
@@ -368,7 +361,7 @@
 
           .item-title {
             margin-bottom: 0;
-            border-bottom: 1px solid var(--color-neutral-3);
+            border-bottom: 1px solid var(--color-border);
 
             &:hover {
               background: none;
@@ -378,7 +371,7 @@
           &.show-select {
             .item {
               .select-icon {
-                display: block;
+                display: inline-block;
               }
 
               .no-select {
@@ -442,26 +435,14 @@
       .drop-inner {
         width: 100%;
         position: absolute;
-        // margin-top: -120px;
-        // top: 50%;
         padding: 12px;
         overflow-y: auto;
         overflow-x: hidden;
       }
-
-      // img {
-      //   margin-bottom: 10px
-      // }
-
-      // .tip {
-      //   font-size: 12px;
-      //   color: #666
-      // }
-
     }
 
     .footer {
-      border-top: 1px solid #d8d8d8
+      border-top: 1px solid var(--color-border);
     }
   }
 }

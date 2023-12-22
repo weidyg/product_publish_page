@@ -194,7 +194,7 @@ function LeftProdInfo(baseProps: LeftProdInfoProps) {
         </div>}
         <a className={styles[`${prefixCls}-btn`]}
             onClick={() => { setVisible(!visible); }}>
-            <span>原 商 品 信 息</span>
+            <span>关联商品信息</span>
             <span className={styles[`icon`]}>
                 {visible
                     ? <IconDoubleLeft />
