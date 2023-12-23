@@ -103,3 +103,18 @@ body[arco-theme='dark'] {
         }
     }
 }
+
+// 离开动画
+.down-out{
+    animation: downOut 0.3s both;
+}
+@keyframes downOut{
+    from{
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+    to{
+        transform: translate(0, 100%);
+        opacity: 0;
+    }
+}

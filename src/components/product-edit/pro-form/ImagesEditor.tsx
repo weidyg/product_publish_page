@@ -1,4 +1,4 @@
-import React, { DragEvent, useState, useMemo, useEffect } from 'react'
+import React, { DragEvent, useState, useMemo, useEffect, useRef } from 'react'
 import { Button, Space, Typography } from '@arco-design/web-react';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import { thumbnail } from '../until';
@@ -7,6 +7,7 @@ import styles from './images-editor.module.less'
 import { IconImage } from '@arco-design/web-react/icon';
 import ImageSpaceModal from '../../ImageSpace/modal';
 import { ImageInfo } from '../../ImageSpace/interface';
+import { findDOMNode } from 'react-dom';
 
 function ImagesEditor(props: any) {
     const [value, setValue] = useMergeValue<string | string[]>([], {
@@ -78,6 +79,32 @@ function ImagesEditor(props: any) {
 
     const prefixCls = 'images-editor';
 
+    function ImageItem(props: any) {
+        const { index, url: imgurl } = props;
+        const animateWrap = useRef<HTMLSpanElement>(null);
+        return <span
+            ref={animateWrap}
+            key={index}
+            draggable={true}
+            onDragStart={(e) => handleDragStart(e, index)}
+            onDragOver={(e) => handleDragOver(e, index)}
+            onDrop={(e) => handleDrop(e, index)}
+        >
+            <ShowImage index={index + 1} size={88} url={imgurl}
+                style={{ backgroundColor: 'var(--color-bg-1)' }}
+                onChange={(file) => {
+                    if (file?.url) {
+                        handleEditImg(index, file.url);
+                    }
+                }}
+                onDeleteClick={() => {
+                    animateWrap?.current?.classList?.add(styles[`down-out`]);
+                    setTimeout(() => { handleDelImg(index); }, 200);
+                }}
+            />
+        </span>
+    }
+
     return (<>
         <ImageSpaceModal
             visible={visible}
@@ -139,25 +166,7 @@ function ImagesEditor(props: any) {
                 <div className={styles[`sidePadding`]}>
                     <Space wrap size={6} >
                         {imgList.map((imgurl, index) => (
-                            <span
-                                key={index}
-                                draggable={true}
-                                onDragStart={(e) => handleDragStart(e, index)}
-                                onDragOver={(e) => handleDragOver(e, index)}
-                                onDrop={(e) => handleDrop(e, index)}
-                            >
-                                <ShowImage index={index + 1} size={88} url={imgurl}
-                                    style={{ backgroundColor: 'var(--color-bg-1)' }}
-                                    onChange={(file) => {
-                                        if (file?.url) {
-                                            handleEditImg(index, file.url);
-                                        }
-                                    }}
-                                    onDeleteClick={() => {
-                                        handleDelImg(index);
-                                    }}
-                                />
-                            </span>
+                            <ImageItem index={index} key={index} url={imgurl} />
                         ))}
                     </Space>
                 </div>

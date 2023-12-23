@@ -217,8 +217,8 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     }</div>
   }
 
-  const [wrapperStyle, setWrapperStyle] = useState({});
   const barRef = useRef<HTMLDivElement>(null);
+  const [wrapperStyle, setWrapperStyle] = useState({});
   useEffect(() => {
     if (barRef.current) {
       const height = barRef.current.clientHeight;
@@ -229,8 +229,17 @@ function ImageSpace(baseProps: ImageSpaceProps) {
       };
       setWrapperStyle(newWrapperStyle);
     }
-  }, [barRef?.current?.clientHeight])
+  }, [barRef?.current])
 
+  // const wrapperStyle = useMemo(() => {
+  //   if (barRef.current) {
+  //     const height = barRef.current.clientHeight;
+  //     return {
+  //       marginTop: `${height}px`,
+  //       height: `calc(100% - ${height}px)`,
+  //     };
+  //   }
+  // }, [barRef?.current])
   return (<>
     <div className={classNames(styles["layout"], className)} style={{ ...style, padding: '0px' }}>
       <div className={styles["topAlert"]} style={{ display: 'block' }}>欢迎使用图片空间</div>
