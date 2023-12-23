@@ -7,7 +7,7 @@ import styles from './style/index.module.less';
 import classNames from "@arco-design/web-react/es/_util/classNames";
 import { isNumber } from "@arco-design/web-react/es/_util/is";
 import { convertByteUnit, convertTime, isAcceptFile, thumbnail } from "../product-edit/until";
-import { debounce, throttle } from "lodash";
+import { debounce, set, throttle } from "lodash";
 import { RequestOptions, UploadItem } from "@arco-design/web-react/es/Upload";
 import { TreeDataType } from "@arco-design/web-react/es/Tree/interface";
 import uploadRequest from "./request";
@@ -52,7 +52,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   const [showUpload, setShowUpload] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadMoreing, setLoadMoreing] = useState<boolean>(false);
-  const [hasNextPage, setHasNextPage] = useState<boolean>(true);
+  const [hasNextPage, setHasNextPage] = useState<boolean>();
 
   const [files, setFiles] = useState<ImageInfo[]>([]);
   const [spaceInfo, setSpaceInfo] = useState<SpaceInfo>({});
@@ -203,23 +203,34 @@ function ImageSpace(baseProps: ImageSpaceProps) {
   }
 
   function LoadMoreDivider() {
-    const show = files?.length >= pageSize;
-    return show
-      ? <Divider style={{ marginTop: '0', fontSize: '12px' }}>{
-        hasNextPage
-          ? <Button type='text'
-            loading={loadMoreing}
-            onClick={() => { loadMoreData(); }}
-            loadingFixedWidth={true}>
-            {loadMoreing ? '加载中...' : '加载更多...'}
-          </Button>
-          : <Typography.Text type='secondary' style={{ fontSize: '12px' }}>
-            没有更多数据
-          </Typography.Text>
-      }
-      </Divider>
-      : undefined
+    return <div className={styles['load-more-text']}>{
+      hasNextPage === true
+        ? <Button type='text'
+          loading={loadMoreing}
+          onClick={() => { loadMoreData(); }}
+          loadingFixedWidth={true}>
+          {loadMoreing ? '加载中...' : '加载更多...'}
+        </Button>
+        : hasNextPage === false
+          ? <span>没有更多了</span>
+          : <></>
+    }</div>
   }
+
+  const [wrapperStyle, setWrapperStyle] = useState({});
+  const barRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (barRef.current) {
+      const height = barRef.current.clientHeight;
+      const newWrapperStyle = {
+        ...wrapperStyle,
+        marginTop: `${height}px`,
+        height: `calc(100% - ${height}px)`,
+      };
+      setWrapperStyle(newWrapperStyle);
+    }
+  }, [barRef?.current?.clientHeight])
+
   return (<>
     <div className={classNames(styles["layout"], className)} style={{ ...style, padding: '0px' }}>
       <div className={styles["topAlert"]} style={{ display: 'block' }}>欢迎使用图片空间</div>
@@ -236,7 +247,7 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                   showLine={true} />
               </div>
               <div className={styles["list"]} >
-                <div className={styles["bar"]}>
+                <div ref={barRef} className={styles["bar"]}>
                   <Space style={{ marginBottom: '4px' }}>
                     <div className={classNames(styles['icon-btn'], { [styles['active']]: showMode == 'grid' })}>
                       <IconApps onClick={() => { setShowMode('grid'); }} />
@@ -280,18 +291,18 @@ function ImageSpace(baseProps: ImageSpaceProps) {
                     >上传图片</Button>
                   </Space>
                 </div>
-
                 <List
                   loading={loading}
                   bordered={false}
                   dataSource={uploads.concat(...files)}
+                  wrapperStyle={wrapperStyle}
                   wrapperClassName={classNames(styles['list-items'], {
                     [styles['lists']]: showMode == 'list',
                     [styles['show-select']]: selectConfirm
                   })}
                   header={showMode == 'list' && <div className={classNames(styles['item'], styles['item-title'])}>
-                    <div className={classNames(styles['list-item'], styles['no-select'])}></div>
-                    <div className={classNames(styles['list-item'], styles['cover'])} style={{ height: '32px' }}></div>
+                    {selectConfirm && <div className={classNames(styles['list-item'])} style={{ width: '10px' }}></div>}
+                    <div className={classNames(styles['list-item'], styles['cover'])}></div>
                     <div className={classNames(styles['list-item'], styles['name'])}>名称</div>
                     <div className={classNames(styles['list-item'], styles['size'])}>分辨率</div>
                     <div className={classNames(styles['list-item'], styles['size'])}>大小</div>

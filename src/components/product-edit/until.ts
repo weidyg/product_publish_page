@@ -269,7 +269,7 @@ export function getUiTypeOrDefault(_props: MyFormItemProps): FieldUiType | undef
     const { uiType, type, name, allowCustom, options = [], rules = {}, tags = [] } = _props;
     if (uiType) { return uiType; }
     if (FieldNames.sku(tags)) { return 'skuEditTable'; }
-    if (FieldNames.desc(tags)) { return 'richTextEditor'; }
+    if (FieldNames.desc(tags)) { return 'descEditor'; }
     switch (type) {
         case 'input':
             {

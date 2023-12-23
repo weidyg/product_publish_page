@@ -49,7 +49,7 @@ export type MyFormRules = {
 export type FormItemType = 'input' | 'multiInput' | 'singleCheck' | 'multiCheck' | 'complex' | 'multiComplex';
 export type FieldUiType = 'input' | 'inputNumber' | 'inputTextArea'
     | 'radioGroup' | 'select' | 'checkBox' | 'checkBoxGroup' | 'multiSelect' | 'imageUpload'
-    | 'skuEditTable' | 'richTextEditor'|'imagesEditor';
+    | 'skuEditTable' | 'descEditor';
 export type FieldValueType = 'string' | 'object' | 'array_object' | 'bool';
 
 export type MyFormDependRules = {

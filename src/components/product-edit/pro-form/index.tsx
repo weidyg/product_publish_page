@@ -6,12 +6,11 @@ import { IconDelete, IconPlus, IconRefresh } from '@arco-design/web-react/icon';
 import { isObject, isString, isUndefined } from '@arco-design/web-react/es/_util/is';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import cs from '@arco-design/web-react/es/_util/classNames';
-import _, { debounce, throttle } from 'lodash';
+import _, { debounce } from 'lodash';
 import { ErrorBoundary } from 'react-error-boundary';
 import { FieldNames, checkDependRules, getStringLength, getTips, getUiTypeOrDefault, getValiRules, isNumberOrStrNumber, sliceString } from '../until';
 import SalePropFormItem from '../sale-prop/SalePropFormItem';
 import SkuEditableTable from '../sku-editable-table';
-import RichTextEditor from './RichTextEditor';
 import ImageUpload from '../../ImageUpload';
 import { getRemoteOptions } from '../api';
 import { ConfigContext } from '@arco-design/web-react/es/ConfigProvider';
@@ -405,12 +404,14 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     <FormItem {...formItemProps} label=''>
                         <ImageUpload size={picSize} text={label} />
                     </FormItem >
-                ) : _uiType == 'richTextEditor' ? (
-                    <FormItem {...formItemProps}>
-                        <ImagesEditor />
-                        {/* <RichTextEditor /> */}
-                    </FormItem>
-                ) : _uiType == 'imagesEditor' ? (
+                ) 
+                // : _uiType == 'richTextEditor' ? (
+                //     <FormItem {...formItemProps}>
+                //         <ImagesEditor />
+                //         {/* <RichTextEditor /> */}
+                //     </FormItem>
+                // )
+                 : _uiType == 'descEditor' ? (
                     <FormItem {...formItemProps}>
                         <ImagesEditor />
                     </FormItem>
