@@ -201,20 +201,22 @@ function ImageSpace(baseProps: ImageSpaceProps) {
       <div className={classNames(styles['list-item'], styles['list-only'], styles['date'])}>{time}</div>
     </div>
   }
-
   function LoadMoreDivider() {
-    return <div className={styles['load-more-text']}>{
-      hasNextPage === true
-        ? <Button type='text'
-          loading={loadMoreing}
-          onClick={() => { loadMoreData(); }}
-          loadingFixedWidth={true}>
-          {loadMoreing ? '加载中...' : '加载更多...'}
-        </Button>
-        : hasNextPage === false
-          ? <span>没有更多了</span>
-          : <></>
-    }</div>
+    const show = files?.length >= 0;
+    return show
+      ? <div className={styles['load-more-text']}>{
+        hasNextPage === true
+          ? <Button type='text'
+            loading={loadMoreing}
+            onClick={() => { loadMoreData(); }}
+            loadingFixedWidth={true}>
+            {loadMoreing ? '加载中...' : '加载更多...'}
+          </Button>
+          : hasNextPage === false
+            ? <span>没有更多了</span>
+            : <></>
+      }</div>
+      : undefined
   }
 
   const barRef = useRef<HTMLDivElement>(null);
@@ -231,15 +233,6 @@ function ImageSpace(baseProps: ImageSpaceProps) {
     }
   }, [barRef?.current])
 
-  // const wrapperStyle = useMemo(() => {
-  //   if (barRef.current) {
-  //     const height = barRef.current.clientHeight;
-  //     return {
-  //       marginTop: `${height}px`,
-  //       height: `calc(100% - ${height}px)`,
-  //     };
-  //   }
-  // }, [barRef?.current])
   return (<>
     <div className={classNames(styles["layout"], className)} style={{ ...style, padding: '0px' }}>
       <div className={styles["topAlert"]} style={{ display: 'block' }}>欢迎使用图片空间</div>
