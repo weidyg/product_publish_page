@@ -193,7 +193,7 @@ function ShowImage(props: {
       {size != 'mini' && <>
         {(index && index >= 0) ? <div className={styles['numberLabel']}>{index}</div> : <></>}
         <div className={styles['upload-picture-mask']}
-          style={imgSize >= 220 ? { fontSize: `18px`, height: `32px`, padding: '4px' } : undefined}
+          style={imgSize >= 220 ? { fontSize: `18px`, height: `32px` } : undefined}
         >
           <Space size={'medium'}>
             {onEditClick

@@ -138,10 +138,7 @@ function ImagesEditor(props: any) {
                         border: 'none'
                     }}>
                         {imgList.map((m, i) => {
-                            return <img key={i}
-                                style={{ maxWidth: '360px' }}
-                                src={thumbnail(m, 360)}
-                            />
+                            return <img style={{ maxWidth: '360px' }} src={thumbnail(m, 360)} />
                         })}
                     </div>
                 </div>

@@ -51,8 +51,12 @@ function SalePropInput(props: SalePropInputProps) {
             onOk={(vals?: string[], gVal?: string) => {
                 const changeGroup = group?.value !== gVal;
                 const newGroup = allOptions.find(f => f.group?.value == gVal)?.group;
-                if (topGropFieldName && newGroup) { form.setFieldValue(topGropFieldName, newGroup); }
-
+                if (topGropFieldName && newGroup) {
+                    form.setFieldValue(topGropFieldName, {
+                        text: newGroup?.label,
+                        value: newGroup?.value
+                    });
+                }
                 const options = (isGroup ? allOptions.filter(f => f.group?.value == newGroup?.value) : allOptions) || [];
                 const newFieldValue = changeGroup ? [] : [...(fieldValue || [])];
                 const newAddValIds = vals?.filter(f => !newFieldValue.some(s => `${f}` == `${s?.value}`));
