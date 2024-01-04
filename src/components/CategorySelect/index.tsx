@@ -19,7 +19,7 @@ function CategorySelect(baseProps: CategorySelectProps) {
 
   const [cateDatas, cateNamePath, disSubmit] = useMemo(() => {
     const cateDatas: Category[] = cateSelectData?.sort((a, b) => a?.level - b?.level)?.filter(f => !!f.category)?.map(m => m.category!);
-    const disSubmit = !cateDatas || cateDatas.length == 0 || cateDatas[cateDatas.length - 1]?.hasChild;
+    const disSubmit = !cateDatas || cateDatas.length == 0 || (cateDatas[cateDatas.length - 1]?.hasChild !== false);
     const cateNamePath = cateDatas?.map(m => m?.name)?.join(" > ");
     return [cateDatas, cateNamePath, disSubmit]
   }, [JSON.stringify(cateSelectData)])
@@ -52,6 +52,24 @@ function CategorySelect(baseProps: CategorySelectProps) {
           value.push({ level, data });
           return value;
         });
+      } else {
+        // console.log('parentId ', parentId, level);
+        setCateAllData(value => {
+          value.forEach(f => {
+            if (f.level == level - 1 && (f.data?.length || 0) > 0) {
+              f.data?.forEach(fi => {
+                if (fi.id == parentId && (fi?.hasChild !== true && fi?.hasChild !== false)) {
+                  fi.hasChild = false;
+                  // console.log('fi.hasChild ', false);
+                  return;
+                }
+              });
+              return;
+            }
+          });
+          // console.log('setCateAllData', value);
+          return value;
+        });
       }
     } catch (error: any) {
       setLoadErrMsg(error?.message || error + '');
@@ -77,7 +95,7 @@ function CategorySelect(baseProps: CategorySelectProps) {
         return values;
       });
     }
-    if (hasChild) {
+    if (hasChild !== false) {
       await loadCateList(level + 1, parentId);
     }
   }
@@ -121,7 +139,8 @@ function CategorySelect(baseProps: CategorySelectProps) {
                   data={data}
                   value={currCate}
                   prefixCls={prefixCls}
-                  loading={loading && loadingLevel == level + 1}
+                  loading={loading}
+                  loadingLevel={loadingLevel}
                   onItemClick={async (value) => {
                     await handleCateClick(level, value);
                   }}

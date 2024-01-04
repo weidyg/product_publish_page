@@ -2,156 +2,161 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title></title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
 </head>
 
 <body>
-  <div id="root"></div>
-  <script src="/assets/js/post.js"> </script>
-  <script>
-    //  document.body.setAttribute('arco-theme', 'dark');
-    
-    var model = { id: null, shopId: null, origSpuId: null, type: null, publish: null, tenantId: 0, encAuthToken: null };
-    //model.encAuthToken = "wNYmO41/48SHNstaLVXxHCCre29BZQl1NhC6NM3R3rzpXtPQxVzH6jEzA/QhXFN5tu6Fk7pO53uppm1mVXMZgxbyRVz26dnepi/FyB6axBY+6gq1GL+uRQgoiFUCjRN2p8w6LevViwKlHyWZZJZO1DGVSjAi1m2U+og9pkHw9/QS8262ijSox6246WlMmqH+jzjkY9YAE1u0rCshwLiHjLZRYER3g6up6TBgX2W1t0lIpoTcFbAU4Haohb1snNa2+fQM/qmrgl9UnflrCqHWkymB9w+IkVTRKUOOava9w/sFkiojesclfXqvNdp11dHFM+WqXT58KHUFDyShiLCShQMQrd3dhUSaTBML98Fev3cjAfGvHPCL+ZrIM7PLBuZxRqBO+x7uUqmLSeimMerAv50F2rtEjn0ceSHUVtE3rkTmUzbCvAO8mlADbjLcsfKCnJreUfLkL1UN50Weny1vzatv3+F86b/JrbNlQnZQnuwy5Hb4GQpe5Igm4KLlnsetDb+sNJLfCo9hHXnhJIEy7MujExZwEXuf4qEqHklU0loQPpYvRgziJSIzJDbFMidBPes9cjBjhGS7PUNVLoFx74qKXTBC1mkW+L+g1VXDAno=";
-    var prodEditConfig = { btn: { publish: model.publish } };
+    <div id="root"></div>
+    <script src="/assets/js/post.js"> </script>
+    <script>
+        //  document.body.setAttribute('arco-theme', 'dark');
 
-    function getDataInput(id, categoryId, shopId, origSpuId, type) {
-      id = id || model.id || getQueryString('id');
-      origSpuId = origSpuId || model.origSpuId || getQueryString('origSpuId');
-      type = type || model.type || getQueryString('type');
-      shopId = shopId || model.shopId || getQueryString('shopId');
-      categoryId = categoryId || getQueryString('categoryId');
-      return { ItemId: id, OrigSpuId: origSpuId, Type: type, ShopId: shopId, CategoryId: categoryId, };
-    }
+        var model = { id: null, shopId: null, origSpuId: null, type: null, publish: null, tenantId: 0, encAuthToken: null };
+        //model.encAuthToken = "wNYmO41/48SHNstaLVXxHCCre29BZQl1NhC6NM3R3rzpXtPQxVzH6jEzA/QhXFN5tu6Fk7pO53uppm1mVXMZgxbyRVz26dnepi/FyB6axBY+6gq1GL+uRQgoiFUCjRN2p8w6LevViwKlHyWZZJZO1DGVSjAi1m2U+og9pkHw9/QS8262ijSox6246WlMmqH+jzjkY9YAE1u0rCshwLiHjLZRYER3g6up6TBgX2W1t0lIpoTcFbAU4Haohb1snNa2+fQM/qmrgl9UnflrCqHWkymB9w+IkVTRKUOOava9w/sFkiojesclfXqvNdp11dHFM+WqXT58KHUFDyShiLCShQMQrd3dhUSaTBML98Fev3cjAfGvHPCL+ZrIM7PLBuZxRqBO+x7uUqmLSeimMerAv50F2rtEjn0ceSHUVtE3rkTmUzbCvAO8mlADbjLcsfKCnJreUfLkL1UN50Weny1vzatv3+F86b/JrbNlQnZQnuwy5Hb4GQpe5Igm4KLlnsetDb+sNJLfCo9hHXnhJIEy7MujExZwEXuf4qEqHklU0loQPpYvRgziJSIzJDbFMidBPes9cjBjhGS7PUNVLoFx74qKXTBC1mkW+L+g1VXDAno=";
+        var prodEditConfig = { btn: { publish: model.publish } };
 
-    // var prodEditConfig = { btn: { publish: false } };
-    const baseUrl = 'http://localhost:49007/api/services/app/ProductPublish/';
-    const productEditUrls = {
-      loadDataWithoutUploadItem: baseUrl + "GetProductEditDataWithoutUploadItem",
-      loadData: baseUrl + "GetProductEditData",
-      saveData: baseUrl + "SaveProductEditData",
-      getOptions: baseUrl + "GetOptions",
-      getCategoryTree: baseUrl + "GetCategoryTree",
-      getImagePageList: baseUrl + "GetImagePageList",
-      saveUploadFileInfo: baseUrl + "SaveUploadFileInfo",
-      uploadImages: "https://img.17qcc.com/picture/AsyncUpload",
-    }
-
-    function ConverData(data) {
-        data = data || {};
-        return {
-            itemId: data.Id,
-            platformId: data.PlatformId,
-            shopId: data.ShopId,
-            platformName: data.PlatformName,
-            shopName: data.ShopName,
-            categoryId: data.CategoryId,
-            categoryNamePath: data.CategoryNamePath,
-            formSchema: data.FormSchemaJson ? JSON.parse(data.FormSchemaJson) : undefined,
-            formData: data.FormDataJson ? JSON.parse(data.FormDataJson) : undefined,
-            origProdInfo: data.OrigProdJson ? JSON.parse(data.OrigProdJson) : undefined,
-            lastModificationTime: data.LastModificationTime
+        function getDataInput(id, categoryId, shopId, origSpuId, type) {
+            id = id || model.id || getQueryString('id');
+            origSpuId = origSpuId || model.origSpuId || getQueryString('origSpuId');
+            type = type || model.type || getQueryString('type');
+            shopId = shopId || model.shopId || getQueryString('shopId');
+            categoryId = categoryId || getQueryString('categoryId');
+            return { ItemId: id, OrigSpuId: origSpuId, Type: type, ShopId: shopId, CategoryId: categoryId, };
         }
-    }
-    function loadProductEditData(categoryId, shopId) {
-        const input = getDataInput(undefined, categoryId, shopId, undefined, undefined) || {};
-        if (input.ItemId > 0) {
-            return post(productEditUrls.loadData, input, ConverData);
-        } else if (input.OrigSpuId > 0 && input.ShopId > 0) {
-            return post(productEditUrls.loadDataWithoutUploadItem, input, ConverData);
-        } else {
-            return Promise.reject({ code: 0, message: "参数错误", });
+
+        // var prodEditConfig = { btn: { publish: false } };
+        const baseUrl = 'http://localhost:49007/api/services/app/ProductPublish/';
+        const productEditUrls = {
+            loadDataWithoutUploadItem: baseUrl + "GetProductEditDataWithoutUploadItem",
+            loadData: baseUrl + "GetProductEditData",
+            saveData: baseUrl + "SaveProductEditData",
+            getOptions: baseUrl + "GetOptions",
+            getCategoryTree: baseUrl + "GetCategoryTree",
+            GetCategorys: baseUrl + "GetCategorys",
+            getImagePageList: baseUrl + "GetImagePageList",
+            saveUploadFileInfo: baseUrl + "SaveUploadFileInfo",
+            uploadImages: "https://img.17qcc.com/picture/AsyncUpload",
         }
-    }
 
-    function saveProductEditData(id, dataJson, publish) {
-        const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
-        return post(productEditUrls.saveData, data);
-    }
-
-    function getCategoryTree(platformId) {
-        const data = { platformId };
-        return post(productEditUrls.getCategoryTree, data);
-    }
-
-    function getRemoteOptions(shopId, categoryId, optionAction, forceUpdate) {
-        const data = { ShopId: shopId, CategoryId: categoryId, Action: optionAction, ForceUpdate: forceUpdate };
-        return post(productEditUrls.getOptions, data);
-    }
-
-    function getImagePageList(keyword, folderId, refType, sortName, sortAsc, pageNo, pageSize) {
-        const data = { Keyword: keyword, FolderId: folderId, RefType: refType, SortName: sortName, SortAsc: sortAsc, Page: pageNo, PageSize: pageSize };
-        return post(productEditUrls.getImagePageList, data).then(function (data) {
+        function ConverData(data) {
             data = data || {};
-            const total = data.TotalCount || {};
-            const items = data.Items.map(m => {
-                return ConverImageInfo(m);
-            })
-            return { total, items }
-        });
-    }
-
-    function getImageUploadConfig() {
-        const action = productEditUrls.uploadImages;
-
-        const convertRequest = (request) => {
-            if (!request) { return {}; }
-            const _request = {
-                enc_auth_token: model && model.encAuthToken,
-                directory: (model && model.tenantId) > 0 ? `t${model.tenantId}/p` : undefined,
+            return {
+                itemId: data.Id,
+                platformId: data.PlatformId,
+                shopId: data.ShopId,
+                platformName: data.PlatformName,
+                shopName: data.ShopName,
+                categoryId: data.CategoryId,
+                categoryNamePath: data.CategoryNamePath,
+                formSchema: data.FormSchemaJson ? JSON.parse(data.FormSchemaJson) : undefined,
+                formData: data.FormDataJson ? JSON.parse(data.FormDataJson) : undefined,
+                origProdInfo: data.OrigProdJson ? JSON.parse(data.OrigProdJson) : undefined,
+                lastModificationTime: data.LastModificationTime
             }
-            return _request;
-        };
-
-        const convertResponse = (response) => {
-            if (!response) { return {}; }
-            const s = response.Success;
-            const e = response.Error;
-            const result = response.Result || {};
-            // const result = (s && m && ConverImageInfo(m)) || {};
-            result.error = e && {
-                code: e.Code,
-                message: e.Message,
-                details: e.Details,
-            };
-            return result;
-        };
-
-        const saveUploadFileInfo = (request, result) => {
-            request = request || {};
-            const data = {
-                FolderId: request.folderId,
-                ImgPix: request.pix,
-                ContentType: 'image/'+ result.MimeType,
-                FileSize: (result.FileSize || 0),
-                FileName: result.OriginFileName,
-                FilePath: result.FileFullPath,
-                Thumbnail: result.Thumbnail,
-            };
-            return post(productEditUrls.saveUploadFileInfo, data)
-                .then(function (data) {
-                    return ConverImageInfo(data || {});
-                });
-        };
-
-        return { action, convertRequest, convertResponse, saveUploadFileInfo };
-    }
-
-    function ConverImageInfo(m) {
-        return {
-            id: m.Id,
-            name: m.FileName,
-            size: m.FileSize,
-            pix: m.ImgPix,
-            url: m.Url,
-            folderId: m.FolderId,
-            time: m.CreationTime,
         }
-    }
-  </script>
-  <script type="module" src="main.tsx"></script>
+        function loadProductEditData(categoryId, shopId) {
+            const input = getDataInput(undefined, categoryId, shopId, undefined, undefined) || {};
+            if (input.ItemId > 0) {
+                return post(productEditUrls.loadData, input, ConverData);
+            } else if (input.OrigSpuId > 0 && input.ShopId > 0) {
+                return post(productEditUrls.loadDataWithoutUploadItem, input, ConverData);
+            } else {
+                return Promise.reject({ code: 0, message: "参数错误", });
+            }
+        }
+
+        function saveProductEditData(id, dataJson, publish) {
+            const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
+            return post(productEditUrls.saveData, data);
+        }
+
+        function getCategoryTree(platformId) {
+            const data = { platformId };
+            return post(productEditUrls.getCategoryTree, data);
+        }
+
+        function getCategorys(shopId, parentId) {
+            const data = { shopId, parentId };
+            return post(productEditUrls.GetCategorys, data);
+        }
+        function getRemoteOptions(shopId, categoryId, optionAction, forceUpdate) {
+            const data = { ShopId: shopId, CategoryId: categoryId, Action: optionAction, ForceUpdate: forceUpdate };
+            return post(productEditUrls.getOptions, data);
+        }
+
+        function getImagePageList(keyword, folderId, refType, sortName, sortAsc, pageNo, pageSize) {
+            const data = { Keyword: keyword, FolderId: folderId, RefType: refType, SortName: sortName, SortAsc: sortAsc, Page: pageNo, PageSize: pageSize };
+            return post(productEditUrls.getImagePageList, data).then(function (data) {
+                data = data || {};
+                const total = data.TotalCount || {};
+                const items = data.Items.map(m => {
+                    return ConverImageInfo(m);
+                })
+                return { total, items }
+            });
+        }
+
+        function getImageUploadConfig() {
+            const action = productEditUrls.uploadImages;
+
+            const convertRequest = (request) => {
+                if (!request) { return {}; }
+                const _request = {
+                    enc_auth_token: model && model.encAuthToken,
+                    directory: (model && model.tenantId) > 0 ? `t${model.tenantId}/p` : undefined,
+                }
+                return _request;
+            };
+
+            const convertResponse = (response) => {
+                if (!response) { return {}; }
+                const s = response.Success;
+                const e = response.Error;
+                const result = response.Result || {};
+                // const result = (s && m && ConverImageInfo(m)) || {};
+                result.error = e && {
+                    code: e.Code,
+                    message: e.Message,
+                    details: e.Details,
+                };
+                return result;
+            };
+
+            const saveUploadFileInfo = (request, result) => {
+                request = request || {};
+                const data = {
+                    FolderId: request.folderId,
+                    ImgPix: request.pix,
+                    ContentType: 'image/' + result.MimeType,
+                    FileSize: (result.FileSize || 0),
+                    FileName: result.OriginFileName,
+                    FilePath: result.FileFullPath,
+                    Thumbnail: result.Thumbnail,
+                };
+                return post(productEditUrls.saveUploadFileInfo, data)
+                    .then(function (data) {
+                        return ConverImageInfo(data || {});
+                    });
+            };
+
+            return { action, convertRequest, convertResponse, saveUploadFileInfo };
+        }
+
+        function ConverImageInfo(m) {
+            return {
+                id: m.Id,
+                name: m.FileName,
+                size: m.FileSize,
+                pix: m.ImgPix,
+                url: m.Url,
+                folderId: m.FolderId,
+                time: m.CreationTime,
+            }
+        }
+    </script>
+    <script type="module" src="main.tsx"></script>
 </body>
 
 </html>

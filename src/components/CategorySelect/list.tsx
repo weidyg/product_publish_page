@@ -14,14 +14,14 @@ function CateItem(props: CategoryItemProps) {
     return <li onClick={handleClick}
         className={classNames({ [styles['active']]: active })}>
         <Space size={0} align={'center'} className={styles['item']}>
-            <span className={classNames(styles['label'], { [styles['hasChild']]: hasChild })}>{name}</span>
-            <span>{hasChild && (loading ? <IconLoading /> : <IconRight />)}</span>
+            <span className={classNames(styles['label'], { [styles['hasChild']]: hasChild !== false })}>{name}</span>
+            <span>{(hasChild !== false) && (loading ? <IconLoading /> : <IconRight />)}</span>
         </Space>
     </li>
 }
 
 function CateList(props: CategoryListProps) {
-    const { loading, prefixCls, level = -1, data = [], value, onItemClick } = props;
+    const { loading, loadingLevel, prefixCls, level = -1, data = [], value, onItemClick } = props;
     const [seachValue, setSeachValue] = useState<string>();
     async function handleItemClick(cate: Category): Promise<void> {
         onItemClick && await onItemClick(cate);
@@ -45,24 +45,23 @@ function CateList(props: CategoryListProps) {
         />
         <div className={styles[`${prefixCls}-list`]}>
             {(level == 1 && data?.length == 0 && !loading)
-                ? <div className={styles[`${prefixCls}-list-empty`]}><Empty /></div>
+                ? <div className={styles[`${prefixCls}-list-empty`]}>
+                    <Empty />
+                </div>
                 : <ul>
                     {groupData?.map((item, index) => {
-                        const { groupName, cates } = item;
-                        return <span key={index}>
-                            {groupName && <div className={styles['gname']}>{groupName}</div >}
-                            {cates?.map((cate, i) => {
+                        return <span key={'c' + index}>
+                            {item?.groupName && <div className={styles['gname']}>{item?.groupName}</div >}
+                            {item?.cates?.map((cate, i) => {
                                 const _active = cate.id == value?.id;
-                                const _loading = _active && loading;
-                                return <>
-                                    <CateItem key={i} {...cate}
-                                        loading={_loading}
-                                        active={_active}
-                                        onClick={(id) => {
-                                            handleItemClick(cate);
-                                        }}
-                                    />
-                                </>
+                                const _loading = _active && loading && loadingLevel == level + 1;
+                                return <CateItem key={'ci' + i} {...cate}
+                                    loading={_loading}
+                                    active={_active}
+                                    onClick={(id) => {
+                                        handleItemClick(cate);
+                                    }}
+                                />
                             })}
                         </span>
                     })}

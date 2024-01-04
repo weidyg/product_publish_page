@@ -9,7 +9,7 @@ import LeftProdInfo from "../../../components/product-edit/left-info";
 import CategorySelect from "../../../components/CategorySelect";
 import { Category } from "../../../components/CategorySelect/interface";
 import { flattenTree } from "../../../components/CategorySelect/until";
-import { getCategoryTree } from "../../../components/CategorySelect/api";
+import { getCategoryTree, getCategorys } from "../../../components/CategorySelect/api";
 import { IconCheckCircleFill, IconFaceFrownFill, IconFaceMehFill, IconFaceSmileFill, IconSound } from "@arco-design/web-react/icon";
 import { now } from "lodash";
 import { formatDate } from "../../../components/product-edit/until";
@@ -44,14 +44,16 @@ function ProductEditPage() {
     }
 
     const loadCateList = async function (parentId?: string | number): Promise<Category[] | undefined> {
-        const { pId, data } = category || {};
-        if (!data || pId != platformId) {
-            const flattenData = await loadAllCategory();
-            setCategory({ pId: platformId!, data: flattenData });
-            return flattenData?.filter((f: any) => f.parentId == parentId) || [];
-        } else {
-            return data?.filter((f: any) => f.parentId == parentId) || [];
-        }
+        // const { pId, data } = category || {};
+        // if (!data || pId != platformId) {
+        //     const flattenData = await loadAllCategory();
+        //     setCategory({ pId: platformId!, data: flattenData });
+        //     return flattenData?.filter((f: any) => f.parentId == parentId) || [];
+        // } else {
+        //     return data?.filter((f: any) => f.parentId == parentId) || [];
+        // }
+        const cateData = await getCategorys(shopId!, parentId!);
+        return cateData;
     };
 
     const loadInitData = async (categoryId?: string, shopId?: string) => {
@@ -138,15 +140,17 @@ function ProductEditPage() {
                         }
                         {showCategorySelect
                             ? <div className={styles['product-content']}>
-                                {<CategorySelect
-                                    title={<>{`选择商品类目`}{categoryNamePath ? <span style={{
-                                        fontSize: '12px',
-                                        color: 'var(--color-text-3)'
-                                    }}>{`（参考类目：${categoryNamePath}）`}</span> : ''}</>}
+                                <CategorySelect
+                                    title={<>{`选择商品类目`}{categoryNamePath
+                                        ? <span style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>
+                                            {`（参考类目：${categoryNamePath}）`}
+                                        </span>
+                                        : ''}
+                                    </>}
                                     onGetChildrens={loadCateList}
                                     onSubmit={(cate) => {
-                                        loadInitData(`${cate[cate.length - 1].id}`);
-                                    }} />}
+                                        loadInitData(`${cate[cate.length - 1].id}`, `${shopId}`);
+                                    }} />
                             </div>
                             : !loading && <>
                                 <div className={styles['product-content']}>

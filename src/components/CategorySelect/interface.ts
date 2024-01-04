@@ -31,13 +31,14 @@ export interface CategoryItemProps extends Category {
     onClick: (id: string | number) => any,
 }
 export interface CategoryListProps {
-    level?: number
+    level?: number,
     data?: Category[],
-    value?: Category
+    value?: Category,
     onItemClick?: (value: Category) => Promise<void>,
 
     prefixCls?: string,
-    loading?: boolean
+    loading?: boolean,
+    loadingLevel?: number,
 }
 
 export type CateSelectData = {
