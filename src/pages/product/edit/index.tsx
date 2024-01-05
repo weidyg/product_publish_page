@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Affix, Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin, Typography } from "@arco-design/web-react";
 import Paragraph from "@arco-design/web-react/es/Typography/paragraph";
 import { ProductEditDataProps } from "./interface";
@@ -10,9 +10,9 @@ import CategorySelect from "../../../components/CategorySelect";
 import { Category } from "../../../components/CategorySelect/interface";
 import { flattenTree } from "../../../components/CategorySelect/until";
 import { getCategoryTree, getCategorys } from "../../../components/CategorySelect/api";
-import { IconCheckCircleFill, IconFaceFrownFill, IconFaceMehFill, IconFaceSmileFill, IconSound } from "@arco-design/web-react/icon";
-import { now } from "lodash";
+import { IconCheckCircleFill, IconFaceFrownFill, IconInfoCircleFill, } from "@arco-design/web-react/icon";
 import { formatDate } from "../../../components/product-edit/until";
+import classNames from "@arco-design/web-react/es/_util/classNames";
 
 function ProductEditPage() {
     const [form] = Form.useForm();
@@ -79,6 +79,7 @@ function ProductEditPage() {
 
     const handleSave = async (id?: string | number, publish?: boolean) => {
         publish ? setPublishLoading(true) : setSaveLoading(true);
+        if (publish) { showPublishLoading(true); }
         setTimeout(async () => {
             try {
                 const values = await form.validate();
@@ -102,18 +103,46 @@ function ProductEditPage() {
                 let labels: any[] = keys.length > 0 ? formSchema.filter(m => keys.includes(m.name!))?.map(m => m.label) || [] : [];
                 Message.error(`检测到 [ ${labels?.join('、')} ] 有必填项未填或格式错误，请补充后重新保存！`);
             } finally {
-                setSaveLoading(false);
+                showPublishLoading(false);
                 setPublishLoading(false);
+                setSaveLoading(false);
             }
         }, 100);
     }
+
+    const modalIns = useRef<any>();
+    function showPublishLoading(publishLoading: boolean) {
+        if (publishLoading === true && !modalIns?.current) {
+            modalIns.current = Modal.confirm({
+                title: '保存并发布',
+                icon: <IconInfoCircleFill />,
+                maskClosable: false,
+                unmountOnExit: true,
+                content: <span style={{ display: 'block', width: '100%', textAlign: 'center' }}>
+                    <Spin size={14} style={{ marginRight: '12px' }} />
+                    <span>正在保存并发布至平台中,请稍后...</span>
+                </span>,
+                footer: null,
+            });
+        } else if (publishLoading === false && modalIns?.current) {
+            modalIns.current.close();
+            modalIns.current = null;
+        }
+    }
+
+
     const config = (window as any)?.prodEditConfig || {};
     return (<>
         {origProdInfo && <Affix offsetTop={50}>
             <LeftProdInfo data={origProdInfo} />
         </Affix>}
-        <Spin loading={loading} tip='页面加载中，请稍后...' className={styles['product']}>
-            <div className={styles['product-box']}>
+        <Spin loading={loading} delay={500}
+            tip={'页面加载中，请稍后...'}
+            className={styles['product']}
+        >
+            <div className={classNames({
+                [styles['product-hide']]: loading
+            })}>
                 {loadErrMsg ?
                     <div className={styles['product-loadError']}>
                         <Result
@@ -133,29 +162,42 @@ function ProductEditPage() {
                             }
                         />
                     </div>
-                    : <>
-                        {!loading && (platformName || shopName) &&
-                            <PageHeader className={styles['product-header']}
-                                title={platformName} subTitle={shopName} />
-                        }
+                    : <div className={styles['product-content']}>
                         {showCategorySelect
-                            ? <div className={styles['product-content']}>
-                                <CategorySelect
-                                    title={<>{`选择商品类目`}{categoryNamePath
+                            ? <CategorySelect
+                                title={<>{`选择商品类目`}
+                                    {categoryNamePath
                                         ? <span style={{ fontSize: '12px', color: 'var(--color-text-3)' }}>
                                             {`（参考类目：${categoryNamePath}）`}
                                         </span>
                                         : ''}
-                                    </>}
-                                    onGetChildrens={loadCateList}
-                                    onSubmit={(cate) => {
-                                        loadInitData(`${cate[cate.length - 1].id}`, `${shopId}`);
-                                    }} />
-                            </div>
-                            : !loading && <>
-                                <div className={styles['product-content']}>
+                                </>}
+                                onGetChildrens={loadCateList}
+                                onSubmit={(cate) => {
+                                    loadInitData(`${cate[cate.length - 1].id}`, `${shopId}`);
+                                }} />
+                            : <>
+                                <PageHeader className={styles['product-header']}
+                                    title={platformName}
+                                    subTitle={shopName}
+                                />
+                                <div>
                                     <Card hoverable className={styles['product-cate']}>
-                                        {`当前类目：${categoryNamePath || '--'}`}
+                                        <Space size='large'>
+                                            <span>{`当前类目：${categoryNamePath || '--'}`}</span>
+                                            <Button type='primary' shape='round' size='mini'
+                                                onClick={() => {
+                                                    Modal.confirm({
+                                                        title: '确认操作',
+                                                        content: '更换类目后，编辑过的商品信息会丢失，确定更换?',
+                                                        onOk: () => {
+                                                            setShowCategorySelect(true);
+                                                        }
+                                                    });
+                                                }}>
+                                                切换类目
+                                            </Button>
+                                        </Space>
                                     </Card>
                                     <Card hoverable className={styles['product-form']}>
                                         <ProductEditForm
@@ -199,8 +241,9 @@ function ProductEditPage() {
                                         </Space>
                                     </Card>
                                 </div>
-                            </>}
-                    </>
+                            </>
+                        }
+                    </div>
                 }
             </div>
         </Spin>
