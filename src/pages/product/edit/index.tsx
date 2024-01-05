@@ -91,10 +91,9 @@ function ProductEditPage() {
                 } catch (error: any) {
                     Modal.error({
                         maskClosable: false,
+                        unmountOnExit: true,
                         title: `保存${publish ? '并发布' : ''}失败`,
-                        content: <Paragraph>
-                            {error?.message}
-                        </Paragraph>
+                        content: <span>{error?.message}</span>,
                     });
                 }
             } catch (error: any) {
@@ -114,10 +113,10 @@ function ProductEditPage() {
     function showPublishLoading(publishLoading: boolean) {
         if (publishLoading === true && !modalIns?.current) {
             modalIns.current = Modal.confirm({
-                title: '保存并发布',
-                icon: <IconInfoCircleFill />,
                 maskClosable: false,
                 unmountOnExit: true,
+                title: '保存并发布',
+                icon: <IconInfoCircleFill />,
                 content: <span style={{ display: 'block', width: '100%', textAlign: 'center' }}>
                     <Spin size={14} style={{ marginRight: '12px' }} />
                     <span>正在保存并发布至平台中,请稍后...</span>
