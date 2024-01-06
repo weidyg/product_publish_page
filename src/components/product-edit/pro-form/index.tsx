@@ -264,6 +264,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
 
     const skuTableRef = useRef<any>();
     const _fieldName = `${fieldName || namePath?.join('.') || name}`;
+    
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
     const [disShouldUpdate, isHide] = checkDependRules(hide || {});
     const shouldUpdate = (prev: any, next: any, info: any) => {
