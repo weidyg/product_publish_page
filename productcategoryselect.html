@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title></title>
+</head>
+
+<body>
+  <div id="productcategoryselect"></div>
+  <script src="/assets/js/post.js"> </script>
+  <script>
+    const baseUrl = 'http://localhost:49007/api/services/app/ProductPublish/';
+    const productEditUrls = {
+      GetCategorys: baseUrl + "GetCategorys",
+    }
+
+    function getCategorys(shopId, parentId) {
+      shopId = shopId || getQueryString('shopId');
+      const data = { shopId, parentId };
+      return post(productEditUrls.GetCategorys, data);
+    }
+
+    function setCategorys(categorys) {
+      alert(JSON.stringify(categorys));
+      return Promise.resolve();
+    }
+  </script>
+  <script type="module" src="/src/pages/product/category-select/main.tsx"></script>
+</body>
+
+</html>

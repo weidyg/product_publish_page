@@ -1,6 +1,7 @@
 
 import { ConfigProvider, Modal } from '@arco-design/web-react';
 import { ReactNode } from 'react';
+import './styles/index.less'
 
 function App(props: { children?: ReactNode }) {
   const { children } = props;

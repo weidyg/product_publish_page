@@ -50,3 +50,10 @@ export type CateData = {
     level: number,
     data?: Category[],
 };
+
+
+export type CatePageConfig = {
+    shopId: number,
+    onSubmit?: (categorys: Category[]) => any,
+    categoryNamePath?: string,
+}

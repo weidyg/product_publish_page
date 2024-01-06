@@ -1,5 +1,5 @@
 import { Ref, createContext, forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
-import { Form, Spin, } from "@arco-design/web-react";
+import { Form, } from "@arco-design/web-react";
 import { FieldNames } from "./until";
 import { ProFormItem } from "./pro-form";
 import { MyFormItemProps, ProductEditFormProps } from "./interface";
@@ -31,61 +31,47 @@ function ProductEditForm(props: ProductEditFormProps, ref: Ref<any>) {
 
     useEffect(() => {
         form?.setFieldsValue(formData || {});
-        setLoading(false);
     }, [JSON.stringify(formData)])
 
-    const [loading, setLoading] = useState(true);
-    // const [form] = Form.useForm();
     useImperativeHandle(ref, () => {
 
     });
 
-
     return (
-        <Spin loading={loading} style={{ display: 'block' }}>
-            <ProductEditContext.Provider value={{ platformId, shopId, categoryId, originalSaleProps }}>
-                <Form id='spuForm'
-                    form={form}
-                    labelCol={{ span: 3, offset: 0 }}
-                    wrapperCol={{ span: 21, offset: 0 }}
-                    // layout='vertical'
-                    layout='horizontal'
-                    autoComplete='off'
-                    scrollToFirstError={true}
-                    // disabled={saveLoading || publishLoading}
-                    // onSubmit={(values: FormData) => {
-                    //     console.log('onSubmit', values);
-                    // }}
-                    // onSubmitFailed={(errors: { [key: string]: FieldError; }) => {
-                    //     console.log('onSubmitFailed', errors);
-                    // }}
-                    onValuesChange={(value, values) => {
-                        // console.log('onValuesChange', value, values);
-                        if (form && skuFullName && skuStockName && quantityFullName) {
-                            const skuChanged = Object.keys(value).some(s => s.endsWith(skuFullName!));
-                            if (skuChanged) {
-                                let quantity = 0;
-                                const skus: any[] = form.getFieldValue(skuFullName!) || [];
-                                skus.forEach(f => { quantity += parseInt(f[skuStockName!]) || 0; });
-                                const oldQuantity = form.getFieldValue(quantityFullName!);
-                                if (oldQuantity != quantity) { form.setFieldValue(quantityFullName!, quantity); }
-                            }
+        <ProductEditContext.Provider value={{ platformId, shopId, categoryId, originalSaleProps }}>
+            <Form id='spuForm'
+                form={form}
+                labelCol={{ span: 3, offset: 0 }}
+                wrapperCol={{ span: 21, offset: 0 }}
+                layout='horizontal'
+                autoComplete='off'
+                scrollToFirstError={true}
+                onValuesChange={(value, values) => {
+                    // console.log('onValuesChange', value, values);
+                    if (form && skuFullName && skuStockName && quantityFullName) {
+                        const skuChanged = Object.keys(value).some(s => s.endsWith(skuFullName!));
+                        if (skuChanged) {
+                            let quantity = 0;
+                            const skus: any[] = form.getFieldValue(skuFullName!) || [];
+                            skus.forEach(f => { quantity += parseInt(f[skuStockName!]) || 0; });
+                            const oldQuantity = form.getFieldValue(quantityFullName!);
+                            if (oldQuantity != quantity) { form.setFieldValue(quantityFullName!, quantity); }
                         }
-                    }}
-                    validateMessages={{
-                        required: (_, { label }) => <>{'必填项'}{label || ''}{'不能为空,请修改'}</>,
-                        string: {
-                            length: `字符数必须是 #{length}`,
-                            match: `不匹配正则 #{pattern}`,
-                        },
-                    }}
-                >
-                    {formSchema.map((m: MyFormItemProps, i: any) => {
-                        return <ProFormItem key={i} {...m} salePropFieldName={salePropFieldName} />
-                    })}
-                </Form>
-            </ProductEditContext.Provider>
-        </Spin>
+                    }
+                }}
+                validateMessages={{
+                    required: (_, { label }) => <>{'必填项'}{label || ''}{'不能为空,请修改'}</>,
+                    string: {
+                        length: `字符数必须是 #{length}`,
+                        match: `不匹配正则 #{pattern}`,
+                    },
+                }}
+            >
+                {formSchema.map((m: MyFormItemProps, i: any) => {
+                    return <ProFormItem key={i} {...m} salePropFieldName={salePropFieldName} />
+                })}
+            </Form>
+        </ProductEditContext.Provider>
     );
 }
 

@@ -8,6 +8,7 @@ import { SelectProps } from '@arco-design/web-react/es/Select/interface';
 import ProdItem from './prod-item';
 import { getSysSkus, loadProductInfo, saveSpuInfo, sysSpuSearch } from './api';
 import classNames from '@arco-design/web-react/es/_util/classNames';
+import { IconFaceFrownFill } from '@arco-design/web-react/icon';
 
 const TableContext = React.createContext<{ options?: any[], loading?: boolean }>({});
 
@@ -271,7 +272,8 @@ function ProductMate(baseProps: ProductMateProps) {
       })}>
         {loadErrMsg ? (
           <Result
-            status='500'
+            status={null}
+            icon={<IconFaceFrownFill style={{ color: 'rgb(var(--arcoblue-6))' }} />}
             subTitle={loadErrMsg}
             extra={
               <Button type='primary'

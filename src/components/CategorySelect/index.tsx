@@ -6,6 +6,7 @@ import styles from './style/index.module.less';
 import { CateData, CateSelectData, Category, CategorySelectProps } from "./interface";
 import { flattenTree } from "./until";
 import CateList from "./list";
+import { IconFaceFrownFill } from "@arco-design/web-react/icon";
 
 const defaultProps: CategorySelectProps = {};
 function CategorySelect(baseProps: CategorySelectProps) {
@@ -105,66 +106,67 @@ function CategorySelect(baseProps: CategorySelectProps) {
   }
 
   const prefixCls = 'cate';
-  return (<>
-    <div>
-      <Card title={title !== undefined ? title : '选择商品类目'}>
-        {loadErrMsg
-          ? <div className={styles[`${prefixCls}-error`]}>
-            <Result
-              status='500'
-              title={'加载错误'}
-              subTitle={loadErrMsg}
-              extra={
-                <Button type='primary'
-                  loading={loading}
-                  onClick={() => {
-                    loadCateList(1, 0);
-                  }}>
-                  重试
-                </Button>
-              }
-            />
-          </div>
-          : <div className={styles[`${prefixCls}-boxs`]}>
-            {cateAllData?.map((item, index) => {
-              const { level, data } = item;
-              const currCate = cateSelectData?.find(f => f.level == level)?.category;
-              return <Spin
-                key={index}
-                loading={loading && loadingLevel == level} tip='拼命加载中...'
-                className={styles[`${prefixCls}-box`]}
-              >
-                <CateList
-                  level={level}
-                  data={data}
-                  value={currCate}
-                  prefixCls={prefixCls}
-                  loading={loading}
-                  loadingLevel={loadingLevel}
-                  onItemClick={async (value) => {
-                    await handleCateClick(level, value);
-                  }}
-                />
-              </Spin>
-            })}
-          </div>}
-        <div>
-          <Alert content={`您当前选择的是：${cateNamePath}`} closable={false} />
+  return (
+    <Card title={title !== undefined ? title : '选择商品类目'}>
+      {loadErrMsg
+        ? <div className={styles[`${prefixCls}-error`]}>
+          <Result
+            status={null}
+            icon={<IconFaceFrownFill style={{ color: 'rgb(var(--arcoblue-6))' }} />}
+            title={'加载错误'}
+            subTitle={loadErrMsg}
+            extra={
+              <Button type='primary'
+                loading={loading}
+                onClick={() => {
+                  loadCateList(1, 0);
+                }}>
+                重试
+              </Button>
+            }
+          />
         </div>
-        <div className={styles[`${prefixCls}-bottom`]}>
-          <Button
-            type='primary'
-            // loading={submiting}
-            disabled={disSubmit}
-            className={styles[`${prefixCls}-bottom-btn`]}
-            onClick={handleOk}
-          >
-            确认
-          </Button>
-        </div>
-      </Card >
-    </div >
-  </>
+        : <div className={styles[`${prefixCls}-boxs`]}>
+          {cateAllData?.map((item, index) => {
+            const { level, data } = item;
+            const currCate = cateSelectData?.find(f => f.level == level)?.category;
+            return <Spin
+              key={index}
+              loading={loading && loadingLevel == level} tip='拼命加载中...'
+              className={styles[`${prefixCls}-box`]}
+            >
+              <CateList
+                level={level}
+                data={data}
+                value={currCate}
+                prefixCls={prefixCls}
+                loading={loading}
+                loadingLevel={loadingLevel}
+                onItemClick={async (value) => {
+                  await handleCateClick(level, value);
+                }}
+              />
+            </Spin>
+          })}
+        </div>}
+      <div>
+        <Alert
+          content={`您当前选择的是：${cateNamePath}`}
+          closable={false}
+        />
+      </div>
+      <div className={styles[`${prefixCls}-bottom`]}>
+        <Button
+          type='primary'
+          // loading={submiting}
+          disabled={disSubmit}
+          className={styles[`${prefixCls}-bottom-btn`]}
+          onClick={handleOk}
+        >
+          确认
+        </Button>
+      </div>
+    </Card >
   );
 }
 

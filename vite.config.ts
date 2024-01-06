@@ -15,15 +15,8 @@ export default defineConfig({
     chunkSizeWarningLimit: 2048,
     rollupOptions: {
       input: {
-        productedit: '/src/pages/product/edit/index.html',
-        productmate: '/src/pages/product/mate/index.html'
-      },
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-        }
+        productedit: '/productedit.html',
+        productmate: '/productmate.html'
       }
     }
   },

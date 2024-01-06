@@ -8,13 +8,13 @@
 </head>
 
 <body>
-  <div id="root"></div>
+  <div id="productmate"></div>
   <script src="/assets/js/post.js"> </script>
   <script>
     const id = getQueryString('id');
     const spuId = getQueryString('spuId');
 
-    const baseUrl = 'http://localhost:60486/api/services/app/NetShopProductRelation/';
+    const baseUrl = 'http://localhost:49007/api/services/app/NetShopProductRelation/';
     const productRelationUrls = {
       getProductInfo: baseUrl + "GetProductInfo",
       SaveProductRelation: baseUrl + "SaveProductRelation",
@@ -42,7 +42,7 @@
     }
 
   </script>
-  <script type="module" src="main.tsx"></script>
+  <script type="module" src="/src/pages/product/mate/main.tsx"></script>
 </body>
 
 </html>

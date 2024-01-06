@@ -1,5 +1,5 @@
 import React, { DragEvent, useState, useMemo, useEffect, useRef } from 'react'
-import { Button, Space, Typography } from '@arco-design/web-react';
+import { Button, Space } from '@arco-design/web-react';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import { thumbnail } from '../until';
 import { ShowImage } from '../../ImageUpload';
@@ -7,7 +7,6 @@ import styles from './images-editor.module.less'
 import { IconImage } from '@arco-design/web-react/icon';
 import ImageSpaceModal from '../../ImageSpace/modal';
 import { ImageInfo } from '../../ImageSpace/interface';
-import { findDOMNode } from 'react-dom';
 
 function ImagesEditor(props: any) {
     const [value, setValue] = useMergeValue<string | string[]>([], {
@@ -138,7 +137,7 @@ function ImagesEditor(props: any) {
                         border: 'none'
                     }}>
                         {imgList.map((m, i) => {
-                            return <img style={{ maxWidth: '360px' }} src={thumbnail(m, 360)} />
+                            return <img key={i} style={{ maxWidth: '360px' }} src={thumbnail(m, 360)} />
                         })}
                     </div>
                 </div>
