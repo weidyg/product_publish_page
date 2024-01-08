@@ -252,19 +252,19 @@ function FormInput(props: FormInputProps) {
 type UIFormItemProps = Omit<FormItemProps, 'rules' | 'label'>;
 
 export function ProFormItem(props: MyFormItemProps & UIFormItemProps
-    & { picSize?: 'mini', salePropFieldName?: string, parentLabel?: any }) {
+    & { picSize?: 'mini', salePropFieldName?: string, parentLabel?: AnalyserNode }) {
     const {
         type, label = '', name, namePath, value, tags = [],
         optionAction, options = [], subItems = [], nestItems = [],
         hide, tips, rules, readOnly, allowCustom,
         fieldName, noStyle, picSize, allowClear = true,
-        valueType, salePropFieldName, parentLabel = '', style,
-        ...uiFormItemProps
+        valueType, salePropFieldName, parentLabel = '',
+        style, ...uiFormItemProps
     } = props || {};
 
     const skuTableRef = useRef<any>();
     const _fieldName = `${fieldName || namePath?.join('.') || name}`;
-    
+
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
     const [disShouldUpdate, isHide] = checkDependRules(hide || {});
     const shouldUpdate = (prev: any, next: any, info: any) => {
@@ -293,7 +293,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                 if (_hide) {
                     // console.log('_fieldName', _fieldName);
                     // form.setFieldValue(_fieldName!, undefined);
-                    return;
+                    return <span style={{ display: 'none' }}></span>;
                 }
                 const tipValues = getTipValues(values) || [];
                 if (_labelArr.length == 2) { tipValues.unshift(_labelArr[1]) }
@@ -314,6 +314,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     style: subItems.length > 0 ? { ...style, marginBottom: '0px' } : { ...style },
                 }
                 const salePropValues = _.get(values, salePropFieldName!);
+
                 return _uiType == 'input' ? (
                     <FormItem {...formItemProps} >
                         <FormInput allowClear={allowClear}
@@ -409,34 +410,21 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                         <FormItem {...formItemProps} field='' noStyle>
                             {FieldNames.cateProp(tags) ? (
                                 <Card style={{ background: 'var(--color-fill-1)', margin: '0 0 18px 0' }}
-                                    bodyStyle={{
-                                        padding: '16px 16px 0',
-                                        maxWidth: "950px",
-                                        margin: 'auto'
-                                    }}>
+                                    bodyStyle={{ padding: '16px 16px 0', maxWidth: "950px", margin: 'auto' }}>
                                     <Grid.Row >
-                                        {subItems?.filter(f => !['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
-                                            return (<Grid.Col key={'complex' + si} span={12}>
-                                                <ProFormItem key={si} {...sm}
-                                                    labelAlign='right'
-                                                    layout={'horizontal'}
-                                                    className={styles['form-label-ellipsis']}
-                                                    uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
-                                                />
-                                            </Grid.Col>
+                                        {subItems?.map((sm, si) => {
+                                            const isComplex = !['complex', 'multiComplex'].includes(sm.type!);
+                                            return (
+                                                <Grid.Col span={isComplex ? 12 : 24} key={si}>
+                                                    <ProFormItem key={si} {...sm}
+                                                        labelAlign='right'
+                                                        layout={'horizontal'}
+                                                        className={styles['form-label-ellipsis']}
+                                                        uiType={isComplex && sm.type == 'singleCheck' ? 'select' : sm.uiType}
+                                                    />
+                                                </Grid.Col>
                                             )
                                         })}
-                                        {subItems?.filter(f => ['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
-                                            return (<Grid.Col key={'complex' + si} span={24}>
-                                                <ProFormItem key={si} {...sm}
-                                                    labelAlign='right'
-                                                    layout={'horizontal'}
-                                                    className={styles['form-label-ellipsis']}
-                                                />
-                                            </Grid.Col>
-                                            )
-                                        })}
-                                        {/* </Grid> */}
                                     </Grid.Row>
                                 </Card>
                             ) : FieldNames.saleProp(tags) ? (
