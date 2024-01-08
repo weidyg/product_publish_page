@@ -17,7 +17,7 @@ import classNames from "@arco-design/web-react/es/_util/classNames";
 function ProductEditPage() {
     const [form] = Form.useForm();
 
-    
+
     const [reload, setReload] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
@@ -95,7 +95,7 @@ function ProductEditPage() {
                         maskClosable: false,
                         unmountOnExit: true,
                         title: `保存${publish ? '并发布' : ''}失败`,
-                        content: <span>{error?.message}</span>,
+                        content: <div dangerouslySetInnerHTML={{ __html: error?.message }} />,
                     });
                 }
             } catch (error: any) {
