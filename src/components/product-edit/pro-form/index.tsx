@@ -412,15 +412,26 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                                 <Card style={{ background: 'var(--color-fill-1)', margin: '0 0 18px 0' }}
                                     bodyStyle={{ padding: '16px 16px 0', maxWidth: "950px", margin: 'auto' }}>
                                     <Grid.Row >
-                                        {subItems?.map((sm, si) => {
-                                            const isComplex = !['complex', 'multiComplex'].includes(sm.type!);
+                                        {subItems?.filter(f => !['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
                                             return (
-                                                <Grid.Col span={isComplex ? 12 : 24} key={si}>
+                                                <Grid.Col span={12} key={si}>
                                                     <ProFormItem key={si} {...sm}
                                                         labelAlign='right'
                                                         layout={'horizontal'}
                                                         className={styles['form-label-ellipsis']}
-                                                        uiType={isComplex && sm.type == 'singleCheck' ? 'select' : sm.uiType}
+                                                        uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
+                                                    />
+                                                </Grid.Col>
+                                            )
+                                        })}
+                                        {subItems?.filter(f => ['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
+                                            return (
+                                                <Grid.Col span={24} key={si}>
+                                                    <ProFormItem key={si} {...sm}
+                                                        labelAlign='right'
+                                                        layout={'horizontal'}
+                                                        className={styles['form-label-ellipsis']}
+                                                        uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
                                                     />
                                                 </Grid.Col>
                                             )
