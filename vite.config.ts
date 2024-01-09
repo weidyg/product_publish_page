@@ -15,6 +15,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 2048,
     rollupOptions: {
       input: {
+        productcategoryselect: '/productcategoryselect.html',
         productedit: '/productedit.html',
         productmate: '/productmate.html'
       }

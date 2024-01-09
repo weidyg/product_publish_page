@@ -164,6 +164,10 @@ function ProductEditPage() {
                         />
                     </div>
                     : <div className={styles['product-content']}>
+                        <PageHeader className={styles['product-header']}
+                            title={platformName}
+                            subTitle={shopName}
+                        />
                         {showCategorySelect
                             ? <CategorySelect
                                 title={<>{`选择商品类目`}
@@ -178,40 +182,34 @@ function ProductEditPage() {
                                     loadInitData(`${cate[cate.length - 1].id}`, `${shopId}`);
                                 }} />
                             : <>
-                                <PageHeader className={styles['product-header']}
-                                    title={platformName}
-                                    subTitle={shopName}
-                                />
-                                <div>
-                                    <Card hoverable className={styles['product-cate']}>
-                                        <Space size='large'>
-                                            <span>{`当前类目：${categoryNamePath || '--'}`}</span>
-                                            <Button type='primary' shape='round' size='mini'
-                                                onClick={() => {
-                                                    Modal.confirm({
-                                                        title: '确认操作',
-                                                        content: '更换类目后，编辑过的商品信息会丢失，确定更换?',
-                                                        onOk: () => {
-                                                            setShowCategorySelect(true);
-                                                        }
-                                                    });
-                                                }}>
-                                                切换类目
-                                            </Button>
-                                        </Space>
-                                    </Card>
-                                    <Card hoverable className={styles['product-form']}>
-                                        <ProductEditForm
-                                            form={form}
-                                            shopId={shopId}
-                                            platformId={platformId}
-                                            categoryId={categoryId}
-                                            formSchema={formSchema}
-                                            formData={formData}
-                                            originalSaleProps={origProdInfo?.saleProp}
-                                        />
-                                    </Card>
-                                </div>
+                                <Card hoverable className={styles['product-cate']}>
+                                    <Space size='large'>
+                                        <span>{`当前类目：${categoryNamePath || '--'}`}</span>
+                                        <Button type='primary' shape='round' size='mini'
+                                            onClick={() => {
+                                                Modal.confirm({
+                                                    title: '确认操作',
+                                                    content: '更换类目后，编辑过的商品信息会丢失，确定更换?',
+                                                    onOk: () => {
+                                                        setShowCategorySelect(true);
+                                                    }
+                                                });
+                                            }}>
+                                            切换类目
+                                        </Button>
+                                    </Space>
+                                </Card>
+                                <Card hoverable className={styles['product-form']}>
+                                    <ProductEditForm
+                                        form={form}
+                                        shopId={shopId}
+                                        platformId={platformId}
+                                        categoryId={categoryId}
+                                        formSchema={formSchema}
+                                        formData={formData}
+                                        originalSaleProps={origProdInfo?.saleProp}
+                                    />
+                                </Card>
                                 <div className={styles['product-floor']}>
                                     <Card>
                                         <Space size={'large'}
@@ -242,8 +240,7 @@ function ProductEditPage() {
                                         </Space>
                                     </Card>
                                 </div>
-                            </>
-                        }
+                            </>}
                     </div>
                 }
             </div>
