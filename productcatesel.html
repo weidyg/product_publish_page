@@ -8,12 +8,16 @@
 </head>
 
 <body>
-  <div id="productcategoryselect"></div>
+  <div id="productcatesel"></div>
   <script src="/assets/js/post.js"> </script>
   <script>
     const baseUrl = 'http://localhost:49007/api/services/app/ProductPublish/';
     const productEditUrls = {
       GetCategorys: baseUrl + "GetCategorys",
+    }
+
+    function getCategoryConfig() {
+      return { title: '请选择类目', categoryNamePath: '' };
     }
 
     function getCategorys(shopId, parentId) {
@@ -27,7 +31,7 @@
       return Promise.resolve();
     }
   </script>
-  <script type="module" src="/src/pages/product/category-select/main.tsx"></script>
+  <script type="module" src="/src/pages/product/categorySelect/main.tsx"></script>
 </body>
 
 </html>

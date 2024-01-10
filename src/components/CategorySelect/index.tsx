@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Button, Card, Result, Spin } from "@arco-design/web-react";
+import { IconFaceFrownFill } from "@arco-design/web-react/icon";
 import useMergeProps from "@arco-design/web-react/es/_util/hooks/useMergeProps";
 import { debounce } from "lodash";
 import styles from './style/index.module.less';
 import { CateData, CateSelectData, Category, CategorySelectProps } from "./interface";
 import { flattenTree } from "./until";
 import CateList from "./list";
-import { IconFaceFrownFill } from "@arco-design/web-react/icon";
 
 const defaultProps: CategorySelectProps = {};
 function CategorySelect(baseProps: CategorySelectProps) {
@@ -169,6 +169,5 @@ function CategorySelect(baseProps: CategorySelectProps) {
     </Card >
   );
 }
-
-
+export type {Category}
 export default CategorySelect;

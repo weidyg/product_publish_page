@@ -1,32 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import { Affix, Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin, Typography } from "@arco-design/web-react";
-import Paragraph from "@arco-design/web-react/es/Typography/paragraph";
+import { Affix, Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
 import { ProductEditDataProps } from "./interface";
 import styles from './style/index.module.less'
-import { loadProductEditData, saveProductEditData } from "../../../components/product-edit/api";
+import { getCategorys, loadProductEditData, saveProductEditData } from "../../../components/product-edit/api";
 import ProductEditForm from "../../../components/product-edit";
 import LeftProdInfo from "../../../components/product-edit/left-info";
 import CategorySelect from "../../../components/CategorySelect";
 import { Category } from "../../../components/CategorySelect/interface";
-import { flattenTree } from "../../../components/CategorySelect/until";
-import { getCategoryTree, getCategorys } from "../../../components/CategorySelect/api";
 import { IconCheckCircleFill, IconFaceFrownFill, IconInfoCircleFill, } from "@arco-design/web-react/icon";
 import { formatDate } from "../../../components/product-edit/until";
 import classNames from "@arco-design/web-react/es/_util/classNames";
 
 function ProductEditPage() {
     const [form] = Form.useForm();
-
-
     const [reload, setReload] = useState(false);
     const [loading, setLoading] = useState(true);
     const [saveLoading, setSaveLoading] = useState(false);
     const [publishLoading, setPublishLoading] = useState(false);
     const [loadErrMsg, setLoadErrMsg] = useState<string>();
     const [productEditData, setProductEditData] = useState<ProductEditDataProps>();
-
     const [showCategorySelect, setShowCategorySelect] = useState(false);
-    const [category, setCategory] = useState<{ pId: number, data: any }>();
 
     const { formSchema = [], formData = {}, origProdInfo,
         itemId, platformId, shopId, categoryId
@@ -39,21 +32,7 @@ function ProductEditPage() {
         loadInitData();
     }, [])
 
-    const loadAllCategory = async (): Promise<Category[]> => {
-        const cateTreeData = await getCategoryTree(platformId!);
-        const flattenData = flattenTree(cateTreeData, 0);
-        return flattenData;
-    }
-
     const loadCateList = async function (parentId?: string | number): Promise<Category[] | undefined> {
-        // const { pId, data } = category || {};
-        // if (!data || pId != platformId) {
-        //     const flattenData = await loadAllCategory();
-        //     setCategory({ pId: platformId!, data: flattenData });
-        //     return flattenData?.filter((f: any) => f.parentId == parentId) || [];
-        // } else {
-        //     return data?.filter((f: any) => f.parentId == parentId) || [];
-        // }
         const cateData = await getCategorys(shopId!, parentId!);
         return cateData;
     };
