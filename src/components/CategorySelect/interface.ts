@@ -28,6 +28,7 @@ export interface CategoryGroup {
 export interface CategoryItemProps extends Category {
     loading?: boolean,
     active?: boolean,
+    disabled?: boolean,
     onClick: (id: string | number) => any,
 }
 export interface CategoryListProps {

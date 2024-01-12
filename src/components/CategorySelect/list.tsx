@@ -7,12 +7,15 @@ import { memo, useMemo, useState } from 'react';
 import { groupShowData } from './until';
 
 function CateItem(props: CategoryItemProps) {
-    const { id, name, hasChild, loading, active, onClick } = props;
+    const { id, name, hasChild, loading, active, disabled, onClick } = props;
     function handleClick() {
-        onClick && onClick(id);
+        if (!disabled) { onClick && onClick(id); }
     }
-    return <li onClick={handleClick}
-        className={classNames({ [styles['active']]: active })}>
+    return <li className={classNames({
+        [styles['active']]: active,
+        [styles['disabled']]: disabled
+    })}
+        onClick={handleClick}>
         <Space size={0} align={'center'} className={styles['item']}>
             <span className={classNames(styles['label'], { [styles['hasChild']]: hasChild !== false })}>{name}</span>
             <span>{(hasChild !== false) && (loading ? <IconLoading /> : <IconRight />)}</span>
@@ -58,6 +61,7 @@ function CateList(props: CategoryListProps) {
                                 return <CateItem key={'ci' + i} {...cate}
                                     loading={_loading}
                                     active={_active}
+                                    disabled={loading}
                                     onClick={(id) => {
                                         handleItemClick(cate);
                                     }}
