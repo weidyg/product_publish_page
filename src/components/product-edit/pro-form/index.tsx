@@ -2,7 +2,7 @@
 
 import { ReactElement, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Form, Space, Input, Select, InputNumber, Radio, FormItemProps, Grid, Link, Button, Checkbox, Message, Spin, Empty, Alert, InputProps, Card, Typography, Tooltip } from '@arco-design/web-react';
-import { IconDelete, IconPlus, IconRefresh } from '@arco-design/web-react/icon';
+import { IconDelete, IconPlus, IconRefresh, IconStar } from '@arco-design/web-react/icon';
 import { isObject, isString, isUndefined } from '@arco-design/web-react/es/_util/is';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import cs from '@arco-design/web-react/es/_util/classNames';
@@ -18,6 +18,7 @@ import styles from './index.module.less'
 import { MyFormItemProps } from '../interface';
 import { ProductEditContext } from '..';
 import ImagesEditor from './ImagesEditor';
+import classNames from '@arco-design/web-react/es/_util/classNames';
 
 function ProFormList(props: MyFormItemProps) {
     const { type, label, name, namePath, value,
@@ -256,10 +257,10 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
     const {
         type, label = '', name, namePath, value, tags = [],
         optionAction, options = [], subItems = [], nestItems = [],
-        hide, tips, rules, readOnly, allowCustom,
+        hide, tips, rules, allowCustom, readOnly, isImportant,
         fieldName, noStyle, picSize, allowClear = true,
         valueType, salePropFieldName, parentLabel = '',
-        style, ...uiFormItemProps
+        className, style, ...uiFormItemProps
     } = props || {};
 
     const skuTableRef = useRef<any>();
@@ -276,15 +277,18 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
     const isComplexType = type == 'complex' || type == 'multiComplex';
     const _uiType = getUiTypeOrDefault(props);
     const _rules = getValiRules(rules);
+    const _required = rules?.required;
     const isPrice = name?.toLocaleLowerCase()?.includes('price');
     const inputNumberProps = {
         precision: isPrice ? 2 : undefined,
         step: isPrice ? 0.01 : undefined
     }
     const _labelArr = label?.replace('：', ':')?.split(':') || [];
-    const _label = label != parentLabel && <span title={label} style={{ marginTop: '10px' }}>
-        {_labelArr.length == 2 ? _labelArr[0] : label}
-    </span>;
+    const _label = label != parentLabel && (
+        <span title={label} style={{ marginTop: '10px' }}>
+            {_labelArr.length == 2 ? _labelArr[0] : label}
+        </span>
+    );
     // const { form } = Form.useFormContext();
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
@@ -304,6 +308,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                 ) : undefined;
                 const formItemProps: FormItemProps = {
                     ...uiFormItemProps,
+                    required: _required || isImportant,
                     label: _label,
                     rules: _rules,
                     disabled: readOnly,
@@ -312,6 +317,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     noStyle: noStyle,
                     extra: !isComplexType ? _extra : undefined,
                     style: subItems.length > 0 ? { ...style, marginBottom: '0px' } : { ...style },
+                    className: classNames(className, { [styles['important']]: !_required && isImportant })
                 }
                 const salePropValues = _.get(values, salePropFieldName!);
 

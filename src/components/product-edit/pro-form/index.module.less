@@ -10,6 +10,14 @@
     }
 }
 
+.important {
+    :global {
+        .@{prefix}-form-item-symbol {
+            color: rgb(var(--warning-6)) !important;
+        }
+    }
+}
+
 :global {
     .@{prefix}-input-group-wrapper {
         width: 100%;
@@ -17,7 +25,7 @@
         vertical-align: top;
         height: 34px;
     }
-    
+
     .@{prefix}-form-label-item>label {
         font-size: 14px;
         white-space: nowrap;
@@ -26,41 +34,5 @@
         /* text-overflow: ellipsis; */
         display: block;
         overflow: hidden;
-    }
-
-    // .@{prefix}-form-item {
-    //     margin-bottom: 18px;
-    // }
-    .w-e-bar {
-        background-color: var(--color-bg-2);
-        color: var(--color-text-2);
-    }
-
-    .w-e-bar-item .disabled:hover {
-        background-color: var(--color-bg-3);
-        color: var(--color-text-3);
-    }
-
-    .w-e-bar-item button:hover {
-        background-color: var(--color-bg-1);
-        color: var(--color-text-1);
-    }
-
-    .w-e-text-container {
-        background-color: var(--color-bg-2);
-        color: var(--color-text-2);
-    }
-
-    .w-e-select-list {
-        background-color: var(--color-bg-2);
-        border: 1px solid var(--color-border-2);
-    }
-
-    .w-e-select-list ul li:hover {
-        background-color: var(--color-bg-1);
-    }
-
-    .w-e-select-list ul .selected {
-        background-color: var(--color-bg-1);
     }
 }

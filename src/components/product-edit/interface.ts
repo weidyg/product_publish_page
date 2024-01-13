@@ -23,6 +23,7 @@ export type MyFormItemProps = {
 
     uiType?: FieldUiType;
     readOnly?: boolean;
+    isImportant?: boolean;
     allowCustom?: boolean;
     valueType?: FieldValueType;
 
