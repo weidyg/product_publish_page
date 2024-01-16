@@ -283,10 +283,11 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
         precision: isPrice ? 2 : undefined,
         step: isPrice ? 0.01 : undefined
     }
-    const _labelArr = label?.replace('：', ':')?.split(':') || [];
+    // const _labelArr = label?.replace('：', ':')?.split(':') || [];
     const _label = label != parentLabel && (
         <span title={label} style={{ marginTop: '10px' }}>
-            {_labelArr.length == 2 ? _labelArr[0] : label}
+            {label}
+            {/* {_labelArr.length == 2 ? _labelArr[0] : label} */}
         </span>
     );
     // const { form } = Form.useFormContext();
@@ -300,7 +301,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                     return <span style={{ display: 'none' }}></span>;
                 }
                 const tipValues = getTipValues(values) || [];
-                if (_labelArr.length == 2) { tipValues.unshift(_labelArr[1]) }
+                // if (_labelArr.length == 2) { tipValues.unshift(_labelArr[1]) }
                 const _extra = tipValues?.length > 0 ? tipValues.map((value: any, index: any) =>
                     index == 0
                         ? <span key={index} dangerouslySetInnerHTML={{ __html: value }} />
