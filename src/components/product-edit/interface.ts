@@ -97,3 +97,11 @@ export interface ProductEditFormProps {
         values: Array<string>;
     }>;
 }
+
+
+export type PublishProductJobProgress = {
+    progress: number,
+    message?: string,
+    dateTime?: string,
+    status: 'waiting' | 'executing' | 'succeeded' | 'failed',
+}

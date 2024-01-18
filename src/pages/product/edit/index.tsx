@@ -1,17 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { Affix, Button, Card, Form, Message, Modal, PageHeader, Result, Space, Spin } from "@arco-design/web-react";
+import { Affix, Button, Card, Form, Message, Modal, PageHeader, Progress, Result, Space, Spin } from "@arco-design/web-react";
 import { ProductEditDataProps } from "./interface";
 import styles from './style/index.module.less'
-import { getCategorys, loadProductEditData, saveProductEditData } from "../../../components/product-edit/api";
+import { getCategorys, getPublishProductJobInfo, loadProductEditData, publishProductWithJob, saveProductEditData } from "../../../components/product-edit/api";
 import ProductEditForm from "../../../components/product-edit";
 import LeftProdInfo from "../../../components/product-edit/left-info";
 import CategorySelect from "../../../components/CategorySelect";
 import { Category } from "../../../components/CategorySelect/interface";
-import { IconCheckCircleFill, IconFaceFrownFill, IconInfoCircleFill, } from "@arco-design/web-react/icon";
+import { IconCheckCircleFill, IconCloseCircleFill, IconExclamationCircleFill, IconFaceFrownFill, IconInfoCircleFill } from "@arco-design/web-react/icon";
 import { formatDate } from "../../../components/product-edit/until";
 import classNames from "@arco-design/web-react/es/_util/classNames";
+import { ModalReturnProps } from "@arco-design/web-react/es/Modal/interface";
+import { ConfirmProps } from "@arco-design/web-react/es/Modal/confirm";
 
 function ProductEditPage() {
+    const config = (window as any)?.prodEditConfig || {};
+
     const [form] = Form.useForm();
     const [reload, setReload] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -37,6 +41,72 @@ function ProductEditPage() {
         return cateData;
     };
 
+    let timer: any;
+    const progressModalIns = useRef<ModalReturnProps>();
+    const statusProgress = { waiting: 'normal', executing: 'normal', succeeded: 'success', failed: 'error' };
+    const statusTitles = { waiting: '等待发布', executing: '发布中', succeeded: '发布成功', failed: '发布失败' };
+    const statusIcons = { waiting: <IconExclamationCircleFill />, executing: <IconInfoCircleFill />, succeeded: <IconCheckCircleFill />, failed: <IconCloseCircleFill />, };
+    function startPublishProgress(jobkey: string) {
+        timer = setInterval(async () => {
+            const publishProgress = await getPublishProductJobInfo(jobkey);
+            const { progress, message, status, dateTime } = publishProgress || {};
+            let confirmProps: ConfirmProps = {
+                closable: true,
+                maskClosable: false,
+                unmountOnExit: true,
+                title: statusTitles[status],
+                icon: statusIcons[status],
+                className:styles['product-modal'],
+                content: <span className={styles['product-modal-content']}>
+                    <Progress animation buffer size='large' percent={progress} status={statusProgress[status] as any} />
+                    <span style={{ color: 'var(--color-text-3)' }}>{message}</span>
+                </span>,
+                footer: progress >= 100 ? undefined : null,
+            };
+            updatePublishLoading(confirmProps);
+            if (progress >= 100) {
+                clearInterval(timer);
+                timer = null;
+            }
+        }, 1000);
+    }
+    function showPublishLoading(publish: boolean) {
+        let confirmProps = {
+            maskClosable: false,
+            unmountOnExit: true,
+            title: `保存${publish ? '并发布' : ''}`,
+            icon: <IconInfoCircleFill />,
+            className:styles['product-modal'],
+            content: <span style={{ display: 'block', width: '100%', textAlign: 'center' }}>
+                <Spin size={14} style={{ marginRight: '12px' }} />
+                <span>正在保存{publish ? '并发布至平台' : ''}中,请稍后...</span>
+            </span>,
+            footer: null,
+        }
+        updatePublishLoading(confirmProps);
+    }
+    function updatePublishLoading(confirmProps: ConfirmProps) {
+        confirmProps.afterClose = () => {
+            progressModalIns.current = undefined;
+            if (timer != null) {
+                clearInterval(timer);
+                timer = null;
+            }
+        };
+        if (progressModalIns.current) {
+            progressModalIns.current.update(confirmProps);
+        } else {
+            progressModalIns.current = Modal.info(confirmProps);
+        }
+    }
+    function closePublishLoading() {
+        if (progressModalIns.current) {
+            progressModalIns.current.close();
+            progressModalIns.current = undefined;
+        }
+    }
+
+
     const loadInitData = async (categoryId?: string, shopId?: string) => {
         setLoading(true);
         setShowCategorySelect(false);
@@ -58,23 +128,32 @@ function ProductEditPage() {
         }
     }
 
+    const isWithJob = config.isWithJob !== false;
     const handleSave = async (id?: string | number, publish?: boolean) => {
         publish ? setPublishLoading(true) : setSaveLoading(true);
-        if (publish) { showPublishLoading(true); }
+        const _publish = (publish || false) && !isWithJob;
+        showPublishLoading(_publish);
         setTimeout(async () => {
             try {
                 const values = await form.validate();
                 try {
-                    await saveProductEditData(values, publish, id);
-                    console.log('values success', values);
-                    Message.success(`保存${publish ? '并发布' : ''}成功！`);
+                    await saveProductEditData(values, _publish, id);
                     setLastModificationTime(formatDate(new Date()));
+                    if (publish && isWithJob) {
+                        const jobkey = await publishProductWithJob(id);
+                        startPublishProgress(jobkey);
+                    } else {
+                        closePublishLoading();
+                        Message.success(`保存${_publish ? '并发布' : ''}成功！`);
+                    }
                 } catch (error: any) {
-                    Modal.error({
+                    updatePublishLoading({
                         maskClosable: false,
                         unmountOnExit: true,
                         title: `保存${publish ? '并发布' : ''}失败`,
+                        icon: statusIcons['failed'],
                         content: <div dangerouslySetInnerHTML={{ __html: error?.message }} />,
+                        footer: undefined,
                     });
                 }
             } catch (error: any) {
@@ -83,35 +162,13 @@ function ProductEditPage() {
                 let labels: any[] = keys.length > 0 ? formSchema.filter(m => keys.includes(m.name!))?.map(m => m.label) || [] : [];
                 Message.error(`检测到 [ ${labels?.join('、')} ] 有必填项未填或格式错误，请补充后重新保存！`);
             } finally {
-                showPublishLoading(false);
                 setPublishLoading(false);
                 setSaveLoading(false);
+                if (!isWithJob) { closePublishLoading(); }
             }
         }, 100);
     }
 
-    const modalIns = useRef<any>();
-    function showPublishLoading(publishLoading: boolean) {
-        if (publishLoading === true && !modalIns?.current) {
-            modalIns.current = Modal.confirm({
-                maskClosable: false,
-                unmountOnExit: true,
-                title: '保存并发布',
-                icon: <IconInfoCircleFill />,
-                content: <span style={{ display: 'block', width: '100%', textAlign: 'center' }}>
-                    <Spin size={14} style={{ marginRight: '12px' }} />
-                    <span>正在保存并发布至平台中,请稍后...</span>
-                </span>,
-                footer: null,
-            });
-        } else if (publishLoading === false && modalIns?.current) {
-            modalIns.current.close();
-            modalIns.current = null;
-        }
-    }
-
-
-    const config = (window as any)?.prodEditConfig || {};
     return (<>
         {origProdInfo && <Affix offsetTop={50}>
             <LeftProdInfo data={origProdInfo} />

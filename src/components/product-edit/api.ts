@@ -1,17 +1,19 @@
 import { ProductEditDataProps } from "../../pages/product/edit/interface";
 import { Category } from "../CategorySelect";
-import { MyFormItemOption } from "./interface";
+import { MyFormItemOption, PublishProductJobProgress } from "./interface";
 
 declare global {
     interface Window {
         loadProductEditData: any,
         saveProductEditData: any,
-        getRemoteOptions: any, 
+        getRemoteOptions: any,
         getCategorys: any,
+        getPublishProductJobInfo: any,
+        publishProductWithJob: any,
     }
 }
 
-export async function loadProductEditData(categoryId?:string, shopId?:string): Promise<ProductEditDataProps> {
+export async function loadProductEditData(categoryId?: string, shopId?: string): Promise<ProductEditDataProps> {
     return await window.loadProductEditData(categoryId, shopId);
 }
 
@@ -25,4 +27,13 @@ export async function getRemoteOptions(shopId?: number, categoryId?: string, opt
 
 export async function getCategorys(shopId?: number, parentId?: string | number): Promise<Category[]> {
     return await window.getCategorys(shopId, parentId);
+}
+
+
+export async function getPublishProductJobInfo(jobkey: string): Promise<PublishProductJobProgress> {
+    return await window.getPublishProductJobInfo(jobkey);
+}
+
+export async function publishProductWithJob(id?: string | number): Promise<string> {
+    return await window.publishProductWithJob(id);
 }

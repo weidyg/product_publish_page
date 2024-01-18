@@ -75,6 +75,33 @@
 
     }
 
+    &-modal {
+        :global {
+            .@{prefix}-modal-header {
+                margin-bottom: 12px;
+            }
+
+            .@{prefix}-modal-footer {
+                margin-top: 12px;
+            }
+        }
+
+        &-content {
+            :global {
+
+                .@{prefix}-progress-line-wrapper,
+                .@{prefix}-progress-steps-wrapper {
+                    height: initial !important;
+                }
+
+                .@{prefix}-progress-line-text {
+                    font-size: 12px;
+                    margin-left: 12px;
+                }
+            }
+        }
+    }
+
     :global {
         .@{prefix}-spin-children:after {
             content: "";

@@ -15,7 +15,7 @@
 
         var model = { id: null, shopId: null, origSpuId: null, type: null, publish: null, tenantId: 0, encAuthToken: null };
         //model.encAuthToken = "wNYmO41/48SHNstaLVXxHCCre29BZQl1NhC6NM3R3rzpXtPQxVzH6jEzA/QhXFN5tu6Fk7pO53uppm1mVXMZgxbyRVz26dnepi/FyB6axBY+6gq1GL+uRQgoiFUCjRN2p8w6LevViwKlHyWZZJZO1DGVSjAi1m2U+og9pkHw9/QS8262ijSox6246WlMmqH+jzjkY9YAE1u0rCshwLiHjLZRYER3g6up6TBgX2W1t0lIpoTcFbAU4Haohb1snNa2+fQM/qmrgl9UnflrCqHWkymB9w+IkVTRKUOOava9w/sFkiojesclfXqvNdp11dHFM+WqXT58KHUFDyShiLCShQMQrd3dhUSaTBML98Fev3cjAfGvHPCL+ZrIM7PLBuZxRqBO+x7uUqmLSeimMerAv50F2rtEjn0ceSHUVtE3rkTmUzbCvAO8mlADbjLcsfKCnJreUfLkL1UN50Weny1vzatv3+F86b/JrbNlQnZQnuwy5Hb4GQpe5Igm4KLlnsetDb+sNJLfCo9hHXnhJIEy7MujExZwEXuf4qEqHklU0loQPpYvRgziJSIzJDbFMidBPes9cjBjhGS7PUNVLoFx74qKXTBC1mkW+L+g1VXDAno=";
-        var prodEditConfig = { btn: { publish: model.publish } };
+        var prodEditConfig = { btn: { publish: model.publish }, isWithJob: true };
 
         function getDataInput(id, categoryId, shopId, origSpuId, type) {
             id = id || model.id || getQueryString('id');
@@ -38,6 +38,8 @@
             getImagePageList: baseUrl + "GetImagePageList",
             saveUploadFileInfo: baseUrl + "SaveUploadFileInfo",
             uploadImages: "https://img.17qcc.com/picture/AsyncUpload",
+            publishProductWithJob: baseUrl + "PublishProductWithJob",
+            getPublishProductJobInfo: baseUrl + "GetPublishProductJobInfo",
         }
 
         function ConverData(data) {
@@ -71,6 +73,15 @@
             const data = { ItemId: id, IsPublish: publish, DataJson: JSON.stringify(dataJson) };
             return post(productEditUrls.saveData, data);
         }
+
+        function getPublishProductJobInfo(jobkey) {
+            return post(productEditUrls.getPublishProductJobInfo + '?jobkey=' + jobkey, {});
+        }
+        function publishProductWithJob(id) {
+            const data = { ItemId: id, SourceProductSpuId: 0, ShopId: 0, SelectPlatformCategoryId: null, };
+            return post(productEditUrls.publishProductWithJob, data);
+        }
+
 
         function getCategoryTree(platformId) {
             const data = { platformId };
