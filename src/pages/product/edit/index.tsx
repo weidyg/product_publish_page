@@ -56,7 +56,7 @@ function ProductEditPage() {
                 unmountOnExit: true,
                 title: statusTitles[status],
                 icon: statusIcons[status],
-                className:styles['product-modal'],
+                className: styles['product-modal'],
                 content: <span className={styles['product-modal-content']}>
                     <Progress animation buffer size='large' percent={progress} status={statusProgress[status] as any} />
                     <span style={{ color: 'var(--color-text-3)' }}>{message}</span>
@@ -76,7 +76,7 @@ function ProductEditPage() {
             unmountOnExit: true,
             title: `保存${publish ? '并发布' : ''}`,
             icon: <IconInfoCircleFill />,
-            className:styles['product-modal'],
+            className: styles['product-modal'],
             content: <span style={{ display: 'block', width: '100%', textAlign: 'center' }}>
                 <Spin size={14} style={{ marginRight: '12px' }} />
                 <span>正在保存{publish ? '并发布至平台' : ''}中,请稍后...</span>
@@ -148,6 +148,7 @@ function ProductEditPage() {
                     }
                 } catch (error: any) {
                     updatePublishLoading({
+                        closable: true,
                         maskClosable: false,
                         unmountOnExit: true,
                         title: `保存${publish ? '并发布' : ''}失败`,
@@ -160,11 +161,11 @@ function ProductEditPage() {
                 console.log('validate error', error?.errors);
                 const keys = Object.keys(error?.errors || {})?.map(m => m && m.split('.')[0]);
                 let labels: any[] = keys.length > 0 ? formSchema.filter(m => keys.includes(m.name!))?.map(m => m.label) || [] : [];
+                closePublishLoading();
                 Message.error(`检测到 [ ${labels?.join('、')} ] 有必填项未填或格式错误，请补充后重新保存！`);
             } finally {
                 setPublishLoading(false);
                 setSaveLoading(false);
-                if (!isWithJob) { closePublishLoading(); }
             }
         }, 100);
     }
