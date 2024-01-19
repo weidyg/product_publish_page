@@ -253,14 +253,14 @@ function FormInput(props: FormInputProps) {
 type UIFormItemProps = Omit<FormItemProps, 'rules' | 'label'>;
 
 export function ProFormItem(props: MyFormItemProps & UIFormItemProps
-    & { picSize?: 'mini', salePropFieldName?: string, parentLabel?: AnalyserNode }) {
+    & { picSize?: 'mini', salePropFieldName?: string, parentLabel?: AnalyserNode, span?: number }) {
     const {
         type, label = '', name, namePath, value, tags = [],
         optionAction, options = [], subItems = [], nestItems = [],
         hide, tips, rules, allowCustom, readOnly, isImportant,
         fieldName, noStyle, picSize, allowClear = true,
         valueType, salePropFieldName, parentLabel = '',
-        className, style, ...uiFormItemProps
+        span, className, style, ...uiFormItemProps
     } = props || {};
 
     const skuTableRef = useRef<any>();
@@ -322,7 +322,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                 }
                 const salePropValues = _.get(values, salePropFieldName!);
 
-                return _uiType == 'input' ? (
+                const FormComponent = _uiType == 'input' ? (
                     <FormItem {...formItemProps} >
                         <FormInput allowClear={allowClear}
                             placeholder={`请输入${label}`}
@@ -418,32 +418,30 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                             {FieldNames.cateProp(tags) ? (
                                 <Card style={{ background: 'var(--color-fill-1)', margin: '0 0 18px 0' }}
                                     bodyStyle={{ padding: '16px 16px 0', maxWidth: "950px", margin: 'auto' }}>
-                                    <Grid.Row >
+                                    <div className={styles['cate-prop-row']} >
                                         {subItems?.filter(f => !['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
                                             return (
-                                                <Grid.Col span={12} key={si}>
-                                                    <ProFormItem key={si} {...sm}
-                                                        labelAlign='right'
-                                                        layout={'horizontal'}
-                                                        className={styles['form-label-ellipsis']}
-                                                        uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
-                                                    />
-                                                </Grid.Col>
+                                                <ProFormItem key={si} {...sm}
+                                                    span={12}
+                                                    labelAlign='right'
+                                                    layout={'horizontal'}
+                                                    className={styles['form-label-ellipsis']}
+                                                    uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
+                                                />
                                             )
                                         })}
                                         {subItems?.filter(f => ['complex', 'multiComplex'].includes(f.type!)).map((sm, si) => {
                                             return (
-                                                <Grid.Col span={24} key={si}>
-                                                    <ProFormItem key={si} {...sm}
-                                                        labelAlign='right'
-                                                        layout={'horizontal'}
-                                                        className={styles['form-label-ellipsis']}
-                                                        uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
-                                                    />
-                                                </Grid.Col>
+                                                <ProFormItem key={si} {...sm}
+                                                    span={24}
+                                                    labelAlign='right'
+                                                    layout={'horizontal'}
+                                                    className={styles['form-label-ellipsis']}
+                                                    uiType={sm.type == 'singleCheck' ? 'select' : sm.uiType}
+                                                />
                                             )
                                         })}
-                                    </Grid.Row>
+                                    </div>
                                 </Card>
                             ) : FieldNames.saleProp(tags) ? (
                                 <Card bordered={false} bodyStyle={{ padding: '6px 0 0', maxWidth: "950px", margin: 'auto' }}>
@@ -490,6 +488,15 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                         )}
                     </Form.Item>
                 ) : <div>---{label}---</div>;
+
+                const _span = span ? `${(span || 0) / 24 * 100}%` : undefined;
+                return (_span
+                    ? <div className={styles['cate-prop-col']}
+                        style={{ width: _span, flex: `0 0 ${_span}` }}>
+                        {FormComponent}
+                    </div>
+                    : <>{FormComponent}</>
+                )
             }}
         </Form.Item >
     )
