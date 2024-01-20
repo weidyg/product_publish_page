@@ -303,8 +303,12 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
             {(values: any) => {
                 const _v = _.get(values, _fieldName);
+
                 const _hide = isHide(values);
-                if (_hide === true) { if (_v) { clearFieldValue(); } return; }
+                if (_hide === true) {
+                    if (_v) { clearFieldValue(); }
+                    return;
+                }
 
                 let options = propOptions;
                 if (options.length > 0 && options.some(s => s.hide)) {
@@ -313,6 +317,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                         clearFieldValue();
                     }
                 }
+
                 const tipValues = getTipValues(values) || [];
                 // if (_labelArr.length == 2) { tipValues.unshift(_labelArr[1]) }
                 const _extra = tipValues?.length > 0 ? tipValues.map((value: any, index: any) =>
