@@ -58,7 +58,7 @@ function ProductEditPage() {
                 icon: statusIcons[status],
                 className: styles['product-modal'],
                 content: <span className={styles['product-modal-content']}>
-                    <Progress animation buffer size='large' percent={progress} status={statusProgress[status] as any} />
+                    <Progress animation size='large' percent={progress} status={statusProgress[status] as any} />
                     <span style={{ color: 'var(--color-text-3)' }}>{message}</span>
                 </span>,
                 footer: progress >= 100 ? undefined : null,

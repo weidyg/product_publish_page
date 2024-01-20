@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { isArray, isNumber, isString } from "@arco-design/web-react/es/_util/is";
 import { ReactNode } from "react";
-import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemProps, MyFormRules } from "./interface";
+import { FieldTag, FieldUiType, MyFormDependGroup, MyFormDependRules, MyFormItemOption, MyFormItemProps, MyFormRules } from "./interface";
 
 export function isNumberOrStrNumber(obj: any) {
     return isNumber(obj) || !isNaN(Number(obj))
@@ -140,7 +140,7 @@ export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): b
     if (!operator || (expressLength == 0 && groupLength == 0)) { return undefined }
     values = values || {};
     let _isMatcheds: (boolean | undefined)[] = [];
-    // let log = "";
+    let log = "";
     for (let i = 0; i < expressLength; i++) {
         const exp = expresses[i];
         const _val = getDeepValue(values, exp.fieldName, exp.namePath);
@@ -149,7 +149,7 @@ export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): b
         } else if (exp.symbol == '==') {
             _isMatcheds.push(_val == exp.fieldValue);
         }
-        // log += `\n ${exp.fieldName}:${exp.fieldValue} ${exp.symbol} ${_val} `;
+        log += `\n ${exp.fieldName}:${_val} ${exp.symbol} ${exp.fieldValue} `;
     }
 
     for (let j = 0; j < expressLength; j++) {
@@ -167,7 +167,7 @@ export function checkDependGroup(dependGroup: MyFormDependGroup, values: any): b
             isMatched = _isMatcheds.some(e => e === true);
         }
     }
-    // console.log("eee", log, isMatched, operator, _isMatcheds);
+    //  console.log("checkDependGroup", log, isMatched, operator, _isMatcheds, values); 
     return isMatched;
 }
 
@@ -316,6 +316,46 @@ export function getTips(tipRules: MyFormDependRules[]): [
             if (value) { return value }
         }));
     };
+    return [shouldUpdate, getValues];
+}
+
+export function getOptions(options: MyFormItemOption[]): [
+    (prev: any, next: any, info: any) => boolean,
+    (values: any) => MyFormItemOption[]
+] {
+    let shouldUpdateList: Array<(prev: any, next: any, info: any) => boolean> = [];
+    let getValuefunList: Array<[(values: any) => any, MyFormItemOption]> = [];
+
+    options?.forEach(option => {
+        const hideRule = option?.hide;
+        if (hideRule) {
+            const [_shouldUpdate, _getValue] = checkDependRules(hideRule || {});
+            shouldUpdateList.push(_shouldUpdate);
+            getValuefunList.push([_getValue, option]);
+        } else {
+            getValuefunList.push([(values: any) => false, option]);
+        }
+    });
+
+    const shouldUpdate = (prev: any, next: any, info: any) => {
+        for (let index = 0; index < shouldUpdateList.length; index++) {
+            const fun = shouldUpdateList[index];
+            const value = fun && fun(prev, next, info);
+            if (value == true) { return true; }
+        }
+        return false;
+    };
+
+    const getValues = (values: any, b?: any): MyFormItemOption[] => {
+        if (shouldUpdateList.length == 0) { return options; }
+        let _options: MyFormItemOption[] = [];
+        getValuefunList.map(([fun, option], index) => {
+            const value = fun && fun(values);
+            if (value !== true) { _options.push(option); }
+        });
+        return _options;
+    };
+
     return [shouldUpdate, getValues];
 }
 

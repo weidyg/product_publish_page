@@ -8,7 +8,7 @@ import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import cs from '@arco-design/web-react/es/_util/classNames';
 import _, { debounce } from 'lodash';
 import { ErrorBoundary } from 'react-error-boundary';
-import { FieldNames, checkDependRules, getStringLength, getTips, getUiTypeOrDefault, getValiRules, isNumberOrStrNumber, sliceString } from '../until';
+import { FieldNames, checkDependRules, getOptions, getStringLength, getTips, getUiTypeOrDefault, getValiRules, isNumberOrStrNumber, sliceString } from '../until';
 import SalePropFormItem from '../sale-prop/SalePropFormItem';
 import SkuEditableTable from '../sku-editable-table';
 import ImageUpload from '../../ImageUpload';
@@ -266,12 +266,16 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
     const skuTableRef = useRef<any>();
     const _fieldName = `${fieldName || namePath?.join('.') || name}`;
 
+    const [opsShouldUpdate, getOpsValues] = getOptions(options || []);
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
     const [disShouldUpdate, isHide] = checkDependRules(hide || {});
+
     const shouldUpdate = (prev: any, next: any, info: any) => {
         if (JSON.stringify(prev) == JSON.stringify(next)) { return false; }
-        let _shouldUpdate = tipShouldUpdate(prev, next, info) || disShouldUpdate(prev, next, info)
-            || FieldNames.sku(tags) || FieldNames.saleProp(tags);
+        let _shouldUpdate = FieldNames.sku(tags) || FieldNames.saleProp(tags)
+            || tipShouldUpdate(prev, next, info)
+            || disShouldUpdate(prev, next, info)
+            || opsShouldUpdate(prev, next, info);
         return _shouldUpdate!;
     }
     const isComplexType = type == 'complex' || type == 'multiComplex';
@@ -290,16 +294,21 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
             {/* {_labelArr.length == 2 ? _labelArr[0] : label} */}
         </span>
     );
-    // const { form } = Form.useFormContext();
+    const { form } = Form.useFormContext();
+    const clearFieldValue = () => {
+        setTimeout(() => { form?.setFieldValue(_fieldName, undefined); }, 10);
+    }
+    
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
             {(values: any) => {
-                const _hide = isHide(values) === true;
-                if (_hide) {
-                    // console.log('_fieldName', _fieldName);
-                    // form.setFieldValue(_fieldName!, undefined);
-                    return <span style={{ display: 'none' }}></span>;
+                const _hide = isHide(values);
+                if (_hide === true) {
+                    const _v = _.get(values, _fieldName);
+                    if (_v) { clearFieldValue(); }
+                    return <></>;
                 }
+                const options = getOpsValues(values) || [];
                 const tipValues = getTipValues(values) || [];
                 // if (_labelArr.length == 2) { tipValues.unshift(_labelArr[1]) }
                 const _extra = tipValues?.length > 0 ? tipValues.map((value: any, index: any) =>
@@ -499,5 +508,6 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
                 )
             }}
         </Form.Item >
+
     )
 }

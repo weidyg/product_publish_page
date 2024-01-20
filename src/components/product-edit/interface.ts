@@ -3,10 +3,8 @@ import { FormInstance } from "@arco-design/web-react";
 export type MyFormItemOption = {
     label: string;
     value: string;
-    group?: {
-        label?: string;
-        value?: string;
-    }
+    group?: { label?: string; value?: string; },
+    hide?: MyFormDependRules;
 }
 export type MyFormItemProps = {
     type?: FormItemType;
