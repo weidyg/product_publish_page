@@ -256,7 +256,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
     & { picSize?: 'mini', salePropFieldName?: string, parentLabel?: AnalyserNode, span?: number }) {
     const {
         type, label = '', name, namePath, value, tags = [],
-        optionAction, options = [], subItems = [], nestItems = [],
+        optionAction, options: propOptions = [], subItems = [], nestItems = [],
         hide, tips, rules, allowCustom, readOnly, isImportant,
         fieldName, noStyle, picSize, allowClear = true,
         valueType, salePropFieldName, parentLabel = '',
@@ -266,7 +266,7 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
     const skuTableRef = useRef<any>();
     const _fieldName = `${fieldName || namePath?.join('.') || name}`;
 
-    const [opsShouldUpdate, getOpsValues] = getOptions(options || []);
+    const [opsShouldUpdate, getOpsValues] = getOptions(propOptions || []);
     const [tipShouldUpdate, getTipValues] = getTips(tips || []);
     const [disShouldUpdate, isHide] = checkDependRules(hide || {});
 
@@ -298,17 +298,21 @@ export function ProFormItem(props: MyFormItemProps & UIFormItemProps
     const clearFieldValue = () => {
         setTimeout(() => { form?.setFieldValue(_fieldName, undefined); }, 10);
     }
-    
+
     return (
         <Form.Item noStyle shouldUpdate={shouldUpdate} >
             {(values: any) => {
+                const _v = _.get(values, _fieldName);
                 const _hide = isHide(values);
-                if (_hide === true) {
-                    const _v = _.get(values, _fieldName);
-                    if (_v) { clearFieldValue(); }
-                    return <></>;
+                if (_hide === true) { if (_v) { clearFieldValue(); } return; }
+
+                let options = propOptions;
+                if (options.length > 0 && options.some(s => s.hide)) {
+                    options = getOpsValues(values) || [];
+                    if (options.every(e => e.value !== _v)) {
+                        clearFieldValue();
+                    }
                 }
-                const options = getOpsValues(values) || [];
                 const tipValues = getTipValues(values) || [];
                 // if (_labelArr.length == 2) { tipValues.unshift(_labelArr[1]) }
                 const _extra = tipValues?.length > 0 ? tipValues.map((value: any, index: any) =>
