@@ -4,7 +4,6 @@ import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import React, { useState, useEffect, useContext } from 'react';
 import { Table, Grid, Button, Card, Spin, Message, Modal, Space, Skeleton, Result } from '@arco-design/web-react';
 import { ColumnProps } from '@arco-design/web-react/es/Table';
-import { SelectProps } from '@arco-design/web-react/es/Select/interface';
 import ProdItem from './prod-item';
 import { getSysSkus, loadProductInfo, saveSpuInfo, sysSpuSearch } from './api';
 import classNames from '@arco-design/web-react/es/_util/classNames';

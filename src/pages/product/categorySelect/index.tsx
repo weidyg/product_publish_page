@@ -1,7 +1,4 @@
-import { createRoot } from "react-dom/client";
 import CategorySelect, { Category } from "../../../components/CategorySelect";
-import App from "../../../App";
-
 
 declare global {
     interface Window {
