@@ -11,7 +11,57 @@
   <div id="wmsrateedit"></div>
   <script src="/assets/js/post.js"> </script>
   <script>
-   
+
+    const baseUrl = 'http://localhost:49050/api/services/app/RateConfig/';
+    const productEditUrls = {
+      loadData: baseUrl + "GetPolicyById",
+      createPolicy: baseUrl + "CreatePolicy",
+      updatePolicy: baseUrl + "UpdatePolicy",
+    }
+
+    const options = {
+      stores: [
+        { label: '奇门正式测试', value: 1471 },
+        { label: '青创网A099仓', value: 1545 },
+        { label: '青创网A100仓', value: 1659 },
+      ],
+      operateTypes: [
+        { label: '入库', value: 10 },
+        { label: '出库', value: 20 },
+      ],
+      expenseTypes: [
+        { label: '快递费', value: 1 },
+        { label: '操作费', value: 2 },
+        { label: '物料费', value: 3 },
+        { label: '储存费', value: 4 },
+      ],
+      calculateRules: [
+        { label: '固定费用', value: 10 },
+        { label: '数量区间', value: 20 },
+        { label: '重量区间', value: 30 },
+      ],
+    }
+
+    function getRateConfigOptions() {
+      return Promise.resolve(options);
+    }
+
+    function loadRateConfigPolicy(id) {
+      id = id || getQueryString('id');
+      if (id > 0) {
+        var input = { id: id, includeDetails: true }
+        return post(productEditUrls.loadData, input);
+      }
+      return Promise.resolve({});
+    }
+
+    function saveRateConfigPolicy(value) {
+      var url = value.id > 0
+        ? productEditUrls.updatePolicy
+        : productEditUrls.createPolicy;
+      return post(url, value);
+    }
+
   </script>
   <script type="module" src="/src/pages/wms/rateConfigPolicy/edit/main.tsx"></script>
 </body>

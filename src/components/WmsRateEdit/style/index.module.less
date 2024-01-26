@@ -3,5 +3,47 @@
 @wre-prefix-cls: ~'wre';
 
 .@{wre-prefix-cls} {
-  
+    &-label {
+        color: var(--color-text-2);
+        white-space: nowrap;
+    }
+
+    &-layout {
+        height: 100vh;
+        overflow: hidden;
+
+        :global {
+            .@{prefix}-select-disabled .@{prefix}-select-view {
+                background-color: inherit;
+            }
+
+            .@{prefix}-input-inner-wrapper-disabled {
+                background-color: inherit;
+            }
+        }
+    }
+
+    &-content {
+        height: calc(100vh - 60px);
+        // overflow: hidden;
+
+        &-top {
+            padding: 8px 12px 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        &-middle {
+            padding: 8px 12px;
+            overflow: auto; 
+        }
+    }
+
+    &-footer {
+        height: 60px;
+        border-top: 1px solid var(--color-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }

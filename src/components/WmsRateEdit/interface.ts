@@ -1,13 +1,23 @@
 
 export interface WmsRateEditProps {
-    stores: Array<{ label: string, value: number }>,
-    expenseTypes: Array<{ label: string, value: number }>,
-    calculateRules: Array<{ label: string, value: number }>,
-    operateTypes: Array<{ label: string, value: number }>,
-
+    options?: WmsRateOptions,
     defaultValue?: RateConfigPolicy,
     value?: RateConfigPolicy,
     onChange?: (value: RateConfigPolicy) => void | Promise<any>,
+    onSubmit?: (value: RateConfigPolicy) => void | Promise<any>,
+    convertType: (calculateRule: number, expenseType: number) => {
+        isFixedFee: boolean;
+        isIntervalFee: boolean;
+        isWeight: boolean;
+        isStorageFee: boolean;
+    }
+}
+
+export interface WmsRateOptions {
+    stores?: Array<{ label: string, value: number }>,
+    expenseTypes?: Array<{ label: string, value: number }>,
+    calculateRules?: Array<{ label: string, value: number }>,
+    operateTypes?: Array<{ label: string, value: number }>,
 }
 
 export interface RateConfigPolicy {
