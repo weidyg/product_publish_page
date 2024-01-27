@@ -19,6 +19,13 @@
       updatePolicy: baseUrl + "UpdatePolicy",
     }
 
+    const convertRateConfigType = (calculateRule, expenseType) => {
+      const isFixedFee = calculateRule == 10;
+      const isIntervalFee = (calculateRule >= 0 && calculateRule != 10);
+      const isWeight = calculateRule == 30;
+      const isStorageFee = expenseType == 4;
+      return { isFixedFee, isIntervalFee, isWeight, isStorageFee }
+    }
     const options = {
       stores: [
         { label: '奇门正式测试', value: 1471 },
@@ -41,7 +48,6 @@
         { label: '重量区间', value: 30 },
       ],
     }
-
     function getRateConfigOptions() {
       return Promise.resolve(options);
     }
@@ -59,6 +65,7 @@
       var url = value.id > 0
         ? productEditUrls.updatePolicy
         : productEditUrls.createPolicy;
+      value.includeDetails = true;
       return post(url, value);
     }
 

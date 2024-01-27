@@ -5,7 +5,7 @@ export interface WmsRateEditProps {
     value?: RateConfigPolicy,
     onChange?: (value: RateConfigPolicy) => void | Promise<any>,
     onSubmit?: (value: RateConfigPolicy) => void | Promise<any>,
-    convertType: (calculateRule: number, expenseType: number) => {
+    convertType: (calculateRule?: number, expenseType?: number) => {
         isFixedFee: boolean;
         isIntervalFee: boolean;
         isWeight: boolean;
@@ -28,6 +28,7 @@ export interface RateConfigPolicy {
 }
 
 export interface RateConfigPolicyDetail {
+    key?: string,
     id?: number,
     expenseType: number,
     calculateRule: number,

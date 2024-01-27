@@ -23,9 +23,29 @@
         }
     }
 
+    &-tag {
+        width: auto;
+        display: block;
+        cursor: pointer;
+        color: var(--color-text-1);
+    }
+
+    &-sider {
+        height: calc(100vh - 60px);
+    }
+
     &-content {
         height: calc(100vh - 60px);
+
         // overflow: hidden;
+        &-empty {
+            height: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            align-content: center;
+            flex-wrap: wrap;
+        }
 
         &-top {
             padding: 8px 12px 0;
@@ -35,7 +55,7 @@
 
         &-middle {
             padding: 8px 12px;
-            overflow: auto; 
+            overflow: auto;
         }
     }
 

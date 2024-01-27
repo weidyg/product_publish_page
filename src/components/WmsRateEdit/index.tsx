@@ -1,17 +1,18 @@
 
-import { useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import { RateConfigPolicy, RateConfigPolicyDetail, WmsRateEditProps } from './interface';
 import styles from './style/index.module.less';
-import { Button, Divider, Form, FormItemProps, Input, InputNumber, Layout, Message, Modal, Select, Space, Tag } from '@arco-design/web-react';
+import { Button, Divider, Empty, Form, FormItemProps, Input, InputNumber, Layout, Message, Modal, Select, Space, Tag } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
+import { isNumber } from '@arco-design/web-react/es/_util/is';
 
 const prefixCls = 'wre';
 const defaultProps: WmsRateEditProps = {
-  convertType: function (calculateRule: number, expenseType: number): { isFixedFee: boolean; isIntervalFee: boolean; isWeight: boolean; isStorageFee: boolean; } {
+  convertType: function (calculateRule?: number, expenseType?: number): { isFixedFee: boolean; isIntervalFee: boolean; isWeight: boolean; isStorageFee: boolean; } {
     const isFixedFee = calculateRule == 10;
-    const isIntervalFee = (calculateRule >= 0 && calculateRule != 10);
+    const isIntervalFee = isNumber(calculateRule) && calculateRule != 10;
     const isWeight = calculateRule == 30;
     const isStorageFee = expenseType == 4;
     return { isFixedFee, isIntervalFee, isWeight, isStorageFee }
@@ -22,6 +23,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
   const { options = {}, onSubmit, convertType } = props;
   const { stores, expenseTypes, calculateRules, operateTypes } = options;
 
+  const formLeftRef = useRef<any>();
   const formRef = useRef<any>();
   const contentTopRef = useRef<any>();
 
@@ -34,49 +36,66 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     value: 'value' in props ? props.value : undefined,
   });
   const onChange = (newData: RateConfigPolicy) => {
-    if (!('value' in props)) { setPolicy(newData); }
-    if (props.onChange) { props.onChange(newData); }
+    let tempData = { ...newData };
+    if (!('value' in props)) { setPolicy(tempData); }
+    if (props.onChange) { props.onChange(tempData); }
   };
 
+  const policyDetails = useMemo(() => {
+    return policy.details?.map(m => {
+      m.key = `${m.id || 'N'}_${m.expenseType || 'N'}_${m.operateType || 'N'}_${m.calculateRule || 'N'}`;
+      return m;
+    }) || [];
+  }, [JSON.stringify(policy.details)])
+
+
+  function findDuplicates(keys?: string[]) {
+    return keys?.filter((key, index, arr) => arr.indexOf(key) !== index && arr.includes(key));
+  }
+
+  async function checkError() {
+    if (editing) { throw new Error('检测到有正在编辑配置，请先保存或取消编辑！'); }
+    try { await formLeftRef?.current?.validate(); }
+    catch (error: any) { throw new Error(`检测到有必填项未填或格式错误！`); }
+    if ((policy?.details?.length || 0) == 0) { throw new Error('配置明细不能为空，请添加配置！'); }
+    const keys = policy?.details?.map(f => {
+      const expenseTypeText = expenseTypes?.find(fi => fi.value == f.expenseType)?.label;
+      const operateTypeText = operateTypes?.find(fi => fi.value == f.operateType)?.label;
+      return `${expenseTypeText || ''}${operateTypeText || ''}`;
+    });
+    const hasKeys = findDuplicates(keys);
+    if ((hasKeys?.length || 0) > 0) {
+      throw new Error(`配置明细(${hasKeys?.join(',')})类型重复，请修改后再重新提交！`);
+    }
+  }
 
   async function handleSubmit(e: Event): Promise<any> {
     if (!onSubmit) { return; }
-    if (editing) {
-      Modal.info({
-        title: '提示',
-        content: `检测到有正在编辑配置，请先保存或取消编辑！`,
-        maskClosable: false,
-      });
-      return;
-    }
     setSubmiting(true);
     try {
+      await checkError();
       await onSubmit(policy);
-      Message.success('保存成功！');
+      Message.success('提交成功！');
     } catch (error: any) {
       Modal.error({
-        maskClosable: false,
-        title: '错误',
+        title: '提示',
         content: error?.message,
+        maskClosable: false,
+        style: { textAlign: 'center' }
       });
     } finally {
       setSubmiting(false);
     }
   }
 
-  function handleNameChange(value: string, e: any): void {
-    onChange({ ...policy, name: value });
+  function handleNameOrStoreChange(value: any, values: any): void {
+    onChange({ ...policy, ...values });
   }
-
-  function handleStoreChange(value: any, option: any): void {
-    onChange({ ...policy, storeId: value });
-  }
-
 
   const initForm = () => {
     setEditing(true);
     setActionKey(null);
-    formRef?.current?.clearFields();
+    setFormFieldsValue(undefined);
   }
 
   function handleAddDetail(): void | Promise<any> {
@@ -100,8 +119,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     const change = () => {
       setEditing(false);
       setActionKey(index);
-      let detail = (policy?.details || [])[index];
-      formRef?.current?.setFieldsValue(detail);
+      setFormFieldsValue(index);
     }
     return new Promise((resolve, reject) => {
       if (actionKey !== index) {
@@ -133,8 +151,10 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
           let _details = [...(policy?.details || [])];
           _details.splice(index, 1);
           onChange({ ...policy, details: _details });
-          initForm();
-
+          if (actionKey == index) {
+            setActionKey(undefined);
+            setFormFieldsValue(undefined);
+          }
           resolve(true);
         },
         onCancel: () => { reject(); },
@@ -156,31 +176,41 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
           values.weightRangePrice = [];
         }
 
-        let _details = [...(policy?.details || [])];
-        if (actionKey >= 0) {
+        let _details = [...policyDetails];
+        if (actionKey === 0 || actionKey > 0) {
           _details[actionKey] = values;
         } else {
           _details.push(values);
-          setActionKey(_details.length - 1);
+          const _actionKey = _details.length - 1;
+          setActionKey(_actionKey);
+          setFormFieldsValue(_actionKey);
         }
         onChange({ ...policy, details: _details });
         setEditing(false);
       } catch (e) {
-        Message.error({
-          closable: true,
-          content: `检测到有必填项未填或格式错误，请补充后重新保存！`,
-        });
+        // Message.error({
+        //   closable: true,
+        //   content: `检测到有必填项未填或格式错误，请补充后重新保存！`,
+        // });
       }
     }
   }
 
   function handleCancel(e: Event): void {
-    const details = policy?.details || [];
-    const detail = actionKey >= 0 && details.length > actionKey ? details[actionKey] : {};
-    formRef?.current?.resetFields();
-    formRef?.current?.setFieldsValue(detail);
+    setFormFieldsValue(actionKey);
+    if (actionKey == null) { setActionKey(undefined); }
     setEditing(false);
   }
+
+  function setFormFieldsValue(index?: number): void {
+    if (index === 0 || index && (index > 0)) {
+      const _detail = policyDetails[index] || {};
+      formRef?.current?.setFieldsValue(_detail);
+    } else {
+      formRef?.current?.clearFields();
+    }
+  }
+
 
   function QuantityFormItem(props: FormItemProps & { unit: string }) {
     const { label, unit, ...rest } = props;
@@ -238,9 +268,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                             <QuantityFormItem disabled={disabled} unit={unit} field={item.field + '.firstValue'}
                               dependencies={[item.field + '.maxValue']} rules={[{
                                 validator: (v, cb) => {
-                                  if (!v) {
-                                    return cb('不能为空')
-                                  } else {
+                                  if (!v) { return cb('不能为空') } else {
                                     const maxValue = formRef?.current?.getFieldValue(item.field + '.maxValue') || 0;
                                     if (v > maxValue) { return cb(`不能大于${maxValue}`); }
                                   }
@@ -283,27 +311,38 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
   return (
     <Layout className={styles[`${prefixCls}-layout`]}>
       <Layout>
-        <Layout.Sider width={220}>
-          <div style={{ padding: '8px' }}>
-            <Space direction={'vertical'}>
-              <Input placeholder='请输入名称' value={policy.name} onChange={handleNameChange} allowClear />
-              <Select placeholder='请选择仓库' value={policy.storeId} onChange={handleStoreChange} options={stores} allowClear />
-            </Space>
+        <Layout.Sider className={styles[`${prefixCls}-sider`]} width={220}>
+          <div style={{ padding: '12px 8px 0' }}>
+            <Form ref={formLeftRef}
+              layout='vertical'
+              initialValues={{ name: policy?.name, storeId: policy?.storeId }}
+              onValuesChange={handleNameOrStoreChange}
+              validateMessages={{
+                required: (_, { label }) => <>{label || ''}{'不能为空'}</>
+              }}>
+              <Form.Item field={'name'} rules={[{ required: true, message: '请输入名称' }]}>
+                <Input placeholder='请输入名称' allowClear />
+              </Form.Item>
+              <Form.Item field={'storeId'} rules={[{ required: true, message: '请选择仓库' }]}>
+                <Select placeholder='请选择仓库' options={stores} allowClear />
+              </Form.Item>
+            </Form>
           </div>
           <Divider style={{ margin: 0 }}>配置明细</Divider>
           <div style={{ padding: '8px' }}>
-            {policy?.details?.map((item, index) => {
+            {policyDetails.map((item, index) => {
               const { expenseType, calculateRule, operateType } = item;
               const expenseTypeText = expenseTypes?.find(f => f.value == expenseType)?.label;
-              const calculateRuleText = calculateRules?.find(f => f.value == calculateRule)?.label;
               const operateTypeText = operateTypes?.find(f => f.value == operateType)?.label;
-              return <div key={index} style={{ marginBottom: '8px' }}>
-                <Tag size='large' closable color={actionKey == index ? 'blue' : undefined} style={{ width: '100%' }}
-                  title={`【${expenseTypeText}】${calculateRuleText}${operateTypeText && `(${operateTypeText})`}`}
+              const calculateRuleText = calculateRules?.find(f => f.value == calculateRule)?.label;
+              return <div key={item.key} style={{ marginBottom: '8px' }}>
+                <Tag size='medium' closable color={actionKey == index ? 'blue' : undefined} style={{ width: '100%' }}
+                  title={`【${expenseTypeText}${operateTypeText || ''}】${calculateRuleText}`}
                   onClose={() => { return handleDelDetail(item, index); }}>
                   <span onClick={() => { return handleSelectDetail(item, index); }} style={{ cursor: 'pointer' }}>
-                    <span style={{ color: 'var(--color-text-1)' }}>{index + 1}.【{expenseTypeText}】{calculateRuleText}</span>
-                    {operateTypeText && <span style={{ color: 'var(--color-text-3)' }}>({operateTypeText})</span>}
+                    <span className={styles[`${prefixCls}-tag`]}>
+                      {index + 1}.【{expenseTypeText}{operateTypeText}】{calculateRuleText}
+                    </span>
                   </span>
                 </Tag>
               </div>
@@ -315,92 +354,129 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
           </div>
         </Layout.Sider>
         <Layout.Content className={styles[`${prefixCls}-content`]}>
-          <Form
-            ref={formRef}
-            layout={'inline'}
-            autoComplete='off'
-            validateMessages={{
-              required: (_, { label }) => <>{label || ''}{'不能为空'}</>
-            }}
-            onValuesChange={(_, v) => {
-              const { isIntervalFee, isWeight } = convertType(v.calculateRule, v.expenseType);
-              if (isIntervalFee) {
-                if (isWeight) {
-                  v.weightRangePrice = v.weightRangePrice || [];
-                  v.quantityRangePrice = [];
-                  if (v.weightRangePrice.length == 0) {
-                    v.weightRangePrice.push({});
-                    formRef?.current?.setFieldsValue(v);
-                  }
-                } else {
-                  v.quantityRangePrice = v.quantityRangePrice || [];
-                  if (v.quantityRangePrice.length == 0) {
-                    v.quantityRangePrice.push({});
-                    formRef?.current?.setFieldsValue(v);
+          {actionKey === undefined
+            ? <div className={styles[`${prefixCls}-content-empty`]}>
+              <Empty description='选择左侧配置明细编辑项或点击添加按钮新增项' />
+            </div>
+            : <Form
+              ref={formRef}
+              layout={'inline'}
+              autoComplete='off'
+              validateMessages={{
+                required: (_, { label }) => <>{label || ''}{'不能为空'}</>
+              }}
+              onValuesChange={(v, vs) => {
+                // console.log('onValuesChange value', v);
+                // console.log('onValuesChange values', vs);
+                const { isIntervalFee, isWeight } = convertType(v.calculateRule, v.expenseType);
+                if (isIntervalFee) {
+                  if (isWeight) {
+                    v.weightRangePrice = v.weightRangePrice || [];
+                    v.quantityRangePrice = [];
+                    if (v.weightRangePrice.length == 0) {
+                      v.weightRangePrice.push({});
+                      formRef?.current?.setFieldsValue(v);
+                    }
+                  } else {
+                    v.quantityRangePrice = v.quantityRangePrice || [];
+                    if (v.quantityRangePrice.length == 0) {
+                      v.quantityRangePrice.push({});
+                      formRef?.current?.setFieldsValue(v);
+                    }
                   }
                 }
-              }
-              console.log(_, v);
-            }}
-          >
-            <Form.Item noStyle shouldUpdate={(prev, next) => {
-              return prev.calculateRule !== next.calculateRule
-                || prev.expenseType !== next.expenseType;
-            }}>
-              {(values) => {
-                const { calculateRule, expenseType } = values;
-                const { isFixedFee, isIntervalFee, isWeight, isStorageFee } = convertType(calculateRule, expenseType);
-
-                const rangeFieldName = isWeight ? "weightRangePrice" : "quantityRangePrice";
-                const label = isWeight ? "重量" : isStorageFee ? "库存" : "数量";
-                const unit = isWeight ? "kg" : isStorageFee ? "件/日" : "件";
-                const fixedPriceUnit = isStorageFee ? "元/日" : "元/单";
-
-                return <>
-                  <div ref={contentTopRef} className={styles[`${prefixCls}-content-top`]}>
-
-                    <Form.Item field={'id'} hidden><Input /></Form.Item>
-
-                    <Form.Item label={'费用类型'} field={'expenseType'} rules={[{ required: true }]}>
-                      <Select disabled={!editing} placeholder='请选择' options={expenseTypes} allowClear style={{ width: '120px' }} />
-                    </Form.Item>
-
-                    <Form.Item label={'费率规则'} field={'calculateRule'} rules={[{ required: true }]}>
-                      <Select disabled={!editing} placeholder='请选择' options={calculateRules} allowClear style={{ width: '120px' }} />
-                    </Form.Item>
-
-                    {!isStorageFee &&
-                      <Form.Item label={'操作类型'} field={'operateType'} rules={[{ required: true }]}>
-                        <Select disabled={!editing} placeholder='请选择' options={operateTypes} allowClear style={{ width: '120px' }} />
-                      </Form.Item>
-                    }
-
-                    <Form.Item>
-                      <Space>
-                        <Button type={'primary'} onClick={handleEdit}>
-                          {editing ? '保存' : '编辑'}
-                        </Button>
-                        {editing && <Button onClick={handleCancel}>取消</Button>}
-                      </Space>
-                    </Form.Item>
-
-                  </div>
-                  <Divider style={{ margin: 0 }}></Divider>
-                  <div className={styles[`${prefixCls}-content-middle`]}>
-                    {isFixedFee
-                      ? <Form.Item label={'单价'} field={'unitPrice'} rules={[{ required: true }]}>
-                        <InputNumber disabled={!editing} placeholder='请输入单价' suffix={fixedPriceUnit}
-                          hideControl step={0.01} min={0.01} precision={2} style={{ width: '160px' }} />
-                      </Form.Item>
-                      : isIntervalFee
-                        ? <FormList disabled={!editing} listFieldName={rangeFieldName} label={label} unit={unit} />
-                        : undefined
-                    }
-                  </div>
-                </>
               }}
-            </Form.Item>
-          </Form>
+            >
+              <Form.Item noStyle shouldUpdate={(prev, next) => {
+                return prev.calculateRule !== next.calculateRule
+                  || prev.expenseType !== next.expenseType;
+              }}>
+                {(values) => {
+                  const { calculateRule, expenseType } = values;
+                  const { isFixedFee, isIntervalFee, isWeight, isStorageFee } = convertType(calculateRule, expenseType);
+                  const rangeFieldName = isWeight ? "weightRangePrice" : "quantityRangePrice";
+                  const label = isWeight ? "重量" : isStorageFee ? "库存" : "数量";
+                  const unit = isWeight ? "kg" : isStorageFee ? "件/日" : "件";
+                  const fixedPriceUnit = isStorageFee ? "元/日" : "元/单";
+                  // if (isStorageFee) {
+                  //   setTimeout(() => {
+                  //     formRef?.current?.setFieldValue('operateType', undefined);
+                  //   }, 10);
+                  // }
+                  return <>
+                    <div ref={contentTopRef} className={styles[`${prefixCls}-content-top`]}>
+                      <Form.Item field={'key'} hidden><Input /></Form.Item>
+                      <Form.Item field={'id'} hidden><Input /></Form.Item>
+                      <Form.Item label={'费用类型'} field={'expenseType'}
+                        dependencies={['operateType']}
+                        rules={[{ required: true }, {
+                          validator: (v, cb) => {
+                            if (!v) { return cb('费用类型不能为空') }
+                            else {
+                              const { isStorageFee } = convertType(undefined, v);
+                              const key = formRef?.current?.getFieldValue('key');
+                              const _operateType = formRef?.current?.getFieldValue('operateType');
+                              const has = policyDetails?.some(f => f.key !== key && (f.expenseType == v && (isStorageFee || f.operateType == _operateType)));
+                              // console.log('validator 费用类型', has, `f.key !== ${key} && (f.expenseType == ${v}  && (${isStorageFee} || f.operateType == ${_operateType}))`, key, policyDetails);
+                              if (has) { return cb('存在配置(组合)重复') }
+                            }
+                            return cb(null);
+                          }
+                        }]}>
+                        <Select disabled={!editing} placeholder='请选择' options={expenseTypes} allowClear style={{ width: '120px' }} />
+                      </Form.Item>
+
+                      {!isStorageFee &&
+                        <Form.Item label={'操作类型'} field={'operateType'}
+                          dependencies={['expenseType']}
+                          rules={[{ required: true }, {
+                            validator: (v, cb) => {
+                              if (!v) { return cb('操作类型不能为空') }
+                              else {
+                                const key = formRef?.current?.getFieldValue('key');
+                                const _expenseType = formRef?.current?.getFieldValue('expenseType');
+                                const { isStorageFee } = convertType(undefined, _expenseType);
+                                const has = policyDetails?.some(f => f.key !== key && (f.expenseType == _expenseType && (isStorageFee || f.operateType == v)));
+                                // console.log('validator 操作类型', has, `f.key !== ${key} && (f.expenseType == ${_expenseType}  && (${isStorageFee} || f.operateType == ${v}))`, key, policyDetails);
+                                if (has) { return cb('存在配置(组合)重复') }
+                              }
+                              return cb(null);
+                            }
+                          }]}>
+                          <Select disabled={!editing} placeholder='请选择' options={operateTypes} allowClear style={{ width: '120px' }} />
+                        </Form.Item>
+                      }
+                      <Form.Item label={'费率规则'} field={'calculateRule'} rules={[{ required: true }]}>
+                        <Select disabled={!editing} placeholder='请选择' options={calculateRules} allowClear style={{ width: '120px' }} />
+                      </Form.Item>
+
+                      <Form.Item>
+                        <Space>
+                          <Button type={'primary'} onClick={handleEdit}>
+                            {editing ? '保存' : '编辑'}
+                          </Button>
+                          {editing && <Button onClick={handleCancel}>取消</Button>}
+                        </Space>
+                      </Form.Item>
+
+                    </div>
+                    <Divider style={{ margin: 0 }}></Divider>
+                    <div className={styles[`${prefixCls}-content-middle`]}>
+                      {isFixedFee
+                        ? <Form.Item label={'单价'} field={'unitPrice'} rules={[{ required: true }]}>
+                          <InputNumber disabled={!editing} placeholder='请输入单价' suffix={fixedPriceUnit}
+                            hideControl step={0.01} min={0.01} precision={2} style={{ width: '160px' }} />
+                        </Form.Item>
+                        : isIntervalFee
+                          ? <FormList disabled={!editing} listFieldName={rangeFieldName} label={label} unit={unit} />
+                          : undefined
+                      }
+                    </div>
+                  </>
+                }}
+              </Form.Item>
+            </Form>
+          }
         </Layout.Content>
       </Layout>
       <Layout.Footer className={styles[`${prefixCls}-footer`]}>

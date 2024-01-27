@@ -4,6 +4,7 @@ declare global {
         loadRateConfigPolicy: any,
         saveRateConfigPolicy: any,
         getRateConfigOptions: any,
+        convertRateConfigType: any
     }
 }
 export async function loadRateConfigPolicy(id?: number): Promise<RateConfigPolicy> {

@@ -3,14 +3,14 @@ body {
   color: var(--color-text-1);
 }
 
-::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 4px;
   height: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
   cursor: pointer;
-  border-radius: 8px; 
+  border-radius: 8px;
   background-color: var(--color-text-4);
 }
 
@@ -20,6 +20,60 @@ body {
 
 ::-webkit-scrollbar-track {
   cursor: pointer;
-  border-radius: 8px; 
+  border-radius: 8px;
   background-color: var(--color-border-1);
 }
+
+
+
+/*message arco-icon*/
+.arco-icon {
+  display: inline-block;
+  color: inherit;
+  font-style: normal;
+  width: 1em;
+  height: 1em;
+  vertical-align: -2px;
+  stroke: currentColor;
+}
+
+.arco-icon[stroke='currentColor'] {
+  stroke: currentColor;
+  fill: none;
+}
+
+.arco-icon-hover {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  line-height: 0;
+
+  .arco-icon {
+    position: relative;
+    vertical-align: -0.09em;
+  }
+}
+
+.arco-icon-hover:hover::before {
+  background-color: var(--color-fill-2);
+}
+
+.arco-icon-hover::before {
+  top: 50%;
+  left: 50%;
+  height: 20px;
+  width: 20px;
+  transform: translate(-50%, -50%);
+}
+
+.arco-icon-hover::before {
+  content: '';
+  position: absolute;
+  display: block;
+  border-radius: var(--border-radius-circle);
+  background-color: transparent;
+  box-sizing: border-box;
+  transition: background-color 0.1s cubic-bezier(0, 0, 1, 1);
+}
+
+/*message arco-icon*/
