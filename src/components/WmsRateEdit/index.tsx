@@ -117,9 +117,11 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
 
   function handleSelectDetail(detail: RateConfigPolicyDetail, index: number): void | Promise<any> {
     const change = () => {
-      setEditing(false);
       setActionKey(index);
-      setFormFieldsValue(index);
+      setTimeout(() => {
+        setFormFieldsValue(index);
+        setEditing(false);
+      }, 10);
     }
     return new Promise((resolve, reject) => {
       if (actionKey !== index) {
@@ -203,9 +205,11 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
   }
 
   function setFormFieldsValue(index?: number): void {
+    // console.log('setFormFieldsValue', index);
     if (index === 0 || index && (index > 0)) {
       const _detail = policyDetails[index] || {};
       formRef?.current?.setFieldsValue(_detail);
+      // console.log('setFormFieldsValue', index, _detail, formRef?.current);
     } else {
       formRef?.current?.clearFields();
     }
