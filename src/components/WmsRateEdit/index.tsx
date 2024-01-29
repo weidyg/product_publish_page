@@ -7,6 +7,7 @@ import { Button, Divider, Empty, Form, FormItemProps, Input, InputNumber, Layout
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import { isNumber } from '@arco-design/web-react/es/_util/is';
+import { includes } from 'lodash';
 
 const prefixCls = 'wre';
 const defaultProps: WmsRateEditProps = {
@@ -221,13 +222,14 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
   }
 
 
-  function QuantityFormItem(props: FormItemProps & { unit: string }) {
-    const { label, unit, ...rest } = props;
+  function QuantityFormItem(props: FormItemProps & { unit: string, includes?: boolean }) {
+    const { label, unit, includes, ...rest } = props;
     const precision = unit == 'kg' ? 3 : 0;
     const step = unit == 'kg' ? 0.001 : 1;
     const prefix = label;
+    const suffix = includes === true ? '含' : includes === false ? '不含' : '';
     return <Form.Item {...rest} >
-      <InputNumber prefix={prefix} step={step} precision={precision} min={step}
+      <InputNumber prefix={prefix} suffix={suffix} step={step} precision={precision} min={step}
         placeholder='请输入' style={{ width: prefix ? '130px' : '100px' }} />
     </Form.Item>
   }
@@ -251,23 +253,39 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
             {fields.map((item, index) => {
               return (
                 <div key={item.key}>
+                  {/* {item.key}_{item.field}_{index} */}
                   <Form.Item label={<span style={{ display: 'block', width: '78px', whiteSpace: 'nowrap' }}>{index + 1}、{label}区间</span>}>
                     <Space wrap size={[8, 0]}>
                       <Space style={{ marginBottom: '8px' }}>
-                        <QuantityFormItem disabled={disabled} unit={unit} field={item.field + '.minValue'} rules={[{ required: true }]} noStyle />
-                        <span className={styles[`${prefixCls}-label`]} >至</span>
-                        <QuantityFormItem disabled={disabled} unit={unit} field={item.field + '.maxValue'}
-                          dependencies={[item.field + '.minValue']} rules={[{
+                        <QuantityFormItem includes={true} disabled={disabled} unit={unit} field={item.field + '.minValue'} noStyle
+                          rules={[{
                             validator: (v, cb) => {
-                              if (!v) {
-                                return cb('不能为空')
-                              } else {
+                              if (!v) { return cb('不能为空') } else {
+                                const values = formRef?.current?.getFieldValue(listFieldName) || [];
+                                for (let i = 0; i < values.length; i++) {
+                                  if (i != index) {
+                                    const _v = values[i];
+                                    if (v >= _v?.minValue && v < _v?.maxValue) {
+                                      return cb('区间值重复');
+                                    }
+                                  }
+                                }
+                              }
+                              return cb(null);
+                            }
+                          }]} />
+                        <span className={styles[`${prefixCls}-label`]} >至</span>
+                        <QuantityFormItem disabled={disabled} unit={unit} field={item.field + '.maxValue'} noStyle
+                          dependencies={[item.field + '.minValue']}
+                          rules={[{
+                            validator: (v, cb) => {
+                              if (!v) { return cb('不能为空') } else {
                                 const minValue = formRef?.current?.getFieldValue(item.field + '.minValue') || 0;
                                 if (minValue > v) { return cb(`不能小于${minValue}`); }
                               }
                               return cb(null);
                             }
-                          }]} noStyle />
+                          }]} />
                         <span className={styles[`${prefixCls}-label`]} >{unit}</span>
                       </Space>
                       <Space size={0}>
@@ -406,7 +424,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                   const rangeFieldName = isWeight ? "weightRangePrice" : "quantityRangePrice";
                   const label = isWeight ? "重量" : isStorageFee ? "库存" : "数量";
                   const unit = isWeight ? "kg" : isStorageFee ? "件/日" : "件";
-                  const fixedPriceUnit = isStorageFee ? "元/日" : "元/单";
+                  const fixedPriceUnit = isStorageFee ? "元/日" : "元/件";
                   // if (isStorageFee) {
                   //   setTimeout(() => {
                   //     formRef?.current?.setFieldValue('operateType', undefined);
@@ -436,7 +454,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                       </Form.Item>
 
                       {!isStorageFee &&
-                        <Form.Item label={'操作类型'} field={'operateType'}
+                        <Form.Item label={'单据类型'} field={'operateType'}
                           dependencies={['expenseType']}
                           rules={[{ required: true }, {
                             validator: (v, cb) => {
