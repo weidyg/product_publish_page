@@ -20,7 +20,7 @@ const defaultProps: WmsRateEditProps = {
 };
 function WmsRateEdit(baseProps: WmsRateEditProps) {
   const props = useMergeProps<WmsRateEditProps>(baseProps, defaultProps, {});
-  const { options = {}, onSubmit, convertType } = props;
+  const { options = {}, onSubmit, onCancel, convertType } = props;
   const { stores, expenseTypes, calculateRules, operateTypes } = options;
 
   const formLeftRef = useRef<any>();
@@ -67,6 +67,11 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     if ((hasKeys?.length || 0) > 0) {
       throw new Error(`配置明细(${hasKeys?.join(',')})类型重复，请修改后再重新提交！`);
     }
+  }
+
+  async function handleCancel(e: Event): Promise<any> {
+    if (!onCancel) { return; }
+    await onCancel();
   }
 
   async function handleSubmit(e: Event): Promise<any> {
@@ -164,7 +169,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     });
   }
 
-  async function handleEdit(e: Event): Promise<void> {
+  async function handleDetailEdit(e: Event): Promise<void> {
     if (!editing) {
       setEditing(true);
     } else {
@@ -198,7 +203,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     }
   }
 
-  function handleCancel(e: Event): void {
+  function handleDetailCancel(e: Event): void {
     setFormFieldsValue(actionKey);
     if (actionKey == null) { setActionKey(undefined); }
     setEditing(false);
@@ -247,7 +252,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
               return (
                 <div key={item.key}>
                   <Form.Item label={<span style={{ display: 'block', width: '78px', whiteSpace: 'nowrap' }}>{index + 1}、{label}区间</span>}>
-                    <Space wrap size={0}>
+                    <Space wrap size={[8, 0]}>
                       <Space style={{ marginBottom: '8px' }}>
                         <QuantityFormItem disabled={disabled} unit={unit} field={item.field + '.minValue'} rules={[{ required: true }]} noStyle />
                         <span className={styles[`${prefixCls}-label`]} >至</span>
@@ -266,7 +271,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                         <span className={styles[`${prefixCls}-label`]} >{unit}</span>
                       </Space>
                       <Space size={0}>
-                        <Space wrap size={0}>
+                        <Space wrap size={[8, 0]}>
                           <Space style={{ marginBottom: '8px' }}>
                             <span className={styles[`${prefixCls}-label`]}>不超</span>
                             <QuantityFormItem disabled={disabled} unit={unit} field={item.field + '.firstValue'}
@@ -456,10 +461,10 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
 
                       <Form.Item>
                         <Space>
-                          <Button type={'primary'} onClick={handleEdit}>
+                          <Button type={'primary'} onClick={handleDetailEdit}>
                             {editing ? '保存' : '编辑'}
                           </Button>
-                          {editing && <Button onClick={handleCancel}>取消</Button>}
+                          {editing && <Button onClick={handleDetailCancel}>取消</Button>}
                         </Space>
                       </Form.Item>
 
@@ -484,7 +489,10 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
         </Layout.Content>
       </Layout>
       <Layout.Footer className={styles[`${prefixCls}-footer`]}>
-        <Button type='primary' loading={submiting} onClick={handleSubmit}>提交</Button>
+        <Space size={'large'}>
+          <Button onClick={handleCancel}>取消</Button>
+          <Button type='primary' loading={submiting} onClick={handleSubmit}>提交</Button>
+        </Space>
       </Layout.Footer>
     </Layout >
   );

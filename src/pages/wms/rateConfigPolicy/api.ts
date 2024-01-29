@@ -1,11 +1,15 @@
 import { RateConfigPolicy, WmsRateOptions } from "../../../components/WmsRateEdit/interface";
 declare global {
     interface Window {
+        convertRateConfigType: any,
+        getRateConfigOptions: any,
         loadRateConfigPolicy: any,
         saveRateConfigPolicy: any,
-        getRateConfigOptions: any,
-        convertRateConfigType: any
+        cancelRateConfigPolicy: any,
     }
+}
+export async function getRateConfigOptions(): Promise<WmsRateOptions> {
+    return await window.getRateConfigOptions();
 }
 export async function loadRateConfigPolicy(id?: number): Promise<RateConfigPolicy> {
     return await window.loadRateConfigPolicy(id);
@@ -13,6 +17,6 @@ export async function loadRateConfigPolicy(id?: number): Promise<RateConfigPolic
 export async function saveRateConfigPolicy(value: RateConfigPolicy): Promise<void> {
     return await window.saveRateConfigPolicy(value);
 }
-export async function getRateConfigOptions(): Promise<WmsRateOptions> {
-    return await window.getRateConfigOptions();
+export async function cancelRateConfigPolicy(): Promise<void> {
+    return await window.cancelRateConfigPolicy();
 }

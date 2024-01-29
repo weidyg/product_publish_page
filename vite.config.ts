@@ -18,6 +18,7 @@ export default defineConfig({
         productedit: '/productedit.html',
         productmate: '/productmate.html',
         productcatesel: '/productcatesel.html',
+        wmsrateedit: '/wmsrateedit.html',
       }
     }
   },

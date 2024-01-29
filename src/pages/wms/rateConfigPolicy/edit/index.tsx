@@ -32,9 +32,13 @@ function WmsRateEditPage() {
             setLoading(false);
         }
     }
-
+    
     async function handleSubmit(value: RateConfigPolicy): Promise<void | Promise<any>> {
         await api.saveRateConfigPolicy(value);
+    }
+
+    async function handleCancel(): Promise<void | Promise<any>> {
+        await api.cancelRateConfigPolicy();
     }
 
     return <Spin loading={loading} tip='加载中...'>
@@ -62,6 +66,7 @@ function WmsRateEditPage() {
                     convertType={convertType}
                     options={options}
                     defaultValue={value}
+                    onCancel={handleCancel}
                     onSubmit={handleSubmit}
                 />
             }
