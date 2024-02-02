@@ -28,9 +28,10 @@ export interface RateConfigPolicy {
 }
 
 export interface RateConfigPolicyDetail {
+    key?: string,
     id?: number,
-    expenseType: number,
-    calculateRule: number,
+    expenseType?: number,
+    calculateRule?: number,
     unitPrice?: number,
     weightRangePrice?: RateRangePrice[],
     quantityRangePrice?: RateRangePrice[],

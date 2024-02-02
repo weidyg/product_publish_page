@@ -7,6 +7,7 @@ import { Button, Divider, Empty, Form, FormItemProps, Input, InputNumber, Layout
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 
+
 const prefixCls = 'wre';
 const defaultProps: WmsRateEditProps = {
   convertType: function (calculateRule?: number | undefined, expenseType?: number | undefined): { isFixedFee: boolean; isIntervalFee: boolean; isWeight: boolean; isStorageFee: boolean; } {
@@ -87,24 +88,25 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     onChange({ ...policy, ...values });
   }
 
-  const initForm = () => {
+  const initForm = (initdata?: RateConfigPolicyDetail) => {
     setEditing(true);
     setActionKey(null);
-    setFormFieldsValue(undefined);
+    setFormFieldsValue(initdata, true);
   }
 
   function handleAddDetail(): void | Promise<any> {
+    const key = uuid(8);
     return new Promise((resolve, reject) => {
       if (editing) {
         Modal.confirm({
           title: '提示',
           content: `检测到有正在编辑配置，是否继续(将放弃未保存的数据)?`,
           maskClosable: false,
-          onOk: () => { initForm(); resolve(true); },
+          onOk: () => { initForm({ key: key }); resolve(true); },
           onCancel: () => { reject(); },
         });
       } else {
-        initForm();
+        initForm({ key: key });
         resolve(true);
       }
     });
@@ -114,6 +116,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     const change = () => {
       setActionKey(index);
       setTimeout(() => {
+        detail.key = detail.key || getKey(detail);
         setFormFieldsValue(detail);
         setEditing(false);
       }, 10);
@@ -166,18 +169,15 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
       try {
         let values = await formRef?.current?.validate();
         const { isIntervalFee, isWeight, isFixedFee } = convertType(values?.calculateRule, values?.expenseType);
-        if ((isIntervalFee && isWeight) || isFixedFee) {
-          values.quantityRangePrice = [];
-        }
-        if ((isIntervalFee && !isWeight) || isFixedFee) {
-          values.weightRangePrice = [];
-        }
-        values.key = getKey(values);
+        if ((isIntervalFee && isWeight) || isFixedFee) { values.quantityRangePrice = []; }
+        if ((isIntervalFee && !isWeight) || isFixedFee) { values.weightRangePrice = []; }
         let _details = [...policy.details || []];
         if (actionKey === 0 || actionKey > 0) {
           _details[actionKey] = values;
         } else {
+          values.key = values.key || getKey(values);
           _details.push(values);
+
           const _actionKey = _details.length - 1;
           setActionKey(_actionKey);
           setFormCurrentDetail(_actionKey, _details);
@@ -205,8 +205,9 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
       ? details && details[index] : undefined;
     setFormFieldsValue(_detail);
   }
-  function setFormFieldsValue(detail?: RateConfigPolicyDetail): void {
+  function setFormFieldsValue(detail?: RateConfigPolicyDetail, clear?: boolean): void {
     if (detail) {
+      if (clear) { formRef?.current?.clearFields(); }
       formRef?.current?.setFieldsValue(detail);
     } else {
       formRef?.current?.clearFields();
@@ -429,9 +430,9 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                   const rangeFieldName = isWeight ? "weightRangePrice" : "quantityRangePrice";
                   const label = isWeight ? "重量" : isStorageFee ? "库存" : "数量";
                   const unit = isWeight ? "kg" : isStorageFee ? "件/日" : "件";
-                  console.log('11', calculateRule, expenseType);
-                  console.log('22', isFixedFee, isIntervalFee, isWeight, isStorageFee);
                   const fixedPriceUnit = isStorageFee ? "元/日" : "元/件";
+                  // console.log('11', calculateRule, expenseType);
+                  // console.log('22', isFixedFee, isIntervalFee, isWeight, isStorageFee);
                   // if (isStorageFee) {
                   //   setTimeout(() => {
                   //     formRef?.current?.setFieldValue('operateType', undefined);
@@ -439,14 +440,15 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                   // }
                   return <>
                     <div ref={contentTopRef} className={styles[`${prefixCls}-content-top`]}>
+                      <Form.Item field={'key'} hidden><Input /></Form.Item>
                       <Form.Item field={'id'} hidden><Input /></Form.Item>
                       <Form.Item label={'费用类型'} field={'expenseType'} rules={[{ required: true }, {
                         validator: (v, cb) => {
                           if (!v) { return cb('费用类型不能为空') }
                           else {
-                            const key = getKey(values);
-                            const has = policy?.details?.some(f => getKey(f) !== key && f.expenseType == v);
-                            // console.log('validator 费用类型', has, `f.key !== ${key} && f.expenseType == ${v}`);
+                            const key = formRef?.current?.getFieldValue('key');
+                            const has = policy?.details?.some(f => f.key !== key && f.expenseType == v);
+                            console.log('validator 费用类型', has, `f.key !== ${key} && f.expenseType == ${v}`, policy?.details);
                             if (has) { return cb('该费用类型已经存在') }
                           }
                           return cb(null);
@@ -496,5 +498,27 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
       </Layout.Footer>
     </Layout >
   );
+}
+
+function uuid(len: number, radix?: number) {
+  var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+  var uuid = [], i;
+  radix = radix || chars.length;
+  if (len) {
+    for (i = 0; i < len; i++) {
+      uuid[i] = chars[0 | Math.random() * radix];
+    }
+  } else {
+    var r;
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+    uuid[14] = '4';
+    for (i = 0; i < 36; i++) {
+      if (!uuid[i]) {
+        r = 0 | Math.random() * 16;
+        uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+      }
+    }
+  }
+  return uuid.join('');
 }
 export default WmsRateEdit;
