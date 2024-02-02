@@ -44,12 +44,15 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
 
   const policyDetails = useMemo(() => {
     return policy.details?.map(m => {
-      m.key = `${m.id || 'N'}_${m.expenseType || 'N'}_${m.operateType || 'N'}_${m.calculateRule || 'N'}`;
+      m.key = getKey(m);
       return m;
     }) || [];
   }, [JSON.stringify(policy.details)])
 
-
+  function getKey(m:any) {
+    if (!m) { return ''; }
+    return  `${m.id || 'N'}_${m.expenseType || 'N'}_${m.operateType || 'N'}_${m.calculateRule || 'N'}`;
+  }
   function findDuplicates(keys?: string[]) {
     return keys?.filter((key, index, arr) => arr.indexOf(key) !== index && arr.includes(key));
   }
@@ -183,7 +186,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
         if ((isIntervalFee && !isWeight) || isFixedFee) {
           values.weightRangePrice = [];
         }
-
+        values.key = getKey(values);
         let _details = [...policyDetails];
         if (actionKey === 0 || actionKey > 0) {
           _details[actionKey] = values;
