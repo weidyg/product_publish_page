@@ -214,7 +214,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     }
   }
 
-  function QuantityFormItem(props: FormItemProps & { step?: number, precision?: number, includes?: boolean }) {
+  function NumFormItem(props: FormItemProps & { step?: number, precision?: number, includes?: boolean }) {
     const { label, precision, step, includes, ...rest } = props;
     const prefix = label;
     const suffix = includes === true ? '含' : includes === false ? '不含' : '';
@@ -241,16 +241,16 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
       {(fields, { add, remove, move }) => {
         return (
           <div>
-            {fields.map((item, index) => {
+            {fields.map(({ key, field }, index) => {
               return (
-                <div key={item.key}>
+                <div key={key}>
                   {/* {item.key}_{item.field}_{index} */}
                   <Form.Item label={<span style={{ display: 'block', width: '78px', whiteSpace: 'nowrap' }}>{index + 1}、{label}区间</span>}>
                     <Space wrap size={[8, 0]}>
                       <Space style={{ marginBottom: '8px' }}>
-                        <QuantityFormItem disabled={disabled}
+                        <NumFormItem disabled={disabled}
                           step={step} precision={precision} includes={true}
-                          field={item.field + '.minValue'} noStyle
+                          field={field + '.minValue'} noStyle
                           rules={[{
                             validator: (v, cb) => {
                               if (!v) { return cb('不能为空') } else {
@@ -268,13 +268,13 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                             }
                           }]} />
                         <span className={styles[`${prefixCls}-label`]} >至</span>
-                        <QuantityFormItem disabled={disabled} step={step} precision={precision}
-                          field={item.field + '.maxValue'} noStyle
-                          dependencies={[item.field + '.minValue']}
+                        <NumFormItem disabled={disabled} step={step} precision={precision}
+                          field={field + '.maxValue'} noStyle
+                          dependencies={[field + '.minValue']}
                           rules={[{
                             validator: (v, cb) => {
                               if (!v) { return cb('不能为空') } else {
-                                const minValue = formRef?.current?.getFieldValue(item.field + '.minValue') || 0;
+                                const minValue = formRef?.current?.getFieldValue(field + '.minValue') || 0;
                                 if (minValue > v) { return cb(`不能小于${minValue}`); }
                               }
                               return cb(null);
@@ -286,13 +286,13 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                         <Space wrap size={[8, 0]}>
                           <Space style={{ marginBottom: '8px' }}>
                             <span className={styles[`${prefixCls}-label`]}>前</span>
-                            <QuantityFormItem disabled={disabled}
+                            <NumFormItem disabled={disabled}
                               step={step} precision={precision}
-                              field={item.field + '.firstValue'} noStyle
-                              dependencies={[item.field + '.maxValue']} rules={[{
+                              field={field + '.firstValue'} noStyle
+                              dependencies={[field + '.maxValue']} rules={[{
                                 validator: (v, cb) => {
                                   if (!v) { return cb('不能为空') } else {
-                                    const maxValue = formRef?.current?.getFieldValue(item.field + '.maxValue') || 0;
+                                    const maxValue = formRef?.current?.getFieldValue(field + '.maxValue') || 0;
                                     if (v > maxValue) { return cb(`不能大于${maxValue}`); }
                                   }
                                   return cb(null);
@@ -300,18 +300,18 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                               }]} />
                             <span className={styles[`${prefixCls}-label`]}>{unit}</span>
                             <span className={styles[`${prefixCls}-label`]}>费用</span>
-                            <FeeFormItem disabled={disabled} field={item.field + '.firstFee'} rules={[{ required: true }]} noStyle />
+                            <FeeFormItem disabled={disabled} field={field + '.firstFee'} rules={[{ required: true }]} noStyle />
                             <span className={styles[`${prefixCls}-label`]}>元</span>
                           </Space>
                           <Space style={{ marginBottom: '8px' }}>
                             <span className={styles[`${prefixCls}-label`]} >每超</span>
-                            <QuantityFormItem disabled={disabled}
+                            <NumFormItem disabled={disabled}
                               step={step} precision={precision}
-                              field={item.field + '.overValue'} noStyle
+                              field={field + '.overValue'} noStyle
                               rules={[{ required: true }]} />
                             <span className={styles[`${prefixCls}-label`]}>{unit}</span>
                             <span className={styles[`${prefixCls}-label`]} >增加</span>
-                            <FeeFormItem disabled={disabled} field={item.field + '.overFee'} rules={[{ required: true }]} noStyle />
+                            <FeeFormItem disabled={disabled} field={field + '.overFee'} rules={[{ required: true }]} noStyle />
                             <span className={styles[`${prefixCls}-label`]} >元</span>
                             {fields.length > 1 &&
                               <Button disabled={disabled} icon={<IconDelete />} type='text' status='danger' onClick={() => remove(index)}></Button>
