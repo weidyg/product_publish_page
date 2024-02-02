@@ -6,7 +6,6 @@ import * as api from "../api";
 import { IconFaceFrownFill } from "@arco-design/web-react/icon";
 import styles from './style/index.module.less'
 
-const convertType = window?.convertRateConfigType;
 function WmsRateEditPage() {
     const [loading, setLoading] = useState(false);
     const [value, setValue] = useState<RateConfigPolicy>();
@@ -63,7 +62,7 @@ function WmsRateEditPage() {
                     />
                 </div>
                 : !loading && <WmsRateEdit
-                    convertType={convertType}
+                    convertType={api.convertRateConfigType}
                     options={options}
                     defaultValue={value}
                     onCancel={handleCancel}

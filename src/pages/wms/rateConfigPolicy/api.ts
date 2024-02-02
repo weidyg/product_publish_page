@@ -8,6 +8,10 @@ declare global {
         cancelRateConfigPolicy: any,
     }
 }
+export function convertRateConfigType(calculateRule?: number, expenseType?: number) {
+    return window.convertRateConfigType(calculateRule, expenseType);
+}
+
 export async function getRateConfigOptions(): Promise<WmsRateOptions> {
     return await window.getRateConfigOptions();
 }

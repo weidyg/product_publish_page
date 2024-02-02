@@ -6,16 +6,11 @@ import styles from './style/index.module.less';
 import { Button, Divider, Empty, Form, FormItemProps, Input, InputNumber, Layout, Message, Modal, Select, Space, Tag } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
-import { isNumber } from '@arco-design/web-react/es/_util/is';
 
 const prefixCls = 'wre';
 const defaultProps: WmsRateEditProps = {
-  convertType: function (calculateRule?: number, expenseType?: number): { isFixedFee: boolean; isIntervalFee: boolean; isWeight: boolean; isStorageFee: boolean; } {
-    const isFixedFee = calculateRule == 10;
-    const isIntervalFee = isNumber(calculateRule) && calculateRule != 10;
-    const isWeight = calculateRule == 30;
-    const isStorageFee = expenseType == 4;
-    return { isFixedFee, isIntervalFee, isWeight, isStorageFee }
+  convertType: function (calculateRule?: number | undefined, expenseType?: number | undefined): { isFixedFee: boolean; isIntervalFee: boolean; isWeight: boolean; isStorageFee: boolean; } {
+    throw new Error('convertType Function not implemented.');
   }
 };
 function WmsRateEdit(baseProps: WmsRateEditProps) {
@@ -218,10 +213,8 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     }
   }
 
-  function QuantityFormItem(props: FormItemProps & { unit: string, includes?: boolean }) {
-    const { label, unit, includes, ...rest } = props;
-    const precision = unit == 'kg' ? 3 : 0;
-    const step = unit == 'kg' ? 0.001 : 1;
+  function QuantityFormItem(props: FormItemProps & { step?: number, precision?: number, includes?: boolean }) {
+    const { label, precision, step, includes, ...rest } = props;
     const prefix = label;
     const suffix = includes === true ? '含' : includes === false ? '不含' : '';
     return <Form.Item {...rest} >
@@ -232,16 +225,17 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
 
   function FeeFormItem(props: FormItemProps) {
     const { label, ...rest } = props;
-    const step = 0.00;
-    const prefix = label;
     return <Form.Item {...rest} >
-      <InputNumber prefix={label} step={step} precision={2} min={step}
-        placeholder='请输入' style={{ width: prefix ? '130px' : '100px' }} />
+      <InputNumber prefix={label} step={0.01} precision={2} min={0.00}
+        placeholder='请输入' style={{ width: label ? '130px' : '100px' }} />
     </Form.Item>
   }
 
-  function FormList(props: { listFieldName: string, label: string, unit: string, disabled: boolean }) {
+  function FormList(props: { listFieldName: string, label?: string, unit: string, disabled: boolean }) {
     const { listFieldName, label, unit, disabled } = props;
+    const precision = unit == 'kg' ? 3 : 0;
+    const step = unit == 'kg' ? 0.001 : 1;
+
     return <Form.List field={listFieldName}>
       {(fields, { add, remove, move }) => {
         return (
@@ -253,7 +247,9 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                   <Form.Item label={<span style={{ display: 'block', width: '78px', whiteSpace: 'nowrap' }}>{index + 1}、{label}区间</span>}>
                     <Space wrap size={[8, 0]}>
                       <Space style={{ marginBottom: '8px' }}>
-                        <QuantityFormItem includes={true} disabled={disabled} unit={unit} field={item.field + '.minValue'} noStyle
+                        <QuantityFormItem disabled={disabled}
+                          step={step} precision={precision} includes={true}
+                          field={item.field + '.minValue'} noStyle
                           rules={[{
                             validator: (v, cb) => {
                               if (!v) { return cb('不能为空') } else {
@@ -271,7 +267,8 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                             }
                           }]} />
                         <span className={styles[`${prefixCls}-label`]} >至</span>
-                        <QuantityFormItem disabled={disabled} unit={unit} field={item.field + '.maxValue'} noStyle
+                        <QuantityFormItem disabled={disabled} step={step} precision={precision}
+                          field={item.field + '.maxValue'} noStyle
                           dependencies={[item.field + '.minValue']}
                           rules={[{
                             validator: (v, cb) => {
@@ -287,8 +284,10 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                       <Space size={0}>
                         <Space wrap size={[8, 0]}>
                           <Space style={{ marginBottom: '8px' }}>
-                            <span className={styles[`${prefixCls}-label`]}>不超</span>
-                            <QuantityFormItem disabled={disabled} unit={unit} field={item.field + '.firstValue'}
+                            <span className={styles[`${prefixCls}-label`]}>前</span>
+                            <QuantityFormItem disabled={disabled}
+                              step={step} precision={precision}
+                              field={item.field + '.firstValue'} noStyle
                               dependencies={[item.field + '.maxValue']} rules={[{
                                 validator: (v, cb) => {
                                   if (!v) { return cb('不能为空') } else {
@@ -297,8 +296,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                                   }
                                   return cb(null);
                                 }
-                              }]}
-                              noStyle />
+                              }]} />
                             <span className={styles[`${prefixCls}-label`]}>{unit}</span>
                             <span className={styles[`${prefixCls}-label`]}>费用</span>
                             <FeeFormItem disabled={disabled} field={item.field + '.firstFee'} rules={[{ required: true }]} noStyle />
@@ -306,7 +304,10 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                           </Space>
                           <Space style={{ marginBottom: '8px' }}>
                             <span className={styles[`${prefixCls}-label`]} >每超</span>
-                            <QuantityFormItem disabled={disabled} unit={unit} field={item.field + '.overValue'} rules={[{ required: true }]} noStyle />
+                            <QuantityFormItem disabled={disabled}
+                              step={step} precision={precision}
+                              field={item.field + '.overValue'} noStyle
+                              rules={[{ required: true }]} />
                             <span className={styles[`${prefixCls}-label`]}>{unit}</span>
                             <span className={styles[`${prefixCls}-label`]} >增加</span>
                             <FeeFormItem disabled={disabled} field={item.field + '.overFee'} rules={[{ required: true }]} noStyle />
@@ -323,7 +324,16 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
               );
             })}
             <Form.Item label={<span style={{ display: 'block', width: '78px', whiteSpace: 'nowrap' }}></span>}>
-              <Button disabled={disabled} onClick={() => { add(); }}>添加{label}区间</Button>
+              <Button disabled={disabled} onClick={async () => {
+                try {
+                  const values = await formRef?.current?.validate();
+                  const { minValue, maxValue } = values[listFieldName][fields.length - 1] || {};
+                  const _minValue = maxValue == minValue ? maxValue + step : maxValue;
+                  add({ minValue: _minValue });
+                } catch (error) {
+
+                }
+              }}>添加{label}区间</Button>
             </Form.Item>
           </div>
         );
@@ -396,13 +406,13 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                     v.weightRangePrice = v.weightRangePrice || [];
                     v.quantityRangePrice = [];
                     if (v.weightRangePrice.length == 0) {
-                      v.weightRangePrice.push({});
+                      v.weightRangePrice.push({ minValue: 0.001, });
                       formRef?.current?.setFieldsValue(v);
                     }
                   } else {
                     v.quantityRangePrice = v.quantityRangePrice || [];
                     if (v.quantityRangePrice.length == 0) {
-                      v.quantityRangePrice.push({});
+                      v.quantityRangePrice.push({ minValue: 1, });
                       formRef?.current?.setFieldsValue(v);
                     }
                   }
@@ -419,6 +429,8 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                   const rangeFieldName = isWeight ? "weightRangePrice" : "quantityRangePrice";
                   const label = isWeight ? "重量" : isStorageFee ? "库存" : "数量";
                   const unit = isWeight ? "kg" : isStorageFee ? "件/日" : "件";
+                  console.log('11', calculateRule, expenseType);
+                  console.log('22', isFixedFee, isIntervalFee, isWeight, isStorageFee);
                   const fixedPriceUnit = isStorageFee ? "元/日" : "元/件";
                   // if (isStorageFee) {
                   //   setTimeout(() => {
@@ -432,9 +444,9 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                         validator: (v, cb) => {
                           if (!v) { return cb('费用类型不能为空') }
                           else {
-                            const key = getKey(values); 
+                            const key = getKey(values);
                             const has = policy?.details?.some(f => getKey(f) !== key && f.expenseType == v);
-                            console.log('validator 费用类型', has, `f.key !== ${key} && f.expenseType == ${v}`);
+                            // console.log('validator 费用类型', has, `f.key !== ${key} && f.expenseType == ${v}`);
                             if (has) { return cb('该费用类型已经存在') }
                           }
                           return cb(null);
@@ -465,7 +477,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                             hideControl step={0.01} min={0.01} precision={2} style={{ width: '160px' }} />
                         </Form.Item>
                         : isIntervalFee
-                          ? <FormList disabled={!editing} listFieldName={rangeFieldName} label={label} unit={unit} />
+                          ? <FormList disabled={!editing} listFieldName={rangeFieldName} unit={unit} />
                           : undefined
                       }
                     </div>
