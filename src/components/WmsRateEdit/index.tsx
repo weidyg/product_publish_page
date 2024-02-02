@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import { RateConfigPolicy, RateConfigPolicyDetail, WmsRateEditProps } from './interface';
 import styles from './style/index.module.less';
@@ -7,7 +7,6 @@ import { Button, Divider, Empty, Form, FormItemProps, Input, InputNumber, Layout
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 import { isNumber } from '@arco-design/web-react/es/_util/is';
-import { includes } from 'lodash';
 
 const prefixCls = 'wre';
 const defaultProps: WmsRateEditProps = {
@@ -22,7 +21,7 @@ const defaultProps: WmsRateEditProps = {
 function WmsRateEdit(baseProps: WmsRateEditProps) {
   const props = useMergeProps<WmsRateEditProps>(baseProps, defaultProps, {});
   const { options = {}, onSubmit, onCancel, convertType } = props;
-  const { stores, expenseTypes, calculateRules, operateTypes } = options;
+  const { stores, expenseTypes, calculateRules } = options;
 
   const formLeftRef = useRef<any>();
   const formRef = useRef<any>();
@@ -42,16 +41,9 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     if (props.onChange) { props.onChange(tempData); }
   };
 
-  const policyDetails = useMemo(() => {
-    return policy.details?.map(m => {
-      m.key = getKey(m);
-      return m;
-    }) || [];
-  }, [JSON.stringify(policy.details)])
-
-  function getKey(m:any) {
+  function getKey(m: RateConfigPolicyDetail) {
     if (!m) { return ''; }
-    return  `${m.id || 'N'}_${m.expenseType || 'N'}_${m.operateType || 'N'}_${m.calculateRule || 'N'}`;
+    return `${m.id || 'i'}_${m.expenseType || 'e'}_${m.calculateRule || 'c'}`;
   }
   function findDuplicates(keys?: string[]) {
     return keys?.filter((key, index, arr) => arr.indexOf(key) !== index && arr.includes(key));
@@ -64,8 +56,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     if ((policy?.details?.length || 0) == 0) { throw new Error('配置明细不能为空，请添加配置！'); }
     const keys = policy?.details?.map(f => {
       const expenseTypeText = expenseTypes?.find(fi => fi.value == f.expenseType)?.label;
-      const operateTypeText = operateTypes?.find(fi => fi.value == f.operateType)?.label;
-      return `${expenseTypeText || ''}${operateTypeText || ''}`;
+      return `${expenseTypeText || ''}`;
     });
     const hasKeys = findDuplicates(keys);
     if ((hasKeys?.length || 0) > 0) {
@@ -128,7 +119,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     const change = () => {
       setActionKey(index);
       setTimeout(() => {
-        setFormFieldsValue(index);
+        setFormFieldsValue(detail);
         setEditing(false);
       }, 10);
     }
@@ -187,14 +178,14 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
           values.weightRangePrice = [];
         }
         values.key = getKey(values);
-        let _details = [...policyDetails];
+        let _details = [...policy.details || []];
         if (actionKey === 0 || actionKey > 0) {
           _details[actionKey] = values;
         } else {
           _details.push(values);
           const _actionKey = _details.length - 1;
           setActionKey(_actionKey);
-          setFormFieldsValue(_actionKey);
+          setFormCurrentDetail(_actionKey, _details);
         }
         onChange({ ...policy, details: _details });
         setEditing(false);
@@ -208,22 +199,24 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
   }
 
   function handleDetailCancel(e: Event): void {
-    setFormFieldsValue(actionKey);
+    setFormCurrentDetail(actionKey, policy?.details);
     if (actionKey == null) { setActionKey(undefined); }
     setEditing(false);
   }
 
-  function setFormFieldsValue(index?: number): void {
-    // console.log('setFormFieldsValue', index);
-    if (index === 0 || index && (index > 0)) {
-      const _detail = policyDetails[index] || {};
-      formRef?.current?.setFieldsValue(_detail);
-      // console.log('setFormFieldsValue', index, _detail, formRef?.current);
+
+  function setFormCurrentDetail(index?: number, details?: RateConfigPolicyDetail[]): void {
+    const _detail = index === 0 || index && (index > 0)
+      ? details && details[index] : undefined;
+    setFormFieldsValue(_detail);
+  }
+  function setFormFieldsValue(detail?: RateConfigPolicyDetail): void {
+    if (detail) {
+      formRef?.current?.setFieldsValue(detail);
     } else {
       formRef?.current?.clearFields();
     }
   }
-
 
   function QuantityFormItem(props: FormItemProps & { unit: string, includes?: boolean }) {
     const { label, unit, includes, ...rest } = props;
@@ -341,7 +334,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
   return (
     <Layout className={styles[`${prefixCls}-layout`]}>
       <Layout>
-        <Layout.Sider className={styles[`${prefixCls}-sider`]} width={220}>
+        <Layout.Sider className={styles[`${prefixCls}-sider`]} width={260}>
           <div style={{ padding: '12px 8px 0' }}>
             <Form ref={formLeftRef}
               layout='vertical'
@@ -360,18 +353,17 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
           </div>
           <Divider style={{ margin: 0 }}>配置明细</Divider>
           <div style={{ padding: '8px' }}>
-            {policyDetails.map((item, index) => {
-              const { expenseType, calculateRule, operateType } = item;
+            {policy?.details?.map((item, index) => {
+              const { expenseType, calculateRule } = item;
               const expenseTypeText = expenseTypes?.find(f => f.value == expenseType)?.label;
-              const operateTypeText = operateTypes?.find(f => f.value == operateType)?.label;
               const calculateRuleText = calculateRules?.find(f => f.value == calculateRule)?.label;
-              return <div key={item.key} style={{ marginBottom: '8px' }}>
+              return <div key={getKey(item)} style={{ marginBottom: '8px' }}>
                 <Tag size='medium' closable color={actionKey == index ? 'blue' : undefined} style={{ width: '100%' }}
-                  title={`【${expenseTypeText}${operateTypeText || ''}】${calculateRuleText}`}
+                  title={`【${expenseTypeText}】${'- '}${calculateRuleText}`}
                   onClose={() => { return handleDelDetail(item, index); }}>
                   <span onClick={() => { return handleSelectDetail(item, index); }} style={{ cursor: 'pointer' }}>
                     <span className={styles[`${prefixCls}-tag`]}>
-                      {index + 1}.【{expenseTypeText}{operateTypeText}】{calculateRuleText}
+                      {index + 1}.【{expenseTypeText}】{'- '}{calculateRuleText}
                     </span>
                   </span>
                 </Tag>
@@ -435,49 +427,24 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                   // }
                   return <>
                     <div ref={contentTopRef} className={styles[`${prefixCls}-content-top`]}>
-                      <Form.Item field={'key'} hidden><Input /></Form.Item>
                       <Form.Item field={'id'} hidden><Input /></Form.Item>
-                      <Form.Item label={'费用类型'} field={'expenseType'}
-                        dependencies={['operateType']}
-                        rules={[{ required: true }, {
-                          validator: (v, cb) => {
-                            if (!v) { return cb('费用类型不能为空') }
-                            else {
-                              const { isStorageFee } = convertType(undefined, v);
-                              const key = formRef?.current?.getFieldValue('key');
-                              const _operateType = formRef?.current?.getFieldValue('operateType');
-                              const has = policyDetails?.some(f => f.key !== key && (f.expenseType == v && (isStorageFee || f.operateType == _operateType)));
-                              // console.log('validator 费用类型', has, `f.key !== ${key} && (f.expenseType == ${v}  && (${isStorageFee} || f.operateType == ${_operateType}))`, key, policyDetails);
-                              if (has) { return cb('存在配置(组合)重复') }
-                            }
-                            return cb(null);
+                      <Form.Item label={'费用类型'} field={'expenseType'} rules={[{ required: true }, {
+                        validator: (v, cb) => {
+                          if (!v) { return cb('费用类型不能为空') }
+                          else {
+                            const key = getKey(values); 
+                            const has = policy?.details?.some(f => getKey(f) !== key && f.expenseType == v);
+                            console.log('validator 费用类型', has, `f.key !== ${key} && f.expenseType == ${v}`);
+                            if (has) { return cb('该费用类型已经存在') }
                           }
-                        }]}>
-                        <Select disabled={!editing} placeholder='请选择' options={expenseTypes} allowClear style={{ width: '120px' }} />
+                          return cb(null);
+                        }
+                      }]}>
+                        <Select disabled={!editing} placeholder='请选择' options={expenseTypes} allowClear style={{ width: '180px' }} />
                       </Form.Item>
 
-                      {!isStorageFee &&
-                        <Form.Item label={'单据类型'} field={'operateType'}
-                          dependencies={['expenseType']}
-                          rules={[{ required: true }, {
-                            validator: (v, cb) => {
-                              if (!v) { return cb('操作类型不能为空') }
-                              else {
-                                const key = formRef?.current?.getFieldValue('key');
-                                const _expenseType = formRef?.current?.getFieldValue('expenseType');
-                                const { isStorageFee } = convertType(undefined, _expenseType);
-                                const has = policyDetails?.some(f => f.key !== key && (f.expenseType == _expenseType && (isStorageFee || f.operateType == v)));
-                                // console.log('validator 操作类型', has, `f.key !== ${key} && (f.expenseType == ${_expenseType}  && (${isStorageFee} || f.operateType == ${v}))`, key, policyDetails);
-                                if (has) { return cb('存在配置(组合)重复') }
-                              }
-                              return cb(null);
-                            }
-                          }]}>
-                          <Select disabled={!editing} placeholder='请选择' options={operateTypes} allowClear style={{ width: '120px' }} />
-                        </Form.Item>
-                      }
                       <Form.Item label={'费率规则'} field={'calculateRule'} rules={[{ required: true }]}>
-                        <Select disabled={!editing} placeholder='请选择' options={calculateRules} allowClear style={{ width: '120px' }} />
+                        <Select disabled={!editing} placeholder='请选择' options={calculateRules} allowClear style={{ width: '180px' }} />
                       </Form.Item>
 
                       <Form.Item>
