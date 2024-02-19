@@ -3,24 +3,58 @@ import { useMemo, useRef, useState } from 'react';
 import useMergeProps from '@arco-design/web-react/es/_util/hooks/useMergeProps';
 import { RateConfigPolicy, RateConfigPolicyDetail, WmsRateEditProps } from './interface';
 import styles from './style/index.module.less';
-import { Button, Divider, Empty, Form, FormItemProps, Input, InputNumber, Layout, Message, Modal, Select, Space, Tag } from '@arco-design/web-react';
+import { Button, Divider, Empty, Form, FormInstance, FormItemProps, Input, InputNumber, Layout, Message, Modal, Select, Space, Tag } from '@arco-design/web-react';
 import { IconDelete, IconPlus } from '@arco-design/web-react/icon';
 import useMergeValue from '@arco-design/web-react/es/_util/hooks/useMergeValue';
 
 
 const prefixCls = 'wre';
 const defaultProps: WmsRateEditProps = {
-  convertType: function (calculateRule?: number | undefined, expenseType?: number | undefined): { isFixedFee: boolean; isIntervalFee: boolean; isWeight: boolean; isStorageFee: boolean; } {
-    throw new Error('convertType Function not implemented.');
+  convertType: function (calculateRule?: number | undefined, expenseType?: number | undefined): { isFixedFee: boolean; isIntervalFee: boolean; unit: string; precision: number; isStorageFee: boolean; } {
+    throw new Error('Function not implemented.');
   }
 };
 function WmsRateEdit(baseProps: WmsRateEditProps) {
   const props = useMergeProps<WmsRateEditProps>(baseProps, defaultProps, {});
   const { options = {}, onSubmit, onCancel, convertType } = props;
-  const { stores, expenseTypes, calculateRules } = options;
+  const { stores, expenseTypes, operateTypes, calculateRules } = options;
+
+  const uiExpenseTypes = useMemo(() => {
+    let ops: any[] = [];
+    expenseTypes?.forEach((et, i) => {
+      if (et.value == 10) {
+        operateTypes?.forEach((ot, i) => {
+          ops.push({ label: `${ot.label}${et.label}`, value: formatUiType(ot.value, et.value) });
+        });
+      } else {
+        ops.push({ label: `${et.label}`, value: formatUiType(undefined, et.value) });
+      }
+    });
+    return ops;
+  }, [JSON.stringify(expenseTypes), JSON.stringify(operateTypes)])
+
+
+  function convertUiType(uiExpenseType?: string): {
+    operateType?: number,
+    expenseType?: number
+  } {
+    const arr = uiExpenseType?.split('_') || [];
+    const result = {
+      operateType: arr?.length > 0 ? parseInt(arr[0]) : undefined,
+      expenseType: arr?.length > 1 ? parseInt(arr[1]) : undefined,
+    };
+    // console.log('convertUiType', uiExpenseType, arr, result);
+    return result;
+  }
+
+  function formatUiType(operateType?: number, expenseType?: number): string {
+    return `${operateType || ''}_${expenseType}`;
+  }
+
+
 
   const formLeftRef = useRef<any>();
-  const formRef = useRef<any>();
+  const formRef = useRef<FormInstance<RateConfigPolicyDetail, any, any>>();
   const contentTopRef = useRef<any>();
 
   const [actionKey, setActionKey] = useState<any>();
@@ -31,6 +65,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     defaultValue: 'defaultValue' in props ? props.defaultValue : undefined,
     value: 'value' in props ? props.value : undefined,
   });
+
   const onChange = (newData: RateConfigPolicy) => {
     let tempData = { ...newData };
     if (!('value' in props)) { setPolicy(tempData); }
@@ -39,7 +74,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
 
   function getKey(m: RateConfigPolicyDetail) {
     if (!m) { return ''; }
-    return `${m.id || 'i'}_${m.expenseType || 'e'}_${m.calculateRule || 'c'}`;
+    return `${m.id || 'i'}_${m.expenseType || 'e'}_${m.operateType || 'o'}_${m.calculateRule || 'c'}`;
   }
   function findDuplicates(keys?: string[]) {
     return keys?.filter((key, index, arr) => arr.indexOf(key) !== index && arr.includes(key));
@@ -51,13 +86,20 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     catch (error: any) { throw new Error(`检测到有必填项未填或格式错误！`); }
     if ((policy?.details?.length || 0) == 0) { throw new Error('配置明细不能为空，请添加配置！'); }
     const keys = policy?.details?.map(f => {
-      const expenseTypeText = expenseTypes?.find(fi => fi.value == f.expenseType)?.label;
+      const uiExpenseType = f.uiExpenseType || formatUiType(f.operateType, f.expenseType);
+      const expenseTypeText = uiExpenseTypes?.find(fi => fi.value == uiExpenseType)?.label;
       return `${expenseTypeText || ''}`;
     });
     const hasKeys = findDuplicates(keys);
     if ((hasKeys?.length || 0) > 0) {
       throw new Error(`配置明细(${hasKeys?.join(',')})类型重复，请修改后再重新提交！`);
     }
+    policy?.details?.forEach((f: any) => {
+      f.calculateRuleText = undefined;
+      f.expenseTypeText = undefined;
+      f.operateTypeText = undefined;
+      f.formulaDescribe = undefined;
+    })
   }
 
   async function handleCancel(e: Event): Promise<any> {
@@ -117,6 +159,8 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
       setActionKey(index);
       setTimeout(() => {
         detail.key = detail.key || getKey(detail);
+        detail.uiExpenseType = detail.uiExpenseType || formatUiType(detail.operateType, detail.expenseType);
+
         setFormFieldsValue(detail);
         setEditing(false);
       }, 10);
@@ -167,10 +211,14 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
       setEditing(true);
     } else {
       try {
-        let values = await formRef?.current?.validate();
-        const { isIntervalFee, isWeight, isFixedFee } = convertType(values?.calculateRule, values?.expenseType);
-        if ((isIntervalFee && isWeight) || isFixedFee) { values.quantityRangePrice = []; }
-        if ((isIntervalFee && !isWeight) || isFixedFee) { values.weightRangePrice = []; }
+        let values = await formRef?.current?.validate() || {};
+        // const { isIntervalFee, precision, isFixedFee } = convertType(values?.calculateRule, values?.expenseType);
+        // if ((isIntervalFee && precision >= 0) || isFixedFee) { values.rangePrice = []; }
+
+        const { expenseType, operateType } = convertUiType(values.uiExpenseType);
+        values.expenseType = expenseType;
+        values.operateType = operateType;
+
         let _details = [...policy.details || []];
         if (actionKey === 0 || actionKey > 0) {
           _details[actionKey] = values;
@@ -214,12 +262,27 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     }
   }
 
+
+  function filtercalculateRuleOptions(expenseType?: number, operateType?: number) {
+    let hideValues: number[] = [];
+    if ((expenseType == 10 && (operateType == 30 || operateType == 40))
+      || expenseType == 20 || expenseType == 40 || expenseType == 50
+    ) {
+      if (expenseType == 40 || expenseType == 50) {
+        hideValues.push(20);
+      }
+      hideValues.push(30);
+      hideValues.push(40);
+    }
+    return calculateRules?.filter(f => !hideValues.includes(f.value));
+  }
+
   function NumFormItem(props: FormItemProps & { step?: number, precision?: number, includes?: boolean }) {
     const { label, precision, step, includes, ...rest } = props;
     const prefix = label;
     const suffix = includes === true ? '含' : includes === false ? '不含' : '';
     return <Form.Item {...rest} >
-      <InputNumber prefix={prefix} suffix={suffix} step={step} precision={precision} min={step}
+      <InputNumber prefix={prefix} suffix={suffix} step={step} precision={precision} min={0}
         placeholder='请输入' style={{ width: prefix ? '130px' : '100px' }} />
     </Form.Item>
   }
@@ -232,11 +295,9 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
     </Form.Item>
   }
 
-  function FormList(props: { listFieldName: string, label?: string, unit: string, disabled: boolean }) {
-    const { listFieldName, label, unit, disabled } = props;
-    const precision = unit == 'kg' ? 3 : 0;
-    const step = unit == 'kg' ? 0.001 : 1;
-
+  function FormList(props: { listFieldName: string, label?: string, unit: string, precision: number, disabled: boolean }) {
+    const { listFieldName, label, unit, precision = 0, disabled } = props;
+    const step = 10 ** (precision * -1);
     return <Form.List field={listFieldName}>
       {(fields, { add, remove, move }) => {
         return (
@@ -327,12 +388,14 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
             <Form.Item label={<span style={{ display: 'block', width: '78px', whiteSpace: 'nowrap' }}></span>}>
               <Button disabled={disabled} onClick={async () => {
                 try {
-                  const values = await formRef?.current?.validate();
-                  const { minValue, maxValue } = values[listFieldName][fields.length - 1] || {};
+                  const values = await formRef?.current?.validate() || {};
+                  const { minValue, maxValue } = fields.length > 0
+                    ? values[listFieldName][fields.length - 1]
+                    : { minValue: undefined, maxValue: undefined };
                   const _minValue = maxValue == minValue ? maxValue + step : maxValue;
                   add({ minValue: _minValue });
                 } catch (error) {
-
+                  console.log('添加区间', error);
                 }
               }}>添加{label}区间</Button>
             </Form.Item>
@@ -365,8 +428,11 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
           <Divider style={{ margin: 0 }}>配置明细</Divider>
           <div style={{ padding: '8px' }}>
             {policy?.details?.map((item, index) => {
-              const { expenseType, calculateRule } = item;
-              const expenseTypeText = expenseTypes?.find(f => f.value == expenseType)?.label;
+              const { operateType, expenseType, calculateRule } = item;
+              const uiExpenseType = item.uiExpenseType || formatUiType(operateType, expenseType);
+              const expenseTypeText = uiExpenseTypes?.find(f => f.value == uiExpenseType)?.label;
+              // console.log('expenseTypeText', expenseTypeText, uiExpenseTypes, uiExpenseType);
+              // const expenseTypeText = expenseTypes?.find(f => f.value == expenseType)?.label;
               const calculateRuleText = calculateRules?.find(f => f.value == calculateRule)?.label;
               return <div key={getKey(item)} style={{ marginBottom: '8px' }}>
                 <Tag size='medium' closable color={actionKey == index ? 'blue' : undefined} style={{ width: '100%' }}
@@ -392,73 +458,82 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
               <Empty description='选择左侧配置明细编辑项或点击添加按钮新增项' />
             </div>
             : <Form
-              ref={formRef}
+              ref={formRef as any}
               layout={'inline'}
               autoComplete='off'
               validateMessages={{
                 required: (_, { label }) => <>{label || ''}{'不能为空'}</>
               }}
-              onValuesChange={(v, vs) => {
-                // console.log('onValuesChange value', v);
-                // console.log('onValuesChange values', vs);
-                const { isIntervalFee, isWeight } = convertType(v.calculateRule, v.expenseType);
+              onValuesChange={(_, vs) => {
+                let update = false;
+                const { expenseType, operateType } = convertUiType(vs.uiExpenseType);
+                const { isIntervalFee, precision } = convertType(vs.calculateRule, expenseType);
                 if (isIntervalFee) {
-                  if (isWeight) {
-                    v.weightRangePrice = v.weightRangePrice || [];
-                    v.quantityRangePrice = [];
-                    if (v.weightRangePrice.length == 0) {
-                      v.weightRangePrice.push({ minValue: 0.001, });
-                      formRef?.current?.setFieldsValue(v);
+                  if (precision == 0) {
+                    vs.quantityRangePrice = vs.quantityRangePrice || [];
+                    if (vs.quantityRangePrice.length == 0) {
+                      vs.quantityRangePrice.push({ minValue: 1, });
+                      update = true;
                     }
                   } else {
-                    v.quantityRangePrice = v.quantityRangePrice || [];
-                    if (v.quantityRangePrice.length == 0) {
-                      v.quantityRangePrice.push({ minValue: 1, });
-                      formRef?.current?.setFieldsValue(v);
+                    vs.weightRangePrice = vs.weightRangePrice || [];
+                    vs.quantityRangePrice = [];
+                    if (vs.weightRangePrice.length == 0) {
+                      vs.weightRangePrice.push({ minValue: 0.001, });
+                      update = true;
                     }
                   }
+                }
+                if (vs.calculateRule) {
+                  const _calculateRules = filtercalculateRuleOptions(expenseType, operateType);
+                  const has = _calculateRules?.some(s => s.value == vs.calculateRule);
+                  if (!has) { vs.calculateRule = undefined; update = true; }
+                }
+                if (update) {
+                  vs.expenseType = expenseType;
+                  vs.operateType = operateType;
+                  formRef?.current?.setFieldsValue(vs);
                 }
               }}
             >
               <Form.Item noStyle shouldUpdate={(prev, next) => {
                 return prev.calculateRule !== next.calculateRule
-                  || prev.expenseType !== next.expenseType;
+                  || prev.expenseType !== next.expenseType
+                  || prev.operateType !== next.operateType
+                  || prev.uiExpenseType !== next.uiExpenseType;
               }}>
                 {(values) => {
-                  const { calculateRule, expenseType } = values;
-                  const { isFixedFee, isIntervalFee, isWeight, isStorageFee } = convertType(calculateRule, expenseType);
-                  const rangeFieldName = isWeight ? "weightRangePrice" : "quantityRangePrice";
-                  const label = isWeight ? "重量" : isStorageFee ? "库存" : "数量";
-                  const unit = isWeight ? "kg" : isStorageFee ? "件/日" : "件";
-                  const fixedPriceUnit = isStorageFee ? "元/日" : "元/件";
-                  // console.log('11', calculateRule, expenseType);
-                  // console.log('22', isFixedFee, isIntervalFee, isWeight, isStorageFee);
-                  // if (isStorageFee) {
-                  //   setTimeout(() => {
-                  //     formRef?.current?.setFieldValue('operateType', undefined);
-                  //   }, 10);
-                  // }
+                  const { calculateRule, operateType, uiExpenseType } = values;
+                  const { expenseType } = convertUiType(uiExpenseType);
+                  const { isFixedFee, isIntervalFee, precision, unit } = convertType(calculateRule, expenseType);
+                  const rangeFieldName = 'rangePrice'; //precision == 0 ? "quantityRangePrice" : "weightRangePrice";
+                  const fixedPriceUnit = `元/${unit}`;
+                  const _calculateRules = filtercalculateRuleOptions(expenseType, operateType);
                   return <>
                     <div ref={contentTopRef} className={styles[`${prefixCls}-content-top`]}>
                       <Form.Item field={'key'} hidden><Input /></Form.Item>
                       <Form.Item field={'id'} hidden><Input /></Form.Item>
-                      <Form.Item label={'费用类型'} field={'expenseType'} rules={[{ required: true }, {
+
+                      {/* <Form.Item field={'expenseType'} ><Input /></Form.Item>
+                      <Form.Item field={'operateType'} ><Input /></Form.Item> */}
+
+                      <Form.Item label={'费用类型'} field={'uiExpenseType'} rules={[{ required: true }, {
                         validator: (v, cb) => {
                           if (!v) { return cb('费用类型不能为空') }
                           else {
                             const key = formRef?.current?.getFieldValue('key');
-                            const has = policy?.details?.some(f => f.key !== key && f.expenseType == v);
-                            console.log('validator 费用类型', has, `f.key !== ${key} && f.expenseType == ${v}`, policy?.details);
+                            const has = policy?.details?.some(f => f.key !== key && f.uiExpenseType == v);
+                            // console.log('validator 费用类型', has, `f.key !== ${key} && f.expenseType == ${v}`, policy?.details);
                             if (has) { return cb('该费用类型已经存在') }
                           }
                           return cb(null);
                         }
                       }]}>
-                        <Select disabled={!editing} placeholder='请选择' options={expenseTypes} allowClear style={{ width: '180px' }} />
+                        <Select disabled={!editing} placeholder='请选择' options={uiExpenseTypes} allowClear style={{ width: '180px' }} />
                       </Form.Item>
 
-                      <Form.Item label={'费率规则'} field={'calculateRule'} rules={[{ required: true }]}>
-                        <Select disabled={!editing} placeholder='请选择' options={calculateRules} allowClear style={{ width: '180px' }} />
+                      <Form.Item label={'费率规则'} field={'calculateRule'} rules={[{ required: true },]}>
+                        <Select disabled={!editing} placeholder='请选择' options={_calculateRules} allowClear style={{ width: '180px' }} />
                       </Form.Item>
 
                       <Form.Item>
@@ -479,7 +554,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                             hideControl step={0.01} min={0.01} precision={2} style={{ width: '160px' }} />
                         </Form.Item>
                         : isIntervalFee
-                          ? <FormList disabled={!editing} listFieldName={rangeFieldName} unit={unit} />
+                          ? <FormList unit={unit} precision={precision} disabled={!editing} listFieldName={rangeFieldName} />
                           : undefined
                       }
                     </div>
