@@ -346,7 +346,7 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                       <Space size={0}>
                         <Space wrap size={[8, 0]}>
                           <Space style={{ marginBottom: '8px' }}>
-                            <span className={styles[`${prefixCls}-label`]}>前</span>
+                            <span className={styles[`${prefixCls}-label`]}>首</span>
                             <NumFormItem disabled={disabled}
                               step={step} precision={precision}
                               field={field + '.firstValue'} noStyle
@@ -360,18 +360,18 @@ function WmsRateEdit(baseProps: WmsRateEditProps) {
                                 }
                               }]} />
                             <span className={styles[`${prefixCls}-label`]}>{unit}</span>
-                            <span className={styles[`${prefixCls}-label`]}>费用</span>
+                            {/* <span className={styles[`${prefixCls}-label`]}>费用</span> */}
                             <FeeFormItem disabled={disabled} field={field + '.firstFee'} rules={[{ required: true }]} noStyle />
                             <span className={styles[`${prefixCls}-label`]}>元</span>
                           </Space>
                           <Space style={{ marginBottom: '8px' }}>
-                            <span className={styles[`${prefixCls}-label`]} >每超</span>
+                            <span className={styles[`${prefixCls}-label`]} >续</span>
                             <NumFormItem disabled={disabled}
                               step={step} precision={precision}
                               field={field + '.overValue'} noStyle
                               rules={[{ required: true }]} />
                             <span className={styles[`${prefixCls}-label`]}>{unit}</span>
-                            <span className={styles[`${prefixCls}-label`]} >增加</span>
+                            <span className={styles[`${prefixCls}-label`]} >加</span>
                             <FeeFormItem disabled={disabled} field={field + '.overFee'} rules={[{ required: true }]} noStyle />
                             <span className={styles[`${prefixCls}-label`]} >元</span>
                             {fields.length > 1 &&
