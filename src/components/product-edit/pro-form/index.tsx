@@ -80,7 +80,7 @@ function ProFormList(props: MyFormItemProps) {
 }
 
 function RemoteSelect(props: any) {
-    const { label, optionAction, options: propOptions = [], value, onChange, ...rest } = props
+    const { label, optionAction, options: propOptions = [], value, onChange, style, ...rest } = props
     const [options, setOptions] = useState<any[]>(propOptions);
     const [fetching, setFetching] = useState(false);
     useEffect(() => {
@@ -119,45 +119,49 @@ function RemoteSelect(props: any) {
     }
 
     return <>
-        <Select
-            value={value}
-            onChange={handleChange}
-            options={options}
-            triggerProps={{
-                autoAlignPopupWidth: false,
-                autoAlignPopupMinWidth: true,
-                position: 'bl',
-                onVisibleChange(visible) {
-                    if (visible && !fetching && options.length == 0) {
-                        debouncedFetchOptions(optionAction, false);
-                    }
-                },
-            }}
-            renderFormat={(option, value) => {
-                if (!option) { return ''; }
-                return option?.children;
-            }}
-            notFoundContent={
-                fetching ? (
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
-                        <Spin style={{ margin: 12 }} />
-                    </div>
-                ) : <Empty />
-            }
-            {...rest}
-        />
-        {optionAction &&
-            <Tooltip content='同步数据可能有延迟，如未同步到最新数据(5分钟之内改动的数据)，请稍等一会再尝试同步！'>
-                <Button type='text' icon={<IconRefresh />}
-                    loading={fetching}
-                    onClick={() => {
-                        debouncedFetchOptions(optionAction, true);
+        <Grid.Row style={style}>
+            <Grid.Col flex='auto'>
+                <Select
+                    value={value}
+                    onChange={handleChange}
+                    options={options}
+                    triggerProps={{
+                        autoAlignPopupWidth: false,
+                        autoAlignPopupMinWidth: true,
+                        position: 'bl',
+                        onVisibleChange(visible) {
+                            if (visible && !fetching && options.length == 0) {
+                                debouncedFetchOptions(optionAction, false);
+                            }
+                        },
                     }}
-                >
-                    {`同步`}
-                </Button>
-            </Tooltip>
-        }
+                    renderFormat={(option, value) => {
+                        if (!option) { return ''; }
+                        return option?.children;
+                    }}
+                    notFoundContent={
+                        fetching ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
+                                <Spin style={{ margin: 12 }} />
+                            </div>
+                        ) : <Empty />
+                    }
+                    {...rest}
+                />
+            </Grid.Col>
+            {optionAction &&
+                <Grid.Col flex='68px'>
+                    <Tooltip content='同步数据可能有延迟，如未同步到最新数据(5分钟之内改动的数据)，请稍等一会再尝试同步！'>
+                        <Button
+                            type='text' icon={<IconRefresh />} loading={fetching}
+                            onClick={() => { debouncedFetchOptions(optionAction, true); }}
+                            style={{ padding: '0 8px' }}>
+                            同步
+                        </Button>
+                    </Tooltip>
+                </Grid.Col>
+            }
+        </Grid.Row>
     </>
 }
 
